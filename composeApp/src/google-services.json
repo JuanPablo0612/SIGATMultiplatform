@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "336608379836",
+    "project_id": "sigat-1bf29",
+    "storage_bucket": "sigat-1bf29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336608379836:android:295673f35d816adbce21b9",
+        "android_client_info": {
+          "package_name": "com.juanpablo0612.sigat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs0WYjwp9LK6FJB-F331W5Z_YRnp4ZntU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336608379836:android:2f5a2af552336ca1ce21b9",
+        "android_client_info": {
+          "package_name": "com.sigat.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs0WYjwp9LK6FJB-F331W5Z_YRnp4ZntU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

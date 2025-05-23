@@ -1,0 +1,84 @@
+<resources>
+    <string name="app_name" translatable="false">SIGAT</string>
+
+    <string name="email_label">Email</string>
+    <string name="email_placeholder">name@example.com</string>
+    <string name="email_error">Please enter a valid email address.</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">********</string>
+    <string name="password_error">Password must be at least 8 characters long.</string>
+    <string name="password_show">Show password</string>
+    <string name="password_hide">Hide password</string>
+    <string name="dni_label">ID Number</string>
+    <string name="dni_placeholder">12345678</string>
+    <string name="dni_error">Please enter a valid ID number.</string>
+    <string name="first_name_label">First Name</string>
+    <string name="first_name_placeholder">John</string>
+    <string name="first_name_error">Please enter a valid first name.</string>
+    <string name="last_name_label">Last Name</string>
+    <string name="last_name_placeholder">Doe</string>
+    <string name="last_name_error">Please enter a valid last name.</string>
+    <string name="contract_number_label">Contract Number</string>
+    <string name="contract_number_error">Please enter a valid contract number.</string>
+
+    <string name="button_accept">Accept</string>
+    <string name="button_select">Select</string>
+    <string name="button_save">Save</string>
+
+    <string name="login_title">Welcome Back!</string>
+    <string name="login_message">Enter your email and password to login</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="login_button">Login</string>
+    <string name="create_account_button">Create an account</string>
+
+    <string name="register_title">Create an account</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="sign_in_here">Sign in here</string>
+
+    <string name="email_verification_title">Confirm your Email address</string>
+    <string name="email_verification_sending">Sending email verification to %1$s…</string>
+    <string name="email_verification_sent">We sent a confirmation email to %1$s\n Check your email and click on the confirmation link to continue.</string>
+    <string name="email_verification_failed">Failed to send email verification to %1$s. Please try again later.</string>
+    <string name="email_verification_resend">Resend email</string>
+    <string name="email_verified">Email verified successfully.</string>
+
+    <string name="data_update_title">Update Data</string>
+
+    <string name="home_title">Home</string>
+    <string name="home_greeting">Welcome, %1$s</string>
+
+    <string name="role">Your role:</string>
+    <string name="role_fa">Facilitator</string>
+    <string name="role_ap">Apprentice</string>
+    <string name="role_ad">Administrator</string>
+    <string name="role_unknown">Unknown</string>
+
+    <string name="reports_title">Reports</string>
+
+    <string name="actions_title">Actions</string>
+    <string name="actions_message">See all the actions you\'ve added</string>
+    <string name="no_actions">You haven\'t added any actions</string>
+    <string name="add_one">Add one</string>
+
+    <string name="description_label">Description</string>
+    <string name="description_error">Please enter a valid description.</string>
+    <string name="obligation_label">Obligation</string>
+    <string name="date_label">Date</string>
+    <string name="select_image_source">Select image source</string>
+    <string name="image_source_gallery">Gallery</string>
+    <string name="image_source_camera">Camera</string>
+    <string name="images_label">Images</string>
+    <string name="button_add_image">Add image</string>
+    <string name="button_add_action">Add action</string>
+
+    <string name="unknown_error_message">An unknown error has occurred</string>
+    <string name="network_error_message">A network error has occurred. Please try again later</string>
+    <string name="invalid_credentials_title">Invalid credentials.</string>
+    <string name="invalid_credentials_message">This means that the email or password is incorrect.</string>
+    <string name="user_already_exists_title">The user already exists.</string>
+    <string name="user_already_exists_message">This means that there is already an account created with the same email.</string>
+    <string name="dni_not_registered_title">ID number not registered.</string>
+    <string name="dni_not_registered_message">Make sure you entered it correctly or contact Tecnoacademia for app access.</string>
+    <string name="dni_already_linked_title">ID number already linked to another account</string>
+    <string name="dni_already_linked_message">For security reasons, we only allow one account per ID number. Log in with the email and password you first registered with.</string>
+</resources>
