@@ -2,12 +2,13 @@ package com.juanpablo0612.sigat.data.actions.remote
 
 import com.juanpablo0612.sigat.data.actions.model.ActionModel
 import com.juanpablo0612.sigat.data.exceptions.handleExceptions
+import com.juanpablo0612.sigat.data.platform.StoragePlatform
 import dev.gitlive.firebase.firestore.FirebaseFirestore
-import dev.gitlive.firebase.storage.Data
 import dev.gitlive.firebase.storage.FirebaseStorage
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.ImageFormat
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.compressImage
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -56,7 +57,7 @@ class ActionsRemoteDataSourceImpl(
     ): String {
         val compressedBytes = compressImage(imageByteArray)
         val imageRef = storage.reference.child("actions/$actionId/$imageName")
-        imageRef.putData(Data(compressedBytes))
+        imageRef.putData(StoragePlatform.dataOf(compressedBytes))
         return imageRef.getDownloadUrl()
     }
 
