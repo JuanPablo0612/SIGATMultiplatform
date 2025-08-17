@@ -3,19 +3,29 @@ package com.juanpablo0612.sigat.ui.training_programs.detail
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
+import com.juanpablo0612.sigat.ui.navigation.Screen
 import kotlinx.coroutines.launch
 
 class TrainingProgramDetailViewModel(
     private val repository: TrainingProgramsRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var uiState by mutableStateOf(TrainingProgramDetailUiState())
         private set
 
-    fun loadTrainingProgram(id: String) {
+    private val trainingProgramDetail = savedStateHandle.toRoute(Screen.TrainingProgramDetail::class)
+
+    init {
+        loadTrainingProgram(trainingProgramDetail.programId)
+    }
+
+    private fun loadTrainingProgram(id: String) {
         viewModelScope.launch {
             uiState = uiState.copy(loading = true)
             try {

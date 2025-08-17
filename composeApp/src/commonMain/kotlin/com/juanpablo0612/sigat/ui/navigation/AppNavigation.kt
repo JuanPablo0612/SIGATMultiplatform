@@ -12,7 +12,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.juanpablo0612.sigat.ui.actions.add_action.AddActionScreen
 import com.juanpablo0612.sigat.ui.auth.login.LoginScreen
 import com.juanpablo0612.sigat.ui.auth.register.RegisterScreen
@@ -167,9 +166,7 @@ fun NavGraphBuilder.addTrainingProgramDetailScreen(
     windowSize: WindowSizeClass
 ) {
     composable<Screen.TrainingProgramDetail> { backStackEntry ->
-        val args = backStackEntry.toRoute<Screen.TrainingProgramDetail>()
         TrainingProgramDetailScreen(
-            programId = args.programId,
             windowSize = windowSize,
             onNavigateBack = { navController.navigateUp() }
         )

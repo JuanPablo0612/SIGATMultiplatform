@@ -44,13 +44,11 @@ import sigat.composeapp.generated.resources.training_program_detail_title
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainingProgramDetailScreen(
-    programId: String,
     viewModel: TrainingProgramDetailViewModel = koinViewModel(),
     windowSize: WindowSizeClass,
     onNavigateBack: () -> Unit
 ) {
     val uiState = viewModel.uiState
-    LaunchedEffect(programId) { viewModel.loadTrainingProgram(programId) }
     if (uiState.finished) {
         LaunchedEffect(Unit) { onNavigateBack() }
     }

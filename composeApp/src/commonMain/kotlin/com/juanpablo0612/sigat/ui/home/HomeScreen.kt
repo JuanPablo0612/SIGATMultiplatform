@@ -1,5 +1,7 @@
 package com.juanpablo0612.sigat.ui.home
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -14,6 +16,8 @@ import com.juanpablo0612.sigat.ui.admin.manage_roles.ManageRolesScreen
 import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import sigat.composeapp.generated.resources.Res
+import sigat.composeapp.generated.resources.logout
 
 @Composable
 fun HomeScreen(
@@ -52,6 +56,19 @@ fun HomeScreen(
                     }
                 )
             }
+            item(
+                icon = {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = null)
+                },
+                label = {
+                    Text(stringResource(Res.string.logout))
+                },
+                selected = false,
+                onClick = {
+                    viewModel::onLogout
+                    onLogout()
+                }
+            )
         }
     ) {
         if (currentDestination != null) {

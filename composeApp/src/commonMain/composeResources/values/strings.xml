@@ -41,6 +41,8 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_in_here">Sign in here</string>
 
+    <string name="logout">Logout</string>
+
     <!-- Email Verification -->
     <string name="email_verification_title">Verify Your Email Address</string>
     <string name="email_verification_sending">Sending verification email to %1$s…</string>

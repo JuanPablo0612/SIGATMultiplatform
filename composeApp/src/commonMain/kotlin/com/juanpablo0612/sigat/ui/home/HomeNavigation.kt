@@ -13,6 +13,7 @@ import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.actions_title
 import sigat.composeapp.generated.resources.manage_roles_title
 import sigat.composeapp.generated.resources.reports_title
+import sigat.composeapp.generated.resources.training_programs_title
 
 enum class HomeDestinations(
     val label: StringResource,
@@ -31,7 +32,11 @@ fun getScreenListForRole(role: Role): List<HomeDestinations> {
         )
 
         RoleType.TEACHER -> {
-            listOf(HomeDestinations.TrainingPrograms, HomeDestinations.Actions, HomeDestinations.Reports)
+            listOf(
+                HomeDestinations.TrainingPrograms,
+                HomeDestinations.Actions,
+                HomeDestinations.Reports
+            )
         }
 
         else -> {

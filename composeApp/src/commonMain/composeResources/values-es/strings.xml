@@ -39,6 +39,8 @@
     <string name="already_have_an_account">¿Ya tienes una cuenta?</string>
     <string name="sign_in_here">Inicia sesión aquí</string>
 
+    <string name="logout">Cerrar sesión</string>
+
     <!-- Verificación de correo -->
     <string name="email_verification_title">Verifica tu correo electrónico</string>
     <string name="email_verification_sending">Enviando correo de verificación a %1$s…</string>

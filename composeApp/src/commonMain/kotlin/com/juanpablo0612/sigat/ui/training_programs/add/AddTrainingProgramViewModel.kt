@@ -19,40 +19,55 @@ class AddTrainingProgramViewModel(
 
     fun onNameChange(newName: String) {
         uiState = uiState.copy(name = newName, validName = newName.isNotBlank())
+        validateName()
     }
 
     fun onCodeChange(newCode: String) {
         uiState = uiState.copy(code = newCode, validCode = newCode.toIntOrNull() != null)
+        validateCode()
     }
 
-    fun onStartDateChange(newStartDate: String) {
-        val valid = newStartDate.toLongOrNull() != null
-        val validEnd = uiState.endDate.toLongOrNull()?.let { end ->
-            newStartDate.toLongOrNull()?.let { start -> start <= end } ?: false
-        } ?: true
-        uiState = uiState.copy(startDate = newStartDate, validStartDate = valid && validEnd)
-        if (!validEnd) {
-            uiState = uiState.copy(validEndDate = false)
-        }
+    fun onStartDateChange(newStartDate: Long) {
+        uiState = uiState.copy(startDate = newStartDate)
+        validateStartDate()
     }
 
-    fun onEndDateChange(newEndDate: String) {
-        val endLong = newEndDate.toLongOrNull()
-        val startLong = uiState.startDate.toLongOrNull()
-        val valid = endLong != null && (startLong == null || startLong <= endLong)
-        uiState = uiState.copy(endDate = newEndDate, validEndDate = valid)
+    fun onEndDateChange(newEndDate: Long) {
+        uiState = uiState.copy(endDate = newEndDate)
+        validateEndDate()
     }
 
     fun onScheduleChange(newSchedule: String) {
         uiState = uiState.copy(schedule = newSchedule, validSchedule = newSchedule.isNotBlank())
+        validateSchedule()
+    }
+
+    private fun validateName() {
+        uiState = uiState.copy(validName = uiState.name.isNotBlank())
+    }
+
+    private fun validateCode() {
+        uiState = uiState.copy(validCode = uiState.code.toIntOrNull() != null)
+    }
+
+    private fun validateStartDate() {
+        uiState = uiState.copy(validStartDate = uiState.startDate != null)
+    }
+
+    private fun validateEndDate() {
+        uiState = uiState.copy(validEndDate = uiState.endDate != null)
+    }
+
+    private fun validateSchedule() {
+        uiState = uiState.copy(validSchedule = uiState.schedule.isNotBlank())
     }
 
     private fun validateFields() {
-        onNameChange(uiState.name)
-        onCodeChange(uiState.code)
-        onStartDateChange(uiState.startDate)
-        onEndDateChange(uiState.endDate)
-        onScheduleChange(uiState.schedule)
+        validateName()
+        validateCode()
+        validateStartDate()
+        validateEndDate()
+        validateSchedule()
     }
 
     private fun allFieldsValid(): Boolean {
@@ -72,8 +87,8 @@ class AddTrainingProgramViewModel(
                     TrainingProgram(
                         name = uiState.name,
                         code = uiState.code.toInt(),
-                        startDate = uiState.startDate.toLong(),
-                        endDate = uiState.endDate.toLong(),
+                        startDate = uiState.startDate!!,
+                        endDate = uiState.endDate!!,
                         schedule = uiState.schedule,
                         teacherUserId = teacherId
                     )
@@ -93,9 +108,9 @@ data class AddTrainingProgramUiState(
     val validName: Boolean = true,
     val code: String = "",
     val validCode: Boolean = true,
-    val startDate: String = "",
+    val startDate: Long? = null,
     val validStartDate: Boolean = true,
-    val endDate: String = "",
+    val endDate: Long? = null,
     val validEndDate: Boolean = true,
     val schedule: String = "",
     val validSchedule: Boolean = true,

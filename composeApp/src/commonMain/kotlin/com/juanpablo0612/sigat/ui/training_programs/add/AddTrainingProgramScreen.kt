@@ -7,13 +7,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +44,16 @@ fun AddTrainingProgramScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState = viewModel.uiState
+    val datePickerState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input)
+
+    LaunchedEffect(datePickerState.selectedStartDateMillis) {
+        datePickerState.selectedStartDateMillis?.let { viewModel.onStartDateChange(it) }
+    }
+
+    LaunchedEffect(datePickerState.selectedEndDateMillis) {
+        datePickerState.selectedEndDateMillis?.let { viewModel.onEndDateChange(it) }
+    }
+
     if (uiState.saved) {
         LaunchedEffect(Unit) { onNavigateBack() }
     }
@@ -55,38 +71,28 @@ fun AddTrainingProgramScreen(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding).padding(16.dp),
+            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            TextField(
+            OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
                 label = { Text(stringResource(Res.string.name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = !uiState.validName
             )
-            TextField(
+            OutlinedTextField(
                 value = uiState.code,
                 onValueChange = viewModel::onCodeChange,
                 label = { Text(stringResource(Res.string.code_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = !uiState.validCode
             )
-            TextField(
-                value = uiState.startDate,
-                onValueChange = viewModel::onStartDateChange,
-                label = { Text(stringResource(Res.string.start_date_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.validStartDate
+            DateRangePicker(
+                state = datePickerState,
+                showModeToggle = false
             )
-            TextField(
-                value = uiState.endDate,
-                onValueChange = viewModel::onEndDateChange,
-                label = { Text(stringResource(Res.string.end_date_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.validEndDate
-            )
-            TextField(
+            OutlinedTextField(
                 value = uiState.schedule,
                 onValueChange = viewModel::onScheduleChange,
                 label = { Text(stringResource(Res.string.schedule_label)) },
