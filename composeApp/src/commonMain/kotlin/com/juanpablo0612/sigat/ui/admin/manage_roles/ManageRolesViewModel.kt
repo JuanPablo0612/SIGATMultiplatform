@@ -51,9 +51,9 @@ class ManageRolesViewModel(
             uiState = uiState.copy(applyingChangesToUser = user)
 
             try {
-                val updatedUsr = user.copy(role = role)
+                val updateUser = user.copy(role = role)
 
-                usersRepository.saveUser(updatedUsr)
+                usersRepository.saveUser(updateUser)
                 uiState = uiState.copy(successChange = true, applyingChangesToUser = null)
             } catch (e: Exception) {
                 uiState =

@@ -80,26 +80,24 @@ class AddActionViewModel(
 
     fun onAdd() {
         viewModelScope.launch {
-            viewModelScope.launch {
-                uiState = uiState.copy(loading = true)
+            uiState = uiState.copy(loading = true)
 
-                try {
-                    val action = Action(
-                        creatorUid = uiState.uid,
-                        obligationNumber = uiState.obligation!!.number,
-                        obligationName = uiState.obligation!!.name,
-                        description = uiState.description,
-                        timestamp = uiState.timestamp!!,
-                        images = emptyList()
-                    )
+            try {
+                val action = Action(
+                    creatorUid = uiState.uid,
+                    obligationNumber = uiState.obligation!!.number,
+                    obligationName = uiState.obligation!!.name,
+                    description = uiState.description,
+                    timestamp = uiState.timestamp!!,
+                    images = emptyList()
+                )
 
-                    actionsRepository.addAction(action, uiState.images)
-                    uiState = uiState.copy(success = true)
-                } catch (e: Exception) {
-                    uiState = uiState.copy(exception = e)
-                } finally {
-                    uiState = uiState.copy(loading = false)
-                }
+                actionsRepository.addAction(action, uiState.images)
+                uiState = uiState.copy(success = true)
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loading = false)
             }
         }
     }
