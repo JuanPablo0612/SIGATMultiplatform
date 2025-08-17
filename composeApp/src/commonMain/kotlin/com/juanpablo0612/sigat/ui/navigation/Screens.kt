@@ -23,4 +23,10 @@ sealed class Screen {
 
     @Serializable
     object GenerateReport: Screen()
+
+    @Serializable
+    object AddTrainingProgram: Screen()
+
+    @Serializable
+    data class TrainingProgramDetail(val programId: String): Screen()
 }

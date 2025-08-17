@@ -2,6 +2,7 @@ package com.juanpablo0612.sigat.ui.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Report
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,6 +18,7 @@ enum class HomeDestinations(
     val label: StringResource,
     val icon: ImageVector
 ) {
+    TrainingPrograms(Res.string.training_programs_title, Icons.Default.List),
     Actions(Res.string.actions_title, Icons.Default.History),
     Reports(Res.string.reports_title, Icons.Default.Report),
     ManageRoles(Res.string.manage_roles_title, Icons.Default.People)
@@ -29,7 +31,7 @@ fun getScreenListForRole(role: Role): List<HomeDestinations> {
         )
 
         RoleType.TEACHER -> {
-            listOf(HomeDestinations.Actions, HomeDestinations.Reports)
+            listOf(HomeDestinations.TrainingPrograms, HomeDestinations.Actions, HomeDestinations.Reports)
         }
 
         else -> {

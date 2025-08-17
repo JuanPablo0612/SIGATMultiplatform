@@ -12,12 +12,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.juanpablo0612.sigat.ui.actions.add_action.AddActionScreen
 import com.juanpablo0612.sigat.ui.auth.login.LoginScreen
 import com.juanpablo0612.sigat.ui.auth.register.RegisterScreen
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.home.HomeScreen
 import com.juanpablo0612.sigat.ui.reports.generate_report.GenerateReportScreen
+import com.juanpablo0612.sigat.ui.training_programs.add.AddTrainingProgramScreen
+import com.juanpablo0612.sigat.ui.training_programs.detail.TrainingProgramDetailScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -61,6 +64,8 @@ fun AppNavigation(
             addHomeScreen(navController = navController, windowSize = windowSize)
             addAddActionScreen(navController = navController, windowSize = windowSize)
             addGenerateReportScreen(navController = navController, windowSize = windowSize)
+            addAddTrainingProgramScreen(navController = navController, windowSize = windowSize)
+            addTrainingProgramDetailScreen(navController = navController, windowSize = windowSize)
         }
     } else {
         LoadingContent(modifier = Modifier.fillMaxSize())
@@ -108,6 +113,12 @@ fun NavGraphBuilder.addHomeScreen(navController: NavController, windowSize: Wind
             onNavigateToAddAction = {
                 navController.navigate(Screen.AddAction)
             },
+            onNavigateToAddTrainingProgram = {
+                navController.navigate(Screen.AddTrainingProgram)
+            },
+            onNavigateToTrainingProgramDetail = { id ->
+                navController.navigate(Screen.TrainingProgramDetail(id))
+            },
             onLogout = {
                 navController.navigate(Screen.Login) {
                     popUpTo(Screen.Home) {
@@ -136,5 +147,31 @@ fun NavGraphBuilder.addGenerateReportScreen(
 ) {
     composable<Screen.GenerateReport> {
         GenerateReportScreen()
+    }
+}
+
+fun NavGraphBuilder.addAddTrainingProgramScreen(
+    navController: NavController,
+    windowSize: WindowSizeClass
+) {
+    composable<Screen.AddTrainingProgram> {
+        AddTrainingProgramScreen(
+            windowSize = windowSize,
+            onNavigateBack = { navController.navigateUp() }
+        )
+    }
+}
+
+fun NavGraphBuilder.addTrainingProgramDetailScreen(
+    navController: NavController,
+    windowSize: WindowSizeClass
+) {
+    composable<Screen.TrainingProgramDetail> { backStackEntry ->
+        val args = backStackEntry.toRoute<Screen.TrainingProgramDetail>()
+        TrainingProgramDetailScreen(
+            programId = args.programId,
+            windowSize = windowSize,
+            onNavigateBack = { navController.navigateUp() }
+        )
     }
 }
