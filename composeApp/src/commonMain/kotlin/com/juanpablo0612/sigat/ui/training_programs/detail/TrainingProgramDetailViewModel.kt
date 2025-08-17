@@ -1,0 +1,164 @@
+package com.juanpablo0612.sigat.ui.training_programs.detail
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
+import com.juanpablo0612.sigat.domain.model.TrainingProgram
+import kotlinx.coroutines.launch
+
+class TrainingProgramDetailViewModel(
+    private val repository: TrainingProgramsRepository,
+) : ViewModel() {
+    var uiState by mutableStateOf(TrainingProgramDetailUiState())
+        private set
+
+    fun loadTrainingProgram(id: String) {
+        viewModelScope.launch {
+            uiState = uiState.copy(loading = true)
+            try {
+                val program = repository.getTrainingProgram(id)
+                if (program != null) {
+                    uiState = uiState.copy(
+                        id = program.id,
+                        name = program.name,
+                        code = program.code.toString(),
+                        startDate = program.startDate.toString(),
+                        endDate = program.endDate.toString(),
+                        schedule = program.schedule,
+                        teacherUserId = program.teacherUserId,
+                        students = program.students
+                    )
+                }
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loading = false)
+            }
+        }
+    }
+    fun onNameChange(newName: String) {
+        uiState = uiState.copy(name = newName, validName = newName.isNotBlank())
+    }
+
+    fun onCodeChange(newCode: String) {
+        uiState = uiState.copy(code = newCode, validCode = newCode.toIntOrNull() != null)
+    }
+
+    fun onStartDateChange(newStartDate: String) {
+        val valid = newStartDate.toLongOrNull() != null
+        val validEnd = uiState.endDate.toLongOrNull()?.let { end ->
+            newStartDate.toLongOrNull()?.let { start -> start <= end } ?: false
+        } ?: true
+        uiState = uiState.copy(startDate = newStartDate, validStartDate = valid && validEnd)
+        if (!validEnd) uiState = uiState.copy(validEndDate = false)
+    }
+
+    fun onEndDateChange(newEndDate: String) {
+        val endLong = newEndDate.toLongOrNull()
+        val startLong = uiState.startDate.toLongOrNull()
+        val valid = endLong != null && (startLong == null || startLong <= endLong)
+        uiState = uiState.copy(endDate = newEndDate, validEndDate = valid)
+    }
+
+    fun onScheduleChange(newSchedule: String) {
+        uiState = uiState.copy(schedule = newSchedule, validSchedule = newSchedule.isNotBlank())
+    }
+
+    fun onStudentIdChange(newId: String) {
+        uiState = uiState.copy(newStudentId = newId)
+    }
+
+    private fun validateFields() {
+        onNameChange(uiState.name)
+        onCodeChange(uiState.code)
+        onStartDateChange(uiState.startDate)
+        onEndDateChange(uiState.endDate)
+        onScheduleChange(uiState.schedule)
+    }
+
+    private fun allFieldsValid(): Boolean {
+        return uiState.validName && uiState.validCode && uiState.validStartDate && uiState.validEndDate && uiState.validSchedule
+    }
+
+    fun updateTrainingProgram() {
+        viewModelScope.launch {
+            validateFields()
+
+            if (!allFieldsValid()) return@launch
+
+            try {
+                repository.updateTrainingProgram(
+                    TrainingProgram(
+                        id = uiState.id,
+                        name = uiState.name,
+                        code = uiState.code.toInt(),
+                        startDate = uiState.startDate.toLong(),
+                        endDate = uiState.endDate.toLong(),
+                        schedule = uiState.schedule,
+                        teacherUserId = uiState.teacherUserId,
+                        students = uiState.students
+                    )
+                )
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            }
+        }
+    }
+
+    fun deleteTrainingProgram() {
+        viewModelScope.launch {
+            try {
+                repository.deleteTrainingProgram(uiState.id)
+                uiState = uiState.copy(finished = true)
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            }
+        }
+    }
+
+    fun addStudent() {
+        viewModelScope.launch {
+            try {
+                repository.addStudentToTrainingProgram(uiState.id, uiState.newStudentId)
+                loadTrainingProgram(uiState.id)
+                uiState = uiState.copy(newStudentId = "")
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            }
+        }
+    }
+
+    fun removeStudent(studentId: String) {
+        viewModelScope.launch {
+            try {
+                repository.removeStudentFromTrainingProgram(uiState.id, studentId)
+                loadTrainingProgram(uiState.id)
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            }
+        }
+    }
+}
+
+data class TrainingProgramDetailUiState(
+    val id: String = "",
+    val name: String = "",
+    val validName: Boolean = true,
+    val code: String = "",
+    val validCode: Boolean = true,
+    val startDate: String = "",
+    val validStartDate: Boolean = true,
+    val endDate: String = "",
+    val validEndDate: Boolean = true,
+    val schedule: String = "",
+    val validSchedule: Boolean = true,
+    val teacherUserId: String = "",
+    val students: List<String> = emptyList(),
+    val newStudentId: String = "",
+    val loading: Boolean = false,
+    val exception: Exception? = null,
+    val finished: Boolean = false
+)

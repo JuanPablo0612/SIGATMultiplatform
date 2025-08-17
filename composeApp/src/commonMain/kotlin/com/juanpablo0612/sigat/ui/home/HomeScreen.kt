@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.juanpablo0612.sigat.ui.actions.action_list.ActionListScreen
 import com.juanpablo0612.sigat.ui.admin.manage_roles.ManageRolesScreen
+import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -19,6 +20,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     windowSize: WindowSizeClass,
     onNavigateToAddAction: () -> Unit,
+    onNavigateToAddTrainingProgram: () -> Unit,
+    onNavigateToTrainingProgramDetail: (String) -> Unit,
     onLogout: () -> Unit
 ) {
     val uiState = viewModel.uiState
@@ -55,6 +58,14 @@ fun HomeScreen(
             when (currentDestination) {
                 HomeDestinations.ManageRoles -> {
                     ManageRolesScreen(windowSize = windowSize)
+                }
+
+                HomeDestinations.TrainingPrograms -> {
+                    TrainingProgramListScreen(
+                        windowSize = windowSize,
+                        onAddProgramClick = onNavigateToAddTrainingProgram,
+                        onProgramClick = onNavigateToTrainingProgramDetail
+                    )
                 }
 
                 HomeDestinations.Actions -> {

@@ -13,6 +13,8 @@ import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSource
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSourceImpl
 import com.juanpablo0612.sigat.data.roles.RolesRepository
 import com.juanpablo0612.sigat.data.roles.remote.RolesRemoteDataSource
+import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
+import com.juanpablo0612.sigat.data.training_programs.remote.TrainingProgramsRemoteDataSource
 import com.juanpablo0612.sigat.data.users.UsersRepository
 import com.juanpablo0612.sigat.data.users.remote.UsersRemoteDataSource
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateEmailUseCase
@@ -27,6 +29,9 @@ import com.juanpablo0612.sigat.state_holders.UserStateHolderImpl
 import com.juanpablo0612.sigat.ui.actions.action_list.ActionListViewModel
 import com.juanpablo0612.sigat.ui.actions.add_action.AddActionViewModel
 import com.juanpablo0612.sigat.ui.admin.manage_roles.ManageRolesViewModel
+import com.juanpablo0612.sigat.ui.training_programs.add.AddTrainingProgramViewModel
+import com.juanpablo0612.sigat.ui.training_programs.detail.TrainingProgramDetailViewModel
+import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListViewModel
 import com.juanpablo0612.sigat.ui.auth.login.LoginViewModel
 import com.juanpablo0612.sigat.ui.auth.register.RegisterViewModel
 import com.juanpablo0612.sigat.ui.home.HomeViewModel
@@ -58,6 +63,9 @@ val viewModelModule = module {
     viewModelOf(::ManageRolesViewModel)
     viewModelOf(::GenerateReportViewModel)
     viewModelOf(::ActionListViewModel)
+    viewModelOf(::TrainingProgramListViewModel)
+    viewModelOf(::AddTrainingProgramViewModel)
+    viewModelOf(::TrainingProgramDetailViewModel)
 }
 
 val domainModule = module {
@@ -86,6 +94,8 @@ val dataModule = module {
     singleOf(::ObligationsRepository)
     single<ReportsLocalDataSource> { ReportsLocalDataSourceImpl() }
     singleOf(::ReportsRepository)
+    singleOf(::TrainingProgramsRemoteDataSource)
+    singleOf(::TrainingProgramsRepository)
 }
 
 fun initKoin(koinAppDeclaration: KoinAppDeclaration? = null) {

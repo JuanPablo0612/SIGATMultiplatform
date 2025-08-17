@@ -59,6 +59,19 @@
     <string name="actions_message">Visualiza y gestiona tus acciones registradas</string>
     <string name="no_actions">Aún no hay acciones registradas</string>
 
+    <!-- Programas de formación -->
+    <string name="training_programs_title">Programas de Formación</string>
+    <string name="add_training_program_title">Agregar Programa de Formación</string>
+    <string name="training_program_detail_title">Detalle del Programa de Formación</string>
+    <string name="name_label">Nombre</string>
+    <string name="code_label">Código</string>
+    <string name="start_date_label">Fecha de inicio</string>
+    <string name="end_date_label">Fecha de fin</string>
+    <string name="schedule_label">Horario</string>
+    <string name="student_id_label">ID del estudiante</string>
+    <string name="button_add_student">Agregar estudiante</string>
+    <string name="button_delete">Eliminar</string>
+
     <!-- Informes -->
     <string name="reports_title">Informes</string>
     <string name="reports_message">Visualiza y gestiona tus informes generados</string>
