@@ -1,6 +1,8 @@
 package com.juanpablo0612.sigat
 
 import com.juanpablo0612.sigat.data.actions.ActionsRepository
+import com.juanpablo0612.sigat.data.actions.remote.ActionsRemoteDataSource
+import com.juanpablo0612.sigat.data.actions.remote.ActionsRemoteDataSourceImpl
 import com.juanpablo0612.sigat.data.auth.AuthRepository
 import com.juanpablo0612.sigat.data.auth.remote.AuthRemoteDataSource
 import com.juanpablo0612.sigat.data.auth.remote.BaseAuthRemoteDataSource
@@ -73,6 +75,7 @@ val dataModule = module {
     single { Firebase.firestore }
     single { Firebase.storage }
     single<AuthRemoteDataSource> { BaseAuthRemoteDataSource(get()) }
+    single<ActionsRemoteDataSource> { ActionsRemoteDataSourceImpl(get(), get()) }
     singleOf(::AuthRepository)
     singleOf(::ActionsRepository)
     singleOf(::RolesRemoteDataSource)
