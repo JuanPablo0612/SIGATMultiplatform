@@ -13,14 +13,16 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import com.juanpablo0612.sigat.ui.utils.DigitOnlyInputTransformation
 import com.juanpablo0612.sigat.ui.utils.LetterAndSpaceOnlyInputTransformation
 import com.juanpablo0612.sigat.ui.utils.NoSpacesInputTransformation
@@ -42,14 +44,16 @@ import sigat.composeapp.generated.resources.password_label
 
 @Composable
 fun EmailTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Next
 ) {
     OutlinedTextField(
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -63,18 +67,18 @@ fun EmailTextField(
             }
         },
         isError = isError,
-        inputTransformation = NoSpacesInputTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
             imeAction = imeAction
         ),
-        lineLimits = TextFieldLineLimits.SingleLine
+        singleLine = true
     )
 }
 
 @Composable
 fun PasswordTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     showPassword: Boolean,
@@ -82,8 +86,9 @@ fun PasswordTextField(
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Done
 ) {
-    OutlinedSecureTextField(
-        state = state,
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -126,8 +131,7 @@ fun PasswordTextField(
             }
         },
         isError = isError,
-        inputTransformation = NoSpacesInputTransformation(),
-        textObfuscationMode = if (showPassword) TextObfuscationMode.Visible else TextObfuscationMode.RevealLastTyped,
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction
@@ -137,15 +141,17 @@ fun PasswordTextField(
 
 @Composable
 fun ConfirmPasswordTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     visiblePassword: Boolean,
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Done
 ) {
-    OutlinedSecureTextField(
-        state = state,
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -159,8 +165,7 @@ fun ConfirmPasswordTextField(
             }
         },
         isError = isError,
-        inputTransformation = NoSpacesInputTransformation(),
-        textObfuscationMode = if (visiblePassword) TextObfuscationMode.Visible else TextObfuscationMode.RevealLastTyped,
+        visualTransformation = if (visiblePassword) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction
@@ -170,14 +175,16 @@ fun ConfirmPasswordTextField(
 
 @Composable
 fun IdNumberTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Next
 ) {
     OutlinedTextField(
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -191,25 +198,26 @@ fun IdNumberTextField(
             }
         },
         isError = isError,
-        inputTransformation = DigitOnlyInputTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = imeAction
         ),
-        lineLimits = TextFieldLineLimits.SingleLine
+        singleLine = true
     )
 }
 
 @Composable
 fun IdIssuingLocationTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Next
 ) {
     OutlinedTextField(
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -223,25 +231,26 @@ fun IdIssuingLocationTextField(
             }
         },
         isError = isError,
-        inputTransformation = LetterAndSpaceOnlyInputTransformation(),
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
             imeAction = imeAction
         ),
-        lineLimits = TextFieldLineLimits.SingleLine
+        singleLine = true
     )
 }
 
 @Composable
 fun FirstNameTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Next
 ) {
     OutlinedTextField(
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -255,25 +264,26 @@ fun FirstNameTextField(
             }
         },
         isError = isError,
-        inputTransformation = LetterAndSpaceOnlyInputTransformation(),
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
             imeAction = imeAction
         ),
-        lineLimits = TextFieldLineLimits.SingleLine
+        singleLine = true
     )
 }
 
 @Composable
 fun LastNameTextField(
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false,
     imeAction: ImeAction = ImeAction.Next
 ) {
     OutlinedTextField(
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
         label = {
@@ -287,11 +297,10 @@ fun LastNameTextField(
             }
         },
         isError = isError,
-        inputTransformation = LetterAndSpaceOnlyInputTransformation(),
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
             imeAction = imeAction
         ),
-        lineLimits = TextFieldLineLimits.SingleLine
+        singleLine = true
     )
 }

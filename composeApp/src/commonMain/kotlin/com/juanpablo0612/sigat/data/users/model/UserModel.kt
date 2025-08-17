@@ -15,16 +15,6 @@ data class UserModel(
     val lastDataUpdate: Timestamp,
     val role: RoleModel
 ) {
-    constructor() : this(
-        uid = "",
-        idNumber = 0,
-        idIssuingLocation = "",
-        firstName = "",
-        lastName = "",
-        lastDataUpdate = Timestamp.now(),
-        role = RoleModel()
-    )
-
     fun toDomain() = User(
         uid = uid,
         idNumber = idNumber,

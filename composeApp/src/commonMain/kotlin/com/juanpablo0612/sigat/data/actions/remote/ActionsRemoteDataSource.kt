@@ -2,10 +2,7 @@ package com.juanpablo0612.sigat.data.actions.remote
 
 import com.juanpablo0612.sigat.data.actions.model.ActionModel
 import com.juanpablo0612.sigat.data.exceptions.handleExceptions
-import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.FirebaseFirestore
-import dev.gitlive.firebase.storage.File
-import dev.gitlive.firebase.storage.storage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.flow.Flow

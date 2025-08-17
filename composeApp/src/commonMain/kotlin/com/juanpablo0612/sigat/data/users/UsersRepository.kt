@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.map
 class UsersRepository(
     private val remoteDataSource: UsersRemoteDataSource,
 ) {
-    suspend fun getRole(dni: String) = remoteDataSource.getRole(dni)
-
     fun getAllUsers(): Flow<Result<List<User>>> {
         return remoteDataSource.getAllUsers()
             .map {

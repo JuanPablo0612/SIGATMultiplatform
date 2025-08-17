@@ -1,6 +1,5 @@
 package com.juanpablo0612.sigat.ui.auth.login
 
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.sigat.data.auth.AuthRepository
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateEmailUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidatePasswordUseCase
-import com.juanpablo0612.sigat.ui.utils.observeValidation
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -20,21 +18,12 @@ class LoginViewModel(
     var uiState by mutableStateOf(LoginUiState())
         private set
 
-    val email = TextFieldState()
-    val password = TextFieldState()
+    fun onEmailChange(email: String) {
+        uiState = uiState.copy(email = email.trim(), isValidEmail = validateEmailUseCase(email.trim()))
+    }
 
-    init {
-        email.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateEmailUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidEmail = it) }
-        )
-        
-        password.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validatePasswordUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidPassword = it) }
-        )
+    fun onPasswordChange(password: String) {
+        uiState = uiState.copy(password = password.trim(), isValidPassword = validatePasswordUseCase(password.trim()))
     }
 
     fun onPasswordVisibilityChange() {
@@ -42,8 +31,8 @@ class LoginViewModel(
     }
 
     private fun validateFields() {
-        val isValidEmail = validateEmailUseCase(email.text.toString())
-        val isValidPassword = validatePasswordUseCase(password.text.toString())
+        val isValidEmail = validateEmailUseCase(uiState.email)
+        val isValidPassword = validatePasswordUseCase(uiState.password)
 
         uiState = uiState.copy(
             isValidEmail = isValidEmail,
@@ -61,10 +50,8 @@ class LoginViewModel(
 
             if (allFieldsValid()) {
                 uiState = uiState.copy(loading = true)
-                val emailStr = email.text.toString()
-                val passwordStr = password.text.toString()
 
-                val loginResult = authRepository.login(emailStr, passwordStr)
+                val loginResult = authRepository.login(uiState.email, uiState.password)
                 loginResult
                     .onSuccess {
                         uiState = uiState.copy(success = true)
@@ -80,7 +67,9 @@ class LoginViewModel(
 }
 
 data class LoginUiState(
+    val email: String = "",
     val isValidEmail: Boolean = true,
+    val password: String = "",
     val isValidPassword: Boolean = true,
     val showPassword: Boolean = false,
     val success: Boolean = false,

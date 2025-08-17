@@ -1,6 +1,5 @@
 package com.juanpablo0612.sigat.ui.auth.register
 
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,7 +15,6 @@ import com.juanpablo0612.sigat.domain.usecase.auth.ValidateIdIssuingLocationUseC
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateIdNumberUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateLastNameUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidatePasswordUseCase
-import com.juanpablo0612.sigat.ui.utils.observeValidation
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
@@ -33,65 +31,53 @@ class RegisterViewModel(
     var uiState by mutableStateOf(RegisterUiState())
         private set
 
-    val firstName = TextFieldState()
-    val lastName = TextFieldState()
-    val idNumber = TextFieldState()
-    val idIssuingLocation = TextFieldState()
-    val email = TextFieldState()
-    val password = TextFieldState()
-    val confirmPassword = TextFieldState()
-
-    init {
-        firstName.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateFirstNameUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidFirstName = it) }
+    fun onFirstNameChange(firstName: String) {
+        uiState = uiState.copy(
+            firstName = firstName,
+            isValidFirstName = validateFirstNameUseCase(firstName.trim())
         )
+    }
 
-        lastName.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateLastNameUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidLastName = it) }
+    fun onLastNameChange(lastName: String) {
+        uiState = uiState.copy(
+            lastName = lastName,
+            isValidLastName = validateLastNameUseCase(lastName.trim())
         )
+    }
 
-        idNumber.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateIdNumberUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidIdNumber = it) }
+    fun onIdNumberChange(idNumber: String) {
+        uiState = uiState.copy(
+            idNumber = idNumber.trim(),
+            isValidIdNumber = validateIdNumberUseCase(idNumber.trim())
         )
+    }
 
-        idIssuingLocation.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateIdIssuingLocationUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidIdIssuingLocation = it) }
+    fun onIdIssuingLocationChange(idIssuingLocation: String) {
+        uiState = uiState.copy(
+            idIssuingLocation = idIssuingLocation,
+            isValidIdIssuingLocation = validateIdIssuingLocationUseCase(idIssuingLocation.trim())
         )
+    }
 
-        email.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateEmailUseCase(it) },
-            updateState = { uiState = uiState.copy(isValidEmail = it) }
+    fun onEmailChange(email: String) {
+        uiState =
+            uiState.copy(email = email.trim(), isValidEmail = validateEmailUseCase(email.trim()))
+    }
+
+    fun onPasswordChange(password: String) {
+        uiState = uiState.copy(
+            password = password.trim(),
+            isValidPassword = validatePasswordUseCase(password.trim())
         )
+    }
 
-        password.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validatePasswordUseCase(it) },
-            updateState = {
-                uiState = uiState.copy(isValidPassword = it)
-                if (confirmPassword.text.isNotEmpty()) {
-                    uiState = uiState.copy(
-                        isValidConfirmPassword = validateConfirmPasswordUseCase(
-                            password.text.toString(),
-                            confirmPassword.text.toString()
-                        )
-                    )
-                }
-            }
-        )
-
-        confirmPassword.observeValidation(
-            viewModelScope = viewModelScope,
-            validator = { validateConfirmPasswordUseCase(password.text.toString(), it) },
-            updateState = { uiState = uiState.copy(isValidConfirmPassword = it) }
+    fun onConfirmPasswordChange(confirmPassword: String) {
+        uiState = uiState.copy(
+            confirmPassword = confirmPassword,
+            isValidConfirmPassword = validateConfirmPasswordUseCase(
+                uiState.password,
+                confirmPassword.trim()
+            )
         )
     }
 
@@ -100,16 +86,16 @@ class RegisterViewModel(
     }
 
     private fun validateFields() {
-        val isValidFirstName = validateFirstNameUseCase(firstName.text.toString())
-        val isValidLastName = validateLastNameUseCase(lastName.text.toString())
-        val isValidIdNumber = validateIdNumberUseCase(idNumber.text.toString())
+        val isValidFirstName = validateFirstNameUseCase(uiState.firstName)
+        val isValidLastName = validateLastNameUseCase(uiState.lastName)
+        val isValidIdNumber = validateIdNumberUseCase(uiState.idNumber)
         val isValidIdIssuingLocation =
-            validateIdIssuingLocationUseCase(idIssuingLocation.text.toString())
-        val isValidEmail = validateEmailUseCase(email.text.toString())
-        val isValidPassword = validatePasswordUseCase(password.text.toString())
+            validateIdIssuingLocationUseCase(uiState.idIssuingLocation)
+        val isValidEmail = validateEmailUseCase(uiState.email)
+        val isValidPassword = validatePasswordUseCase(uiState.password)
         val isValidConfirmPassword = validateConfirmPasswordUseCase(
-            password.text.toString(),
-            confirmPassword.text.toString()
+            uiState.password,
+            uiState.confirmPassword
         )
 
         uiState = uiState.copy(
@@ -141,12 +127,12 @@ class RegisterViewModel(
 
             uiState = uiState.copy(loading = true, exception = null)
 
-            val emailStr = email.text.toString()
-            val passwordStr = password.text.toString()
-            val idNumberLong = idNumber.text.toString().toLong()
-            val issuingLocationStr = idIssuingLocation.text.toString().trim()
-            val firstNameStr = firstName.text.toString().trim()
-            val lastNameStr = lastName.text.toString().trim()
+            val emailStr = uiState.email
+            val passwordStr = uiState.password
+            val idNumberLong = uiState.idNumber.toLong()
+            val issuingLocationStr = uiState.idIssuingLocation
+            val firstNameStr = uiState.firstName
+            val lastNameStr = uiState.lastName
 
             val registerResult = authRepository.register(emailStr, passwordStr)
             registerResult
@@ -178,12 +164,19 @@ class RegisterViewModel(
 }
 
 data class RegisterUiState(
+    val firstName: String = "",
     val isValidFirstName: Boolean = true,
+    val lastName: String = "",
     val isValidLastName: Boolean = true,
+    val idNumber: String = "",
     val isValidIdNumber: Boolean = true,
+    val idIssuingLocation: String = "",
     val isValidIdIssuingLocation: Boolean = true,
+    val email: String = "",
     val isValidEmail: Boolean = true,
+    val password: String = "",
     val isValidPassword: Boolean = true,
+    val confirmPassword: String = "",
     val isValidConfirmPassword: Boolean = true,
     val showPassword: Boolean = false,
     val success: Boolean = false,

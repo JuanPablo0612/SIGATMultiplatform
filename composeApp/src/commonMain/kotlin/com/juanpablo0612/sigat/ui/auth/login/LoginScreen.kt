@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,9 +50,9 @@ fun LoginScreen(
     }
 
     LoginScreenContent(
-        email = viewModel.email,
-        password = viewModel.password,
         uiState = uiState,
+        onEmailChange = viewModel::onEmailChange,
+        onPasswordChange = viewModel::onPasswordChange,
         onPasswordVisibilityChange = viewModel::onPasswordVisibilityChange,
         onLoginClick = viewModel::onLoginClick,
         onNavigateToRegister = onNavigateToRegister
@@ -62,9 +61,9 @@ fun LoginScreen(
 
 @Composable
 fun LoginScreenContent(
-    email: TextFieldState,
-    password: TextFieldState,
     uiState: LoginUiState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
     onLoginClick: () -> Unit,
     onNavigateToRegister: () -> Unit
@@ -90,13 +89,15 @@ fun LoginScreenContent(
             )
 
             EmailTextField(
-                state = email,
+                value = uiState.email,
+                onValueChange = onEmailChange,
                 modifier = Modifier.fillMaxWidth(),
                 isError = !uiState.isValidEmail
             )
 
             PasswordTextField(
-                state = password,
+                value = uiState.password,
+                onValueChange = onPasswordChange,
                 showPassword = uiState.showPassword,
                 onVisibilityChange = onPasswordVisibilityChange,
                 modifier = Modifier.fillMaxWidth(),

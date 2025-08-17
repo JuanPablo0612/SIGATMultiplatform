@@ -13,8 +13,6 @@ data class ActionModel(
     val images: List<String>,
     val timestamp: Long
 ) {
-    constructor() : this("", "", 0, "", "", emptyList(), 0)
-
     fun toDomain() = Action(
         id = id,
         creatorUid = creatorUid,
