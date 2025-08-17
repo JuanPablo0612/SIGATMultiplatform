@@ -9,11 +9,13 @@ import com.juanpablo0612.sigat.data.roles.RolesRepository
 import com.juanpablo0612.sigat.data.users.UsersRepository
 import com.juanpablo0612.sigat.domain.model.Role
 import com.juanpablo0612.sigat.domain.model.User
+import com.juanpablo0612.sigat.state_holders.UserStateHolder
 import kotlinx.coroutines.launch
 
 class ManageRolesViewModel(
     private val usersRepository: UsersRepository,
-    private val rolesRepository: RolesRepository
+    private val rolesRepository: RolesRepository,
+    private val userStateHolder: UserStateHolder,
 ) : ViewModel() {
     var uiState by mutableStateOf(ManageRolesUiState())
         private set
@@ -27,11 +29,12 @@ class ManageRolesViewModel(
             uiState = uiState.copy(initialLoading = true)
 
             try {
+                val currentUserId = userStateHolder.userState.user?.uid ?: return@launch
                 val roles = rolesRepository.getRoles()
                 usersRepository.getAllUsers().collect { usersResult ->
                     usersResult.fold(
                         onSuccess = { users ->
-                            uiState = uiState.copy(users = users, roles = roles)
+                            uiState = uiState.copy(users = users.filterNot { it.uid == currentUserId }, roles = roles)
                         },
                         onFailure = { uiState = uiState.copy(exception = it as Exception) }
                     )
@@ -48,14 +51,7 @@ class ManageRolesViewModel(
             uiState = uiState.copy(applyingChangesToUser = user)
 
             try {
-                val updatedUsr = User(
-                    uid = user.uid,
-                    idNumber = user.idNumber,
-                    idIssuingLocation = user.idIssuingLocation,
-                    firstName = user.firstName,
-                    lastName = user.lastName,
-                    role = role
-                )
+                val updatedUsr = user.copy(role = role)
 
                 usersRepository.saveUser(updatedUsr)
                 uiState = uiState.copy(successChange = true, applyingChangesToUser = null)

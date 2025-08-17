@@ -9,8 +9,8 @@ enum class RoleType {
 }
 
 data class Role(
-    val id: String = "",
-    val name: String = "",
+    val id: String = "aprendiz",
+    val name: String = "Aprendiz",
     val description: String = "",
     val type: RoleType = RoleType.STUDENT
 ) {

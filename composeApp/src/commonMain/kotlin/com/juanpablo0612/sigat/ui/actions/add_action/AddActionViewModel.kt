@@ -6,19 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.sigat.data.actions.ActionsRepository
-import com.juanpablo0612.sigat.data.auth.AuthRepository
 import com.juanpablo0612.sigat.data.obligations.ObligationsRepository
-import com.juanpablo0612.sigat.data.users.UsersRepository
 import com.juanpablo0612.sigat.domain.model.Action
 import com.juanpablo0612.sigat.domain.model.Obligation
+import com.juanpablo0612.sigat.state_holders.UserStateHolder
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.launch
 
 class AddActionViewModel(
     private val actionsRepository: ActionsRepository,
-    private val authRepository: AuthRepository,
-    private val usersRepository: UsersRepository,
-    private val obligationsRepository: ObligationsRepository
+    private val obligationsRepository: ObligationsRepository,
+    private val userStateHolder: UserStateHolder,
 ) : ViewModel() {
     var uiState by mutableStateOf(AddActionUiState())
         private set
@@ -29,17 +27,11 @@ class AddActionViewModel(
 
     private fun getData() {
         viewModelScope.launch {
-            val uid = authRepository.getUid()
-            val userResult = usersRepository.getUserByUid(uid)
-            userResult.fold(
-                onSuccess = { user ->
-                    val obligations = obligationsRepository.getObligations(user.role.id)
-                    uiState = uiState.copy(
-                        uid = uid,
-                        obligations = obligations.sortedBy { it.number }
-                    )
-                },
-                onFailure = { uiState = uiState.copy(exception = it as Exception) }
+            val user = userStateHolder.userState.user ?: return@launch
+            val obligations = obligationsRepository.getObligations(user.role.id)
+            uiState = uiState.copy(
+                uid = user.uid,
+                obligations = obligations.sortedBy { it.number }
             )
         }
     }
@@ -54,7 +46,7 @@ class AddActionViewModel(
 
     fun onDescriptionChange(newDescription: String) {
         uiState = uiState.copy(description = newDescription)
-        validateAction()
+        validateDescription()
     }
 
     fun onTimestampChange(newTimestamp: Long) {
@@ -81,7 +73,7 @@ class AddActionViewModel(
         uiState = uiState.copy(images = images)
     }
 
-    private fun validateAction() {
+    private fun validateDescription() {
         val validAction = uiState.description.isNotBlank()
         uiState = uiState.copy(validDescription = validAction)
     }
@@ -93,7 +85,7 @@ class AddActionViewModel(
 
                 try {
                     val action = Action(
-                        creatorUid = authRepository.getUid(),
+                        creatorUid = uiState.uid,
                         obligationNumber = uiState.obligation!!.number,
                         obligationName = uiState.obligation!!.name,
                         description = uiState.description,

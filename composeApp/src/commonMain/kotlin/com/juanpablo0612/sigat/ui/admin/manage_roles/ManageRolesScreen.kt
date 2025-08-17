@@ -2,6 +2,7 @@ package com.juanpablo0612.sigat.ui.admin.manage_roles
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -52,8 +53,10 @@ fun ManageRolesScreen(
         topBar = {
             ManageRolesTopBar()
         }
-    ) {
-        Column {
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)
+        ) {
             if (uiState.initialLoading) {
                 LoadingContent(modifier = Modifier.fillMaxSize())
             } else if (uiState.exception != null) {
@@ -125,7 +128,7 @@ private fun UserRoleCard(
                 }
             }
             Text(
-                text = user.firstName,
+                text = "${user.firstName} ${user.lastName}",
                 style = MaterialTheme.typography.titleMedium
             )
             Text(

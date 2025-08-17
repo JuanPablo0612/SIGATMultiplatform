@@ -28,10 +28,12 @@ fun AppNavigation(
     val uiState = viewModel.uiState
     val navController = rememberNavController()
 
-    if (uiState.startDestination != null) {
+    if (uiState.userState != null) {
+        val startDestination = if (uiState.userState.isLoggedIn) Screen.Home else Screen.Login
+
         NavHost(
             navController = navController,
-            startDestination = uiState.startDestination,
+            startDestination = startDestination,
             modifier = Modifier.imePadding(),
             enterTransition = {
                 slideInHorizontally { height -> height }
@@ -46,8 +48,16 @@ fun AppNavigation(
                 slideOutHorizontally { height -> height }
             }
         ) {
-            addLoginScreen(navController = navController, windowSize = windowSize)
-            addRegisterScreen(navController = navController, windowSize = windowSize)
+            addLoginScreen(
+                navController = navController,
+                windowSize = windowSize,
+                onLoginSuccess = viewModel::loadCurrentUser
+            )
+            addRegisterScreen(
+                navController = navController,
+                windowSize = windowSize,
+                onRegisterSuccess = viewModel::loadCurrentUser
+            )
             addHomeScreen(navController = navController, windowSize = windowSize)
             addAddActionScreen(navController = navController, windowSize = windowSize)
             addGenerateReportScreen(navController = navController, windowSize = windowSize)
@@ -57,21 +67,35 @@ fun AppNavigation(
     }
 }
 
-fun NavGraphBuilder.addLoginScreen(navController: NavController, windowSize: WindowSizeClass) {
+fun NavGraphBuilder.addLoginScreen(
+    navController: NavController,
+    windowSize: WindowSizeClass,
+    onLoginSuccess: () -> Unit
+) {
     composable<Screen.Login> {
         LoginScreen(
             windowSize = windowSize,
             onNavigateToRegister = { navController.navigate(Screen.Register) },
-            onNavigateToHome = { navController.navigate(Screen.Home) }
+            onNavigateToHome = {
+                navController.navigate(Screen.Home)
+                onLoginSuccess()
+            }
         )
     }
 }
 
-fun NavGraphBuilder.addRegisterScreen(navController: NavController, windowSize: WindowSizeClass) {
+fun NavGraphBuilder.addRegisterScreen(
+    navController: NavController,
+    windowSize: WindowSizeClass,
+    onRegisterSuccess: () -> Unit
+) {
     composable<Screen.Register> {
         RegisterScreen(
             windowSize = windowSize,
-            onNavigateToHome = { navController.navigate(Screen.Home) },
+            onNavigateToHome = {
+                onRegisterSuccess()
+                navController.navigate(Screen.Home)
+            },
             onNavigateBack = { navController.popBackStack() }
         )
     }

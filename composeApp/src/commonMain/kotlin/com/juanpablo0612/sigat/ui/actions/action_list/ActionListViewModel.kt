@@ -6,13 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.sigat.data.actions.ActionsRepository
-import com.juanpablo0612.sigat.data.auth.AuthRepository
 import com.juanpablo0612.sigat.domain.model.Action
+import com.juanpablo0612.sigat.state_holders.UserStateHolder
 import kotlinx.coroutines.launch
 
 class ActionListViewModel(
-    private val authRepository: AuthRepository,
-    private val actionsRepository: ActionsRepository
+    private val actionsRepository: ActionsRepository,
+    private val userStateHolder: UserStateHolder,
 ) : ViewModel() {
     var uiState by mutableStateOf(ActionListUiState())
         private set
@@ -26,7 +26,7 @@ class ActionListViewModel(
             uiState = uiState.copy(loading = true)
 
             try {
-                val uid = authRepository.getUid()
+                val uid = userStateHolder.userState.user?.uid ?: return@launch
                 actionsRepository.getActions(uid).collect {
                     uiState = uiState.copy(actions = it, loading = false)
                 }

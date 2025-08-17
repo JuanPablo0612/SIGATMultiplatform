@@ -20,6 +20,8 @@ import com.juanpablo0612.sigat.domain.usecase.auth.ValidateLastNameUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateIdNumberUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateIdIssuingLocationUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateConfirmPasswordUseCase
+import com.juanpablo0612.sigat.state_holders.UserStateHolder
+import com.juanpablo0612.sigat.state_holders.UserStateHolderImpl
 import com.juanpablo0612.sigat.ui.actions.action_list.ActionListViewModel
 import com.juanpablo0612.sigat.ui.actions.add_action.AddActionViewModel
 import com.juanpablo0612.sigat.ui.admin.manage_roles.ManageRolesViewModel
@@ -40,6 +42,10 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 expect val platformModule: Module
+
+val stateHoldersModule = module {
+    singleOf<UserStateHolder>(::UserStateHolderImpl)
+}
 
 val viewModelModule = module {
     viewModelOf(::LoginViewModel)
@@ -82,6 +88,6 @@ val dataModule = module {
 fun initKoin(koinAppDeclaration: KoinAppDeclaration? = null) {
     startKoin {
         koinAppDeclaration?.invoke(this)
-        modules(platformModule, viewModelModule, domainModule, dataModule)
+        modules(platformModule, stateHoldersModule, viewModelModule, domainModule, dataModule)
     }
 }
