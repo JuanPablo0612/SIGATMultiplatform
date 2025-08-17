@@ -1,21 +1,31 @@
 package com.juanpablo0612.sigat.ui.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,8 +45,6 @@ import com.juanpablo0612.sigat.ui.training_programs.detail.TrainingProgramDetail
 import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import sigat.composeapp.generated.resources.Res
-import sigat.composeapp.generated.resources.logout
 
 @Composable
 fun AppNavigation(
@@ -46,100 +54,115 @@ fun AppNavigation(
     val uiState = viewModel.uiState
     val navController = rememberNavController()
 
-    if (uiState.userState != null) {
-        val userState = uiState.userState
-        val destinations = remember(userState.user) {
-            userState.user?.let { getScreenListForRole(it.role) } ?: emptyList()
-        }
-        val startDestination = if (userState.isLoggedIn && destinations.isNotEmpty()) {
-            destinations.first().screen
+    Surface(color = MaterialTheme.colorScheme.background) {
+        if (uiState.userState == null) {
+            LoadingContent(modifier = Modifier.fillMaxSize())
         } else {
-            Screen.Login
-        }
+            val userState = uiState.userState
+            val destinations = remember(userState.user) {
+                userState.user?.let { getScreenListForRole(it.role) } ?: emptyList()
+            }
+            val startDestination = if (userState.isLoggedIn && destinations.isNotEmpty()) {
+                destinations.first().screen
+            } else {
+                Screen.Login
+            }
 
-        val backStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = backStackEntry?.destination?.route
-        val bottomRoutes = destinations.map { it.screen::class.qualifiedName }
-        val showBottomBar = currentRoute in bottomRoutes
+            val backStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = backStackEntry?.destination
+            val bottomRoutes = destinations.map { it.screen::class.qualifiedName }
+            val showBottomBar = currentDestination?.route in bottomRoutes
 
-        LaunchedEffect(userState.isLoggedIn) {
-            if (userState.isLoggedIn) {
-                val first = destinations.firstOrNull()?.screen
-                val current = navController.currentBackStackEntry?.destination?.route
-                val target = first?.let { it::class.qualifiedName }
-                if (first != null && current != target) {
-                    navController.navigate(first) {
-                        popUpTo(Screen.Login) { inclusive = true }
+            LaunchedEffect(userState.isLoggedIn) {
+                if (userState.isLoggedIn) {
+                    val first = destinations.firstOrNull()?.screen
+                    val current = navController.currentBackStackEntry?.destination?.route
+                    val target = first?.let { it::class.qualifiedName }
+                    if (first != null && current != target) {
+                        navController.navigate(first) {
+                            popUpTo(Screen.Login) { inclusive = true }
+                        }
                     }
                 }
             }
-        }
 
-        val navHost: @Composable () -> Unit = {
-            NavHost(
-                navController = navController,
-                startDestination = startDestination,
-                modifier = Modifier.imePadding(),
-                enterTransition = {
-                    slideInHorizontally { height -> height }
-                },
-                exitTransition = {
-                    slideOutHorizontally { height -> -height }
-                },
-                popEnterTransition = {
-                    slideInHorizontally { height -> -height }
-                },
-                popExitTransition = {
-                    slideOutHorizontally { height -> height }
+            Column {
+                NavHost(
+                    navController = navController,
+                    startDestination = startDestination,
+                    modifier = Modifier.weight(1f).imePadding(),
+                    enterTransition = {
+                        slideInHorizontally { height -> height }
+                    },
+                    exitTransition = {
+                        slideOutHorizontally { height -> -height }
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally { height -> -height }
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally { height -> height }
+                    }
+                ) {
+                    addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
+                    addRegisterScreen(navController, windowSize, viewModel::loadCurrentUser)
+                    addManageRolesScreen(windowSize)
+                    addTrainingProgramsScreen(navController, windowSize)
+                    addActionsScreen(navController, windowSize)
+                    addReportsScreen(windowSize)
+                    addAddActionScreen(navController, windowSize)
+                    addAddTrainingProgramScreen(navController, windowSize)
+                    addTrainingProgramDetailScreen(navController, windowSize)
                 }
-            ) {
-                addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
-                addRegisterScreen(navController, windowSize, viewModel::loadCurrentUser)
-                addManageRolesScreen(windowSize)
-                addTrainingProgramsScreen(navController, windowSize)
-                addActionsScreen(navController, windowSize)
-                addReportsScreen(windowSize)
-                addAddActionScreen(navController, windowSize)
-                addAddTrainingProgramScreen(navController, windowSize)
-                addTrainingProgramDetailScreen(navController, windowSize)
-            }
-        }
 
-        if (showBottomBar) {
-            NavigationSuiteScaffold(
-                navigationSuiteItems = {
-                    destinations.forEach { destination ->
-                        item(
-                            icon = { Icon(imageVector = destination.icon, contentDescription = null) },
-                            label = { Text(stringResource(destination.label)) },
-                            selected = currentRoute == destination.screen::class.qualifiedName,
-                            onClick = {
-                                navController.navigate(destination.screen) {
-                                    launchSingleTop = true
-                                    popUpTo(startDestination) { saveState = true }
-                                    restoreState = true
+                AnimatedVisibility(showBottomBar) {
+                    BottomNavigationBar(
+                        destinations = destinations,
+                        currentDestination = currentDestination!!,
+                        onNavigate = {
+                            navController.navigate(it) {
+                                launchSingleTop = true
+                                restoreState = true
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
                                 }
-                            }
-                        )
-                    }
-                    item(
-                        icon = { Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = null) },
-                        label = { Text(stringResource(Res.string.logout)) },
-                        selected = false,
-                        onClick = {
-                            viewModel.logout()
-                            navController.navigate(Screen.Login) {
-                                popUpTo(startDestination) { inclusive = true }
                             }
                         }
                     )
                 }
-            ) { navHost() }
-        } else {
-            navHost()
+            }
         }
-    } else {
-        LoadingContent(modifier = Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+fun BottomNavigationBar(
+    destinations: List<HomeDestinations>,
+    currentDestination: NavDestination,
+    onNavigate: (Screen) -> Unit
+) {
+    NavigationBar {
+        destinations.forEach { destination ->
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = destination.icon,
+                        contentDescription = null
+                    )
+                },
+                label = {
+                    Text(
+                        stringResource(destination.label),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                selected = currentDestination.hierarchy.any {
+                    it.hasRoute(destination.screen::class)
+                },
+                onClick = { onNavigate(destination.screen) }
+            )
+        }
     }
 }
 

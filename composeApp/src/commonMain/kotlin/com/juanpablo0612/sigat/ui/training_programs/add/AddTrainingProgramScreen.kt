@@ -4,10 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,9 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -31,10 +30,8 @@ import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.add_training_program_title
 import sigat.composeapp.generated.resources.button_save
 import sigat.composeapp.generated.resources.code_label
-import sigat.composeapp.generated.resources.end_date_label
 import sigat.composeapp.generated.resources.name_label
 import sigat.composeapp.generated.resources.schedule_label
-import sigat.composeapp.generated.resources.start_date_label
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +68,10 @@ fun AddTrainingProgramScreen(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedTextField(
@@ -99,7 +99,10 @@ fun AddTrainingProgramScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = !uiState.validSchedule
             )
-            Button(onClick = { viewModel.addTrainingProgram() }, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = { viewModel.addTrainingProgram() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(stringResource(Res.string.button_save))
             }
         }
