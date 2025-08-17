@@ -10,14 +10,6 @@ import kotlinx.coroutines.flow.map
 class UsersRemoteDataSource(firestore: FirebaseFirestore) {
     private val usersCollection = firestore.collection("users")
 
-    suspend fun getRole(dni: String): Role {
-        return handleExceptions {
-            val userDocument = usersCollection.document(dni).get()
-            val userModel = userDocument.data(UserModel.serializer())
-            userModel.role.toDomain()
-        }
-    }
-
     fun getAllUsers(): Flow<List<UserModel>> {
         return usersCollection.snapshots.map {
             it.documents.map { document ->
