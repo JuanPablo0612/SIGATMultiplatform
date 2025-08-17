@@ -4,209 +4,97 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Numbers
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedSecureTextField
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.ui.utils.DigitOnlyInputTransformation
+import com.juanpablo0612.sigat.ui.utils.LetterAndSpaceOnlyInputTransformation
+import com.juanpablo0612.sigat.ui.utils.NoSpacesInputTransformation
 import org.jetbrains.compose.resources.stringResource
 import sigat.composeapp.generated.resources.Res
-import sigat.composeapp.generated.resources.dni_error
-import sigat.composeapp.generated.resources.dni_label
-import sigat.composeapp.generated.resources.dni_placeholder
+import sigat.composeapp.generated.resources.confirm_password_error
+import sigat.composeapp.generated.resources.confirm_password_label
 import sigat.composeapp.generated.resources.email_error
 import sigat.composeapp.generated.resources.email_label
-import sigat.composeapp.generated.resources.email_placeholder
 import sigat.composeapp.generated.resources.first_name_label
-import sigat.composeapp.generated.resources.first_name_placeholder
-import sigat.composeapp.generated.resources.forgot_password
+import sigat.composeapp.generated.resources.id_issuing_location_error
+import sigat.composeapp.generated.resources.id_issuing_location_label
+import sigat.composeapp.generated.resources.id_number_error
+import sigat.composeapp.generated.resources.id_number_label
 import sigat.composeapp.generated.resources.last_name_error
 import sigat.composeapp.generated.resources.last_name_label
-import sigat.composeapp.generated.resources.last_name_placeholder
 import sigat.composeapp.generated.resources.password_error
 import sigat.composeapp.generated.resources.password_label
-import sigat.composeapp.generated.resources.password_placeholder
-
-@Composable
-private fun BaseTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    label: @Composable (() -> Unit)? = null,
-    placeholder: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    supportingText: @Composable (() -> Unit)? = null,
-    isError: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-) {
-    Column(
-        modifier = modifier
-    ) {
-        label?.let {
-            label()
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon,
-            placeholder = placeholder,
-            keyboardOptions = keyboardOptions,
-            shape = MaterialTheme.shapes.extraLarge,
-            colors = TextFieldDefaults.colors(
-                focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                errorLeadingIconColor = MaterialTheme.colorScheme.error,
-                disabledIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                errorIndicatorColor = Color.Transparent
-            ),
-            isError = isError,
-            singleLine = true,
-            supportingText = supportingText,
-            visualTransformation = visualTransformation,
-            enabled = enabled,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun TextFieldLabel(text: String, isError: Boolean, modifier: Modifier = Modifier) {
-    val textStyle =
-        if (isError) MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.error) else MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-
-    Text(
-        text = text,
-        style = textStyle,
-        modifier = modifier
-    )
-}
 
 @Composable
 fun EmailTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isError: Boolean = false
+    isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Next
 ) {
-    BaseTextField(
-        value = value,
-        onValueChange = onValueChange,
+    OutlinedTextField(
+        state = state,
         modifier = modifier,
         enabled = enabled,
-        placeholder = {
-            Text(text = stringResource(Res.string.email_placeholder))
-        },
         label = {
-            TextFieldLabel(
-                text = stringResource(Res.string.email_label),
-                isError = isError
+            Text(
+                text = stringResource(Res.string.email_label)
             )
         },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Email,
-                contentDescription = null
-            )
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Next
-        ),
-        isError = isError,
         supportingText = if (!isError) null else {
             {
                 Text(text = stringResource(Res.string.email_error))
             }
         },
+        isError = isError,
+        inputTransformation = NoSpacesInputTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = imeAction
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine
     )
 }
 
 @Composable
 fun PasswordTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    onForgotPasswordClick: (() -> Unit)? = null,
-    visiblePassword: Boolean,
-    onVisibilityChange: (Boolean) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    showPassword: Boolean,
+    onVisibilityChange: () -> Unit,
     isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Done
 ) {
-    BaseTextField(
-        value = value,
-        onValueChange = onValueChange,
+    OutlinedSecureTextField(
+        state = state,
         modifier = modifier,
         enabled = enabled,
-        placeholder = {
-            Text(text = stringResource(Res.string.password_placeholder))
-        },
         label = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextFieldLabel(
-                    text = stringResource(Res.string.password_label),
-                    isError = isError
-                )
-
-                onForgotPasswordClick?.let {
-                    Text(
-                        text = stringResource(Res.string.forgot_password),
-                        style = MaterialTheme.typography.bodyMedium.copy(color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.clickable { it() }
-                    )
-                }
-            }
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Person,
-                contentDescription = null
+            Text(
+                text = stringResource(Res.string.password_label)
             )
         },
         trailingIcon = {
-            IconButton(onClick = { onVisibilityChange(!visiblePassword) }) {
+            IconButton(onClick = { onVisibilityChange() }) {
                 AnimatedContent(
-                    targetState = visiblePassword,
+                    targetState = showPassword,
                     label = "PasswordVisibilityAnimation",
                     transitionSpec = {
                         if (targetState) {
@@ -232,150 +120,178 @@ fun PasswordTextField(
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done
-        ),
-        isError = isError,
-        visualTransformation = if (!visiblePassword) {
-            PasswordVisualTransformation()
-        } else {
-            VisualTransformation.None
-        },
         supportingText = if (!isError) null else {
             {
                 Text(text = stringResource(Res.string.password_error))
             }
-        }
+        },
+        isError = isError,
+        inputTransformation = NoSpacesInputTransformation(),
+        textObfuscationMode = if (showPassword) TextObfuscationMode.Visible else TextObfuscationMode.RevealLastTyped,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction
+        )
     )
 }
 
 @Composable
-fun DniTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+fun ConfirmPasswordTextField(
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isError: Boolean = false
+    visiblePassword: Boolean,
+    isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Done
 ) {
-    BaseTextField(
-        value = value,
-        onValueChange = {
-            if (it.isBlank()) onValueChange(it)
-            else {
-                if (it.last().isDigit()) {
-                    onValueChange(it)
-                }
-            }
-        },
+    OutlinedSecureTextField(
+        state = state,
         modifier = modifier,
         enabled = enabled,
-        placeholder = {
-            Text(text = stringResource(Res.string.dni_placeholder))
-        },
         label = {
-            TextFieldLabel(
-                text = stringResource(Res.string.dni_label),
-                isError = isError
+            Text(
+                text = stringResource(Res.string.confirm_password_label)
             )
         },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Numbers,
-                contentDescription = null
-            )
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Next
-        ),
-        isError = isError,
         supportingText = if (!isError) null else {
             {
-                Text(text = stringResource(Res.string.dni_error))
+                Text(text = stringResource(Res.string.confirm_password_error))
             }
         },
+        isError = isError,
+        inputTransformation = NoSpacesInputTransformation(),
+        textObfuscationMode = if (visiblePassword) TextObfuscationMode.Visible else TextObfuscationMode.RevealLastTyped,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction
+        )
+    )
+}
+
+@Composable
+fun IdNumberTextField(
+    state: TextFieldState,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Next
+) {
+    OutlinedTextField(
+        state = state,
+        modifier = modifier,
+        enabled = enabled,
+        label = {
+            Text(
+                text = stringResource(Res.string.id_number_label)
+            )
+        },
+        supportingText = if (!isError) null else {
+            {
+                Text(text = stringResource(Res.string.id_number_error))
+            }
+        },
+        isError = isError,
+        inputTransformation = DigitOnlyInputTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = imeAction
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine
+    )
+}
+
+@Composable
+fun IdIssuingLocationTextField(
+    state: TextFieldState,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Next
+) {
+    OutlinedTextField(
+        state = state,
+        modifier = modifier,
+        enabled = enabled,
+        label = {
+            Text(
+                text = stringResource(Res.string.id_issuing_location_label)
+            )
+        },
+        supportingText = if (!isError) null else {
+            {
+                Text(text = stringResource(Res.string.id_issuing_location_error))
+            }
+        },
+        isError = isError,
+        inputTransformation = LetterAndSpaceOnlyInputTransformation(),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = imeAction
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine
     )
 }
 
 @Composable
 fun FirstNameTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isError: Boolean = false
+    isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Next
 ) {
-    BaseTextField(
-        value = value,
-        onValueChange = onValueChange,
+    OutlinedTextField(
+        state = state,
         modifier = modifier,
         enabled = enabled,
-        placeholder = {
-            Text(text = stringResource(Res.string.first_name_placeholder))
-        },
         label = {
-            TextFieldLabel(
-                text = stringResource(Res.string.first_name_label),
-                isError = isError
+            Text(
+                text = stringResource(Res.string.first_name_label)
             )
         },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Person,
-                contentDescription = null
-            )
-        },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words,
-            imeAction = ImeAction.Next
-        ),
-        isError = isError,
         supportingText = if (!isError) null else {
             {
                 Text(text = stringResource(Res.string.email_error))
             }
         },
+        isError = isError,
+        inputTransformation = LetterAndSpaceOnlyInputTransformation(),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = imeAction
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine
     )
 }
 
 @Composable
 fun LastNameTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isError: Boolean = false
+    isError: Boolean = false,
+    imeAction: ImeAction = ImeAction.Next
 ) {
-    BaseTextField(
-        value = value,
-        onValueChange = onValueChange,
+    OutlinedTextField(
+        state = state,
         modifier = modifier,
         enabled = enabled,
-        placeholder = {
-            Text(text = stringResource(Res.string.last_name_placeholder))
-        },
         label = {
-            TextFieldLabel(
-                text = stringResource(Res.string.last_name_label),
-                isError = isError
+            Text(
+                text = stringResource(Res.string.last_name_label)
             )
         },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Person,
-                contentDescription = null
-            )
-        },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words,
-            imeAction = ImeAction.Next
-        ),
-        isError = isError,
         supportingText = if (!isError) null else {
             {
                 Text(text = stringResource(Res.string.last_name_error))
             }
         },
+        isError = isError,
+        inputTransformation = LetterAndSpaceOnlyInputTransformation(),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = imeAction
+        ),
+        lineLimits = TextFieldLineLimits.SingleLine
     )
 }

@@ -1,16 +1,15 @@
 package com.juanpablo0612.sigat.ui.actions.add_action
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,172 +19,150 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.sigat.domain.model.Obligation
-import com.juanpablo0612.sigat.utils.timestampToText
+import com.juanpablo0612.sigat.ui.camera_launcher.isCameraLauncherAvailable
+import com.juanpablo0612.sigat.ui.camera_launcher.launchCamera
+import com.juanpablo0612.sigat.utils.timestampToDayMonthYearFormat
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.nameWithoutExtension
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.button_add_action
-import sigat.composeapp.generated.resources.button_add_image
 import sigat.composeapp.generated.resources.button_select
 import sigat.composeapp.generated.resources.date_label
 import sigat.composeapp.generated.resources.description_label
 import sigat.composeapp.generated.resources.image_source_camera
 import sigat.composeapp.generated.resources.image_source_gallery
 import sigat.composeapp.generated.resources.images_label
+import sigat.composeapp.generated.resources.obligation_error
 import sigat.composeapp.generated.resources.obligation_label
-import sigat.composeapp.generated.resources.select_image_source
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddActionScreen(viewModel: AddActionViewModel = koinInject(), onNavigateBack: () -> Unit) {
+fun AddActionScreen(
+    viewModel: AddActionViewModel = koinViewModel(),
+    windowSize: WindowSizeClass,
+    onNavigateBack: () -> Unit
+) {
     val uiState = viewModel.uiState
+    val screenRows = remember(windowSize.widthSizeClass) {
+        if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) 2 else 1
+    }
+    val coroutineScope = rememberCoroutineScope()
+
     val datePickerState = rememberDatePickerState()
-    val sheetState = rememberModalBottomSheetState()
-    val imageLauncher =
+    val galleryLauncher =
         rememberFilePickerLauncher(type = FileKitType.Image, mode = FileKitMode.Multiple()) {
             it?.let {
-                viewModel.onImageSourceSelectorVisibilityChange(false)
                 viewModel.onAddImages(it)
             }
         }
 
     Scaffold(topBar = { AddActionTopAppBar(onBack = onNavigateBack) }) { innerPadding ->
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            ObligationSelector(
-                obligations = uiState.obligations,
-                expandObligationList = uiState.expandObligationList,
-                onExpandObligationListChange = viewModel::onExpandObligationListChange,
-                selectedObligation = uiState.obligation,
-                onObligationChange = viewModel::onObligationChange
-            )
+        if (screenRows > 1) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp)
+            ) {
+                ObligationSelector(
+                    obligations = uiState.obligations,
+                    expandObligationList = uiState.expandObligationList,
+                    alwaysExpand = true,
+                    onExpandObligationListChange = viewModel::onExpandObligationListChange,
+                    selectedObligation = uiState.obligation,
+                    onObligationChange = viewModel::onObligationChange,
+                    modifier = Modifier.weight(0.5f)
+                )
 
-            TextField(
-                value = uiState.description,
-                onValueChange = viewModel::onDescriptionChange,
-                label = { Text(text = stringResource(Res.string.description_label)) },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-                },
-                isError = !uiState.validDescription,
-                enabled = !uiState.loading,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            if (uiState.showDatePicker) {
-                DatePickerDialog(
-                    state = datePickerState,
-                    onVisibilityChange = viewModel::onDatePickerVisibilityChange,
-                    onSelect = viewModel::onTimestampChange
+                ActionDetails(
+                    uiState = uiState,
+                    datePickerState = datePickerState,
+                    onDescriptionChange = viewModel::onDescriptionChange,
+                    onTimestampChange = viewModel::onTimestampChange,
+                    onDatePickerVisibilityChange = viewModel::onDatePickerVisibilityChange,
+                    onCameraClick = {
+                        coroutineScope.launch {
+                            val file = launchCamera()
+                            file?.let {
+                                viewModel.onAddImages(listOf(file))
+                            }
+                        }
+                    },
+                    onGalleryClick = { galleryLauncher.launch() },
+                    onAdd = viewModel::onAdd,
+                    onDeleteImage = viewModel::onDeleteImage,
+                    modifier = Modifier.weight(0.5f)
                 )
             }
-
-            Text(
-                text = stringResource(Res.string.date_label),
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+        } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp)
             ) {
-                if (uiState.timestamp != null) {
-                    Text(
-                        text = timestampToText(uiState.timestamp),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                } else {
-                    Text(
-                        text = stringResource(Res.string.button_select),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                ObligationSelector(
+                    obligations = uiState.obligations,
+                    expandObligationList = uiState.expandObligationList,
+                    alwaysExpand = false,
+                    onExpandObligationListChange = viewModel::onExpandObligationListChange,
+                    selectedObligation = uiState.obligation,
+                    onObligationChange = viewModel::onObligationChange,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                IconButton(onClick = { viewModel.onDatePickerVisibilityChange(true) }) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-                }
+                ActionDetails(
+                    uiState = uiState,
+                    datePickerState = datePickerState,
+                    onDescriptionChange = viewModel::onDescriptionChange,
+                    onTimestampChange = viewModel::onTimestampChange,
+                    onDatePickerVisibilityChange = viewModel::onDatePickerVisibilityChange,
+                    onCameraClick = {
+                        coroutineScope.launch {
+                            val file = launchCamera()
+                            file?.let {
+                                viewModel.onAddImages(listOf(file))
+                            }
+                        }
+                    },
+                    onGalleryClick = { galleryLauncher.launch() },
+                    onAdd = viewModel::onAdd,
+                    onDeleteImage = viewModel::onDeleteImage,
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                )
             }
-
-            Text(
-                text = stringResource(Res.string.images_label),
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            SelectedImageList(
-                images = uiState.images,
-                onAddClick = { viewModel.onImageSourceSelectorVisibilityChange(true) },
-                onDeleteClick = viewModel::onDeleteImage,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            val buttonEnabled =
-                uiState.obligation != null && uiState.validDescription && !uiState.loading && uiState.timestamp != null
-
-            Button(
-                onClick = viewModel::onAdd,
-                enabled = buttonEnabled,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (uiState.loading) {
-                    CircularProgressIndicator()
-                } else {
-                    Text(text = stringResource(Res.string.button_add_action))
-                }
-            }
-        }
-
-        if (uiState.showImageSourceSelector) {
-            ImageSourceSelector(
-                state = sheetState,
-                onVisibilityChange = viewModel::onImageSourceSelectorVisibilityChange,
-                onGalleryClick = {
-                    imageLauncher.launch()
-                },
-                onCameraClick = {
-
-                }
-            )
         }
     }
 }
@@ -207,60 +184,211 @@ private fun AddActionTopAppBar(onBack: () -> Unit) {
 private fun ObligationSelector(
     obligations: List<Obligation>,
     expandObligationList: Boolean,
+    alwaysExpand: Boolean,
     onExpandObligationListChange: (Boolean) -> Unit,
     selectedObligation: Obligation?,
-    onObligationChange: (Obligation) -> Unit
+    onObligationChange: (Obligation) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        DropdownMenu(
-            expanded = expandObligationList,
-            onDismissRequest = { onExpandObligationListChange(false) },
-            modifier = Modifier.weight(1f)
-        ) {
-            obligations.forEach { obligation ->
-                Column {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = "${obligation.number}. ${obligation.name}",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        },
-                        onClick = {
-                            onObligationChange(obligation)
-                            onExpandObligationListChange(false)
-                        }
-                    )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier) {
+        Row {
+            Text(
+                text = stringResource(Res.string.obligation_label),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
+            )
 
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                    Spacer(modifier = Modifier.height(5.dp))
+            if (!alwaysExpand) {
+                IconButton(onClick = { onExpandObligationListChange(!expandObligationList) }) {
+                    val icon =
+                        if (expandObligationList) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
+                    Icon(imageVector = icon, contentDescription = null)
                 }
             }
         }
 
-        val fontStyle =
-            if (selectedObligation == null) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge
+        AnimatedVisibility(visible = if (alwaysExpand) true else expandObligationList) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(obligations, key = { it.id }) { obligation ->
+                    if (obligation == selectedObligation) {
+                        SelectedObligationCard(obligation) {
+                            onObligationChange(obligation)
+                            onExpandObligationListChange(false)
+                        }
+                    } else {
+                        UnselectedObligationCard(obligation) {
+                            onObligationChange(obligation)
+                            onExpandObligationListChange(false)
+                        }
+                    }
+                }
+            }
+        }
 
-        Text(
-            text = selectedObligation?.name ?: stringResource(Res.string.obligation_label),
-            style = fontStyle,
-            modifier = Modifier.weight(1.0f)
-        )
-
-        IconButton(onClick = { onExpandObligationListChange(!expandObligationList) }) {
-            val icon =
-                if (expandObligationList) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
-            Icon(imageVector = icon, contentDescription = null)
+        if (!alwaysExpand) {
+            Text(
+                text = selectedObligation?.name ?: stringResource(Res.string.obligation_error),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ActionDetails(
+    uiState: AddActionUiState,
+    datePickerState: DatePickerState,
+    onDescriptionChange: (String) -> Unit,
+    onTimestampChange: (Long) -> Unit,
+    onDatePickerVisibilityChange: (Boolean) -> Unit,
+    onCameraClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onAdd: () -> Unit,
+    onDeleteImage: (PlatformFile) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+    ) {
+        item {
+            TextField(
+                value = uiState.description,
+                onValueChange = onDescriptionChange,
+                label = { Text(text = stringResource(Res.string.description_label)) },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                },
+                isError = !uiState.validDescription,
+                enabled = !uiState.loading,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            if (uiState.showDatePicker) {
+                DatePickerDialog(
+                    state = datePickerState,
+                    onVisibilityChange = onDatePickerVisibilityChange,
+                    onSelect = onTimestampChange
+                )
+            }
+
+            Text(
+                text = stringResource(Res.string.date_label),
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (uiState.timestamp != null) {
+                    Text(
+                        text = timestampToDayMonthYearFormat(uiState.timestamp),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                } else {
+                    Text(
+                        text = stringResource(Res.string.button_select),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                IconButton(onClick = { onDatePickerVisibilityChange(true) }) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                }
+            }
+        }
+
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(Res.string.images_label),
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                if (isCameraLauncherAvailable) {
+                    AssistChip(
+                        onClick = onCameraClick,
+                        label = { Text(text = stringResource(Res.string.image_source_camera)) },
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.CameraAlt, contentDescription = null)
+                        }
+                    )
+                }
+
+                AssistChip(
+                    onClick = onGalleryClick,
+                    label = { Text(text = stringResource(Res.string.image_source_gallery)) },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Photo, contentDescription = null)
+                    }
+                )
+            }
+        }
+
+        itemsIndexed(
+            uiState.images,
+            key = { _, image -> image.nameWithoutExtension }) { index, image ->
+            SelectedImageItem(
+                image = image,
+                onDeleteClick = { onDeleteImage(image) },
+                number = index + 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem()
+            )
+        }
+
+        item {
+            val buttonEnabled =
+                uiState.obligation != null && uiState.validDescription && !uiState.loading && uiState.timestamp != null
+
+            Button(
+                onClick = onAdd,
+                enabled = buttonEnabled,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (uiState.loading) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(text = stringResource(Res.string.button_add_action))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectedObligationCard(obligation: Obligation, onClick: () -> Unit) {
+    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = obligation.name,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Composable
+fun UnselectedObligationCard(obligation: Obligation, onClick: () -> Unit) {
+    OutlinedCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = obligation.name,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -288,37 +416,6 @@ fun DatePickerDialog(
         }
     ) {
         DatePicker(state = state, modifier = Modifier.fillMaxWidth())
-    }
-}
-
-@Composable
-fun SelectedImageList(
-    images: List<PlatformFile>,
-    onAddClick: () -> Unit,
-    onDeleteClick: (uri: PlatformFile) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier) {
-        item {
-            AddImageButton(
-                onClick = onAddClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-            )
-        }
-
-        itemsIndexed(images, key = { _, image -> image.toString() }) { index, image ->
-            SelectedImageItem(
-                image = image,
-                onDeleteClick = { onDeleteClick(image) },
-                number = index + 1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItem()
-                    .padding(bottom = 8.dp)
-            )
-        }
     }
 }
 
@@ -352,73 +449,5 @@ fun SelectedImageItem(
                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ImageSourceSelector(
-    state: SheetState,
-    onVisibilityChange: (Boolean) -> Unit,
-    onGalleryClick: () -> Unit,
-    onCameraClick: () -> Unit
-) {
-    ModalBottomSheet(
-        onDismissRequest = { onVisibilityChange(false) },
-        sheetState = state,
-        modifier = Modifier.wrapContentHeight()
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = stringResource(Res.string.select_image_source))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ImageSourceOption(
-                    icon = Icons.Default.Photo,
-                    name = stringResource(Res.string.image_source_gallery),
-                    onClick = onGalleryClick
-                )
-
-                ImageSourceOption(
-                    icon = Icons.Default.CameraAlt,
-                    name = stringResource(Res.string.image_source_camera),
-                    onClick = onCameraClick
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ImageSourceOption(icon: ImageVector, name: String, onClick: () -> Unit) {
-    OutlinedCard(onClick = onClick) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(10.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Text(text = name)
-        }
-    }
-}
-
-@Composable
-fun AddImageButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Text(text = stringResource(Res.string.button_add_image))
     }
 }

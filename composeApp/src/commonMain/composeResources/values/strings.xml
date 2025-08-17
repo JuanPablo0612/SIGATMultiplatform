@@ -1,99 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Campos -->
-    <!-- Correo electrónico -->
-    <string name="email_label">Correo electrónico</string>
-    <string name="email_placeholder">nombre@example.com</string>
-    <string name="email_error">Por favor, ingresa un correo electrónico válido.</string>
-    <!-- Contraseña -->
-    <string name="password_label">Contraseña</string>
-    <string name="password_placeholder">********</string>
-    <string name="password_error">La contraseña debe contener al menos 8 caracteres.</string>
-    <string name="password_show">Mostrar contraseña</string>
-    <string name="password_hide">Ocultar contraseña</string>
-    <!-- DNI -->
-    <string name="dni_label">DNI</string>
-    <string name="dni_placeholder">12345678</string>
-    <string name="dni_error">Por favor, ingresa un DNI válido.</string>
-    <!-- Nombres -->
-    <string name="first_name_label">Nombres</string>
-    <string name="first_name_placeholder">Juan</string>
-    <string name="first_name_error">Por favor, ingresa un nombre válido.</string>
-    <!-- Apellidos -->
-    <string name="last_name_label">Apellidos</string>
-    <string name="last_name_placeholder">Pérez</string>
-    <string name="last_name_error">Por favor, ingresa un apellido válido.</string>
-    <!-- Número de contrato -->
-    <string name="contract_number_label">Número de contrato</string>
-    <string name="contract_number_error">Por favor, ingresa un número de contrato válido.</string>
+    <string name="app_name" translatable="false">SIGAT</string>
 
-    <!-- Botones -->
-    <string name="button_accept">Aceptar</string>
-    <string name="button_select">Seleccionar</string>
-    <string name="button_save">Guardar</string>
+    <!-- Form Fields -->
+    <string name="email_label">Email Address</string>
+    <string name="email_placeholder">Enter your email address</string>
+    <string name="email_error">Email address is not valid</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">Enter your password</string>
+    <string name="password_error">Password must be at least 8 characters long</string>
+    <string name="confirm_password_label">Confirm Password</string>
+    <string name="confirm_password_error">Passwords must match</string>
+    <string name="id_number_label">ID Number</string>
+    <string name="id_number_placeholder">Enter your ID number</string>
+    <string name="id_number_error">ID number must have at least 8 digits</string>
+    <string name="id_issuing_location_label">ID Issuing Location</string>
+    <string name="id_issuing_location_error">This field cannot be empty</string>
+    <string name="first_name_label">First Name</string>
+    <string name="first_name_placeholder">Enter your first name</string>
+    <string name="first_name_error">First name is not valid</string>
+    <string name="last_name_label">Last Name</string>
+    <string name="last_name_placeholder">Enter your last name</string>
+    <string name="last_name_error">Last name is not valid</string>
 
-    <!-- Pantalla de inicio de sesión -->
-    <string name="login_title">¡Bienvenido de nuevo!</string>
-    <string name="login_message">Ingresa tu correo electrónico y contraseña para iniciar sesión</string>
-    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="login_button">Iniciar sesión</string>
-    <string name="create_account_button">Crear una cuenta</string>
+    <!-- Buttons -->
+    <string name="button_accept">Accept</string>
+    <string name="button_select">Select</string>
+    <string name="button_save">Save</string>
 
-    <!-- Pantalla de registro -->
-    <string name="register_title">Crear una cuenta</string>
-    <string name="already_have_an_account">¿Ya tienes una cuenta?</string>
-    <string name="sign_in_here">Inicia sesión aquí</string>
+    <!-- Authentication -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_message">Sign in to your account to continue</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login_button">Sign In</string>
+    <string name="dont_have_an_account">Don\'t have an account?</string>
+    <string name="create_one_here">Create one here</string>
 
-    <!-- Pantalla de verificación de correo electrónico -->
-    <string name="email_verification_title">Confirma tu dirección de correo electrónico</string>
-    <string name="email_verification_sending">Enviando verificación por correo electrónico a %1$s…</string>
-    <string name="email_verification_sent">Enviamos un correo electrónico de confirmación a %1$s\n Revise su correo electrónico y haga clic en el enlace de confirmación para continuar.</string>
-    <string name="email_verification_failed">No se pudo enviar la verificación por correo electrónico a %1$s. Inténtelo de nuevo más tarde.</string>
-    <string name="email_verification_resend">Reenviar correo electrónico</string>
-    <string name="email_verified">Correo electrónico verificado exitosamente.</string>
+    <string name="register_title">Create Your Account</string>
+    <string name="register_button_text">Create Account</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="sign_in_here">Sign in here</string>
 
-    <!-- Pantalla de actualización de datos -->
-    <string name="data_update_title">Actualización de datos</string>
+    <!-- Email Verification -->
+    <string name="email_verification_title">Verify Your Email Address</string>
+    <string name="email_verification_sending">Sending verification email to %1$s…</string>
+    <string name="email_verification_sent">We\'ve sent a verification email to %1$s\nPlease check your inbox and click the verification link to continue.</string>
+    <string name="email_verification_failed">Failed to send verification email to %1$s. Please try again later.</string>
+    <string name="email_verification_resend">Resend Email</string>
+    <string name="email_verified">Email address verified successfully</string>
 
-    <!-- Pantalla de inicio -->
-    <string name="home_title">Principal</string>
-    <string name="home_greeting">Hola</string>
+    <!-- Data Management -->
+    <string name="data_update_title">Update Information</string>
 
-    <string name="reports_title">Informes</string>
+    <!-- Navigation -->
+    <string name="home_title">Dashboard</string>
+    <string name="home_greeting">Hello</string>
 
-    <!-- Pantalla de acciones -->
-    <string name="actions_title">Acciones</string>
-    <string name="actions_message">Mira todas las acciones que has agregado</string>
-    <string name="no_actions">No has agregado ninguna acción</string>
-    <string name="add_one">Agrega una</string>
+    <!-- Actions -->
+    <string name="actions_title">Actions</string>
+    <string name="actions_message">View and manage your recorded actions</string>
+    <string name="no_actions">No actions recorded yet</string>
 
-    <string name="role">Tu rol:</string>
-    <string name="role_fa">Facilitador</string>
-    <string name="role_ap">Aprendiz</string>
-    <string name="role_ad">Administrador</string>
-    <string name="role_unknown">Desconocido</string>
+    <!-- Reports -->
+    <string name="reports_title">Reports</string>
+    <string name="reports_message">View and manage your generated reports</string>
+    <string name="no_reports">No reports generated yet</string>
 
-    <!-- Acción -->
-    <string name="description_label">Descripción</string>
-    <string name="description_error">Por favor, ingresa una descripción válida.</string>
-    <string name="obligation_label">Obligación</string>
-    <string name="date_label">Fecha</string>
-    <string name="select_image_source">Selecciona de dónde quieres cargar la imagen</string>
-    <string name="image_source_gallery">Galería</string>
-    <string name="image_source_camera">Cámara</string>
-    <string name="images_label">Imágenes</string>
-    <string name="button_add_image">Agregar imagen</string>
-    <string name="button_add_action">Agregar acción</string>
+    <!-- User Roles -->
+    <string name="role">Your Role:</string>
+    <string name="role_fa">Facilitator</string>
+    <string name="role_ap">Apprentice</string>
+    <string name="role_ad">Administrator</string>
+    <string name="role_unknown">Unknown</string>
 
-    <!-- Excepciones -->
-    <string name="unknown_error_message">Se ha producido un error desconocido</string>
-    <string name="network_error_message">Se ha producido un error de red. Inténtalo de nuevo más tarde</string>
-    <string name="invalid_credentials_title">Credenciales inválidas.</string>
-    <string name="invalid_credentials_message">Esto significa que el correo electrónico o la contraseña son incorrectos.</string>
-    <string name="user_already_exists_title">El usuario ya existe.</string>
-    <string name="user_already_exists_message">Esto significa que ya hay una cuenta creada con el mismo correo electrónico.</string>
-    <string name="dni_not_registered_title">El DNI no está registrado.</string>
-    <string name="dni_not_registered_message">Asegúrate de que el que escribiste sea el correcto o comunícate con Tecnoacademia para darte acceso a la app.</string>
-    <string name="dni_already_linked_title">El DNI ya está vinculado a otra cuenta</string>
-    <string name="dni_already_linked_message">Por seguridad, solo permitimos que el dni se asocie a solo una cuenta. Accede con el correo y contraseña que te registraste por primera vez.</string>
+    <!-- Action Form -->
+    <string name="description_label">Description</string>
+    <string name="description_error">Please enter a description</string>
+    <string name="obligation_label">Obligation</string>
+    <string name="obligation_error">Please select an obligation</string>
+    <string name="date_label">Date</string>
+    <string name="select_image_source">Choose image source</string>
+    <string name="image_source_gallery">Photo Gallery</string>
+    <string name="image_source_camera">Camera</string>
+    <string name="images_label">Images</string>
+    <string name="button_add_image">Add Image</string>
+    <string name="button_add_action">Add Action</string>
+
+    <!-- Administration -->
+    <string name="manage_roles_title">Manage User Roles</string>
+
+    <!-- Error Messages -->
+    <string name="unknown_error_message">An unexpected error occurred. Please try again</string>
+    <string name="network_error_message">Network connection error. Please check your internet connection and try again</string>
+    <string name="invalid_credentials_title">Invalid Credentials</string>
+    <string name="invalid_credentials_message">The email address or password you entered is incorrect. Please try again.</string>
+    <string name="user_already_exists_title">Account Already Exists</string>
+    <string name="user_already_exists_message">An account with this email address already exists. Please sign in instead.</string>
+    <string name="dni_not_registered_title">ID Number Not Registered</string>
+    <string name="dni_not_registered_message">This ID number is not registered in our system. Please verify the number or contact Tecnoacademia for access.</string>
+    <string name="dni_already_linked_title">ID Number Already Associated</string>
+    <string name="dni_already_linked_message">This ID number is already linked to another account. Please sign in with the email and password you used during registration.</string>
 </resources>

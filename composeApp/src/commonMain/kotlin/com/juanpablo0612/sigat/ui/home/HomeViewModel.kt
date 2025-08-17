@@ -25,8 +25,12 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val uid = authRepository.getUid()
-                val user = usersRepository.getUserByUid(uid)
-                uiState = uiState.copy(user = user, loading = false)
+                val userResult = usersRepository.getUserByUid(uid)
+                userResult.fold(
+                    onSuccess = { uiState = uiState.copy(user = it) },
+                    onFailure = { uiState = uiState.copy(exception = it as Exception) }
+                )
+                uiState = uiState.copy(loading = false)
             } catch (e: Exception) {
                 uiState = uiState.copy(loading = false, exception = e)
             }

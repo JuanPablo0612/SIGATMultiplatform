@@ -26,6 +26,16 @@ class UsersRemoteDataSource(firestore: FirebaseFirestore) {
         }
     }
 
+    suspend fun getUsersByIds(ids: List<String>): List<UserModel> {
+        return handleExceptions {
+            val users = usersCollection.where {
+                "uid" inArray ids
+            }.get()
+
+            users.documents.map { it.data(UserModel.serializer()) }
+        }
+    }
+
     suspend fun getUserByUid(uid: String): UserModel {
         return handleExceptions {
             usersCollection.where {
@@ -40,10 +50,8 @@ class UsersRemoteDataSource(firestore: FirebaseFirestore) {
         }
     }
 
-    suspend fun updateUser(userModel: UserModel) {
-        handleExceptions {
-            val userDocument = usersCollection.document(userModel.id)
-            userDocument.set(userModel)
-        }
+    suspend fun saveUser(userModel: UserModel) {
+        val userDocument = usersCollection.document(userModel.uid)
+        userDocument.set(userModel)
     }
 }

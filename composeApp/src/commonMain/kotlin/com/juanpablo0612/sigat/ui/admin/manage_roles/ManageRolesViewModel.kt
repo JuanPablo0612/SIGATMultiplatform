@@ -28,8 +28,14 @@ class ManageRolesViewModel(
 
             try {
                 val roles = rolesRepository.getRoles()
-                usersRepository.getAllUsers().collect { users ->
-                    uiState = uiState.copy(initialLoading = false, users = users, roles = roles)
+                usersRepository.getAllUsers().collect { usersResult ->
+                    usersResult.fold(
+                        onSuccess = { users ->
+                            uiState = uiState.copy(users = users, roles = roles)
+                        },
+                        onFailure = { uiState = uiState.copy(exception = it as Exception) }
+                    )
+                    uiState = uiState.copy(initialLoading = false)
                 }
             } catch (e: Exception) {
                 uiState = uiState.copy(initialLoading = false, exception = e)
@@ -44,14 +50,14 @@ class ManageRolesViewModel(
             try {
                 val updatedUsr = User(
                     uid = user.uid,
-                    id = user.id,
+                    idNumber = user.idNumber,
+                    idIssuingLocation = user.idIssuingLocation,
                     firstName = user.firstName,
                     lastName = user.lastName,
-                    role = role,
-                    contractNumber = user.contractNumber
+                    role = role
                 )
 
-                usersRepository.updateUser(updatedUsr)
+                usersRepository.saveUser(updatedUsr)
                 uiState = uiState.copy(successChange = true, applyingChangesToUser = null)
             } catch (e: Exception) {
                 uiState =

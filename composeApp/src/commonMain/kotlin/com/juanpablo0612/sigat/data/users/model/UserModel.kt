@@ -7,23 +7,31 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserModel(
-    val id: String,
     val uid: String,
+    val idNumber: Long,
+    val idIssuingLocation: String,
     val firstName: String,
     val lastName: String,
     val lastDataUpdate: Timestamp,
-    val role: RoleModel,
-    val contractNumber: String
+    val role: RoleModel
 ) {
-    constructor() : this("", "", "", "", Timestamp.now(), RoleModel(), "")
+    constructor() : this(
+        uid = "",
+        idNumber = 0,
+        idIssuingLocation = "",
+        firstName = "",
+        lastName = "",
+        lastDataUpdate = Timestamp.now(),
+        role = RoleModel()
+    )
 
     fun toDomain() = User(
         uid = uid,
-        id = id,
+        idNumber = idNumber,
+        idIssuingLocation = idIssuingLocation,
         firstName = firstName,
         lastName = lastName,
         lastDataUpdate = lastDataUpdate,
-        role = role.toDomain(),
-        contractNumber = contractNumber
+        role = role.toDomain()
     )
 }

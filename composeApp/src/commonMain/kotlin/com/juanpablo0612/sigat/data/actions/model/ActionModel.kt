@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ActionModel(
     val id: String,
-    val dni: String,
+    val creatorUid: String,
     val obligationNumber: Int,
     val obligationName: String,
     val description: String,
@@ -17,7 +17,7 @@ data class ActionModel(
 
     fun toDomain() = Action(
         id = id,
-        uid = dni,
+        creatorUid = creatorUid,
         obligationNumber = obligationNumber,
         obligationName = obligationName,
         description = description,

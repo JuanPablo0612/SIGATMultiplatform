@@ -3,6 +3,7 @@ package com.juanpablo0612.sigat.ui.navigation
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,11 +17,12 @@ import com.juanpablo0612.sigat.ui.auth.login.LoginScreen
 import com.juanpablo0612.sigat.ui.auth.register.RegisterScreen
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.home.HomeScreen
-import org.koin.compose.koinInject
+import com.juanpablo0612.sigat.ui.reports.generate_report.GenerateReportScreen
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavigation(
-    viewModel: AppNavigationViewModel = koinInject(),
+    viewModel: AppNavigationViewModel = koinViewModel(),
     windowSize: WindowSizeClass
 ) {
     val uiState = viewModel.uiState
@@ -29,7 +31,8 @@ fun AppNavigation(
     if (uiState.startDestination != null) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Login,
+            startDestination = uiState.startDestination,
+            modifier = Modifier.imePadding(),
             enterTransition = {
                 slideInHorizontally { height -> height }
             },
@@ -47,6 +50,7 @@ fun AppNavigation(
             addRegisterScreen(navController = navController, windowSize = windowSize)
             addHomeScreen(navController = navController, windowSize = windowSize)
             addAddActionScreen(navController = navController, windowSize = windowSize)
+            addGenerateReportScreen(navController = navController, windowSize = windowSize)
         }
     } else {
         LoadingContent(modifier = Modifier.fillMaxSize())
@@ -94,9 +98,19 @@ fun NavGraphBuilder.addHomeScreen(navController: NavController, windowSize: Wind
 fun NavGraphBuilder.addAddActionScreen(navController: NavController, windowSize: WindowSizeClass) {
     composable<Screen.AddAction> {
         AddActionScreen(
+            windowSize = windowSize,
             onNavigateBack = {
                 navController.navigateUp()
             }
         )
+    }
+}
+
+fun NavGraphBuilder.addGenerateReportScreen(
+    navController: NavController,
+    windowSize: WindowSizeClass
+) {
+    composable<Screen.GenerateReport> {
+        GenerateReportScreen()
     }
 }

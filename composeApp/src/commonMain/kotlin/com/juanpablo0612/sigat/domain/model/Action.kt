@@ -4,7 +4,7 @@ import com.juanpablo0612.sigat.data.actions.model.ActionModel
 
 data class Action(
     val id: String = "",
-    val uid: String = "",
+    val creatorUid: String = "",
     val obligationNumber: Int = 0,
     val obligationName: String = "",
     val description: String = "",
@@ -13,7 +13,7 @@ data class Action(
 ) {
     fun toModel() = ActionModel(
         id = id,
-        dni = uid,
+        creatorUid = creatorUid,
         obligationNumber = obligationNumber,
         obligationName = obligationName,
         description = description,

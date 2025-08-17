@@ -15,10 +15,10 @@ kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,18 +29,31 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+        val androidAndIosMain by creating {
+            dependsOn(commonMain.get())
+        }
+
+        androidMain {
+            dependsOn(androidAndIosMain)
+        }
+
+        iosMain {
+            dependsOn(androidAndIosMain)
+        }
+
         androidMain.dependencies {
-            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+            implementation(libs.apache.poi)
+            implementation(libs.apache.poi.ooxml)
         }
         commonMain.dependencies {
+            implementation(compose.preview)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -61,12 +74,13 @@ kotlin {
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
             implementation(libs.filekit.coil)
-            implementation(libs.firebase.auth)
-            implementation(libs.firebase.firestore)
-            implementation(libs.firebase.storage)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.firebase.kotlin.sdk.auth)
+            implementation(libs.firebase.kotlin.sdk.firestore)
+            implementation(libs.firebase.kotlin.sdk.storage)
+            implementation(libs.coil.network.okhttp)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

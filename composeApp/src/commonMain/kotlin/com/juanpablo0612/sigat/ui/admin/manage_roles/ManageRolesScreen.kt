@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -28,12 +29,15 @@ import com.juanpablo0612.sigat.domain.model.User
 import com.juanpablo0612.sigat.ui.components.ErrorCard
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.unknown_error_message
 
 @Composable
-fun ManageRolesScreen(viewModel: ManageRolesViewModel = koinInject(), windowSize: WindowSizeClass) {
+fun ManageRolesScreen(
+    viewModel: ManageRolesViewModel = koinViewModel(),
+    windowSize: WindowSizeClass
+) {
     val uiState = viewModel.uiState
     val cols = remember(windowSize.widthSizeClass) {
         when (windowSize.widthSizeClass) {
@@ -44,18 +48,24 @@ fun ManageRolesScreen(viewModel: ManageRolesViewModel = koinInject(), windowSize
         }
     }
 
-    Column {
-        if (uiState.initialLoading) {
-            LoadingContent(modifier = Modifier.fillMaxSize())
-        } else if (uiState.exception != null) {
-            ErrorCard(message = stringResource(Res.string.unknown_error_message))
-        } else {
-            ManageRolesContent(
-                users = uiState.users,
-                roles = uiState.roles,
-                cols = cols,
-                onUserRoleChange = viewModel::updateUserRole
-            )
+    Scaffold(
+        topBar = {
+            ManageRolesTopBar()
+        }
+    ) {
+        Column {
+            if (uiState.initialLoading) {
+                LoadingContent(modifier = Modifier.fillMaxSize())
+            } else if (uiState.exception != null) {
+                ErrorCard(message = stringResource(Res.string.unknown_error_message))
+            } else {
+                ManageRolesContent(
+                    users = uiState.users,
+                    roles = uiState.roles,
+                    cols = cols,
+                    onUserRoleChange = viewModel::updateUserRole
+                )
+            }
         }
     }
 }
@@ -106,7 +116,7 @@ private fun UserRoleCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = user.id,
+                    text = user.idNumber.toString(),
                     style = MaterialTheme.typography.bodySmall
                 )
 

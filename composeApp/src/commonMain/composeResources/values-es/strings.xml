@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Campos de formulario -->
+    <string name="email_label">Correo electrónico</string>
+    <string name="email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="email_error">El correo electrónico no es válido</string>
+    <string name="password_label">Contraseña</string>
+    <string name="password_placeholder">Ingresa tu contraseña</string>
+    <string name="password_error">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="confirm_password_label">Confirmar contraseña</string>
+    <string name="confirm_password_error">Las contraseñas no coinciden</string>
+    <string name="id_number_label">Número de documento</string>
+    <string name="id_number_placeholder">Ingresa tu número de documento</string>
+    <string name="id_number_error">El número de documento debe tener al menos 8 dígitos</string>
+    <string name="id_issuing_location_label">Lugar de expedición del documento</string>
+    <string name="id_issuing_location_error">Este campo no puede estar vacío</string>
+    <string name="first_name_label">Nombres</string>
+    <string name="first_name_placeholder">Ingresa tus nombres</string>
+    <string name="first_name_error">El nombre no es válido</string>
+    <string name="last_name_label">Apellidos</string>
+    <string name="last_name_placeholder">Ingresa tus apellidos</string>
+    <string name="last_name_error">El apellido no es válido</string>
+
+    <!-- Botones -->
+    <string name="button_accept">Aceptar</string>
+    <string name="button_select">Seleccionar</string>
+    <string name="button_save">Guardar</string>
+
+    <!-- Autenticación -->
+    <string name="login_title">Bienvenido de vuelta</string>
+    <string name="login_message">Inicia sesión en tu cuenta para continuar</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="dont_have_an_account">¿No tienes una cuenta?</string>
+    <string name="create_one_here">Crea una aquí</string>
+
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_button_text">Crear cuenta</string>
+    <string name="already_have_an_account">¿Ya tienes una cuenta?</string>
+    <string name="sign_in_here">Inicia sesión aquí</string>
+
+    <!-- Verificación de correo -->
+    <string name="email_verification_title">Verifica tu correo electrónico</string>
+    <string name="email_verification_sending">Enviando correo de verificación a %1$s…</string>
+    <string name="email_verification_sent">Hemos enviado un correo de verificación a %1$s\nRevisa tu bandeja de entrada y haz clic en el enlace de verificación para continuar.</string>
+    <string name="email_verification_failed">No se pudo enviar el correo de verificación a %1$s. Inténtalo de nuevo más tarde.</string>
+    <string name="email_verification_resend">Reenviar correo</string>
+    <string name="email_verified">Correo electrónico verificado exitosamente</string>
+
+    <!-- Gestión de datos -->
+    <string name="data_update_title">Actualizar información</string>
+
+    <!-- Navegación -->
+    <string name="home_title">Panel principal</string>
+    <string name="home_greeting">Hola</string>
+
+    <!-- Acciones -->
+    <string name="actions_title">Acciones</string>
+    <string name="actions_message">Visualiza y gestiona tus acciones registradas</string>
+    <string name="no_actions">Aún no hay acciones registradas</string>
+
+    <!-- Informes -->
+    <string name="reports_title">Informes</string>
+    <string name="reports_message">Visualiza y gestiona tus informes generados</string>
+    <string name="no_reports">Aún no hay informes generados</string>
+
+    <!-- Roles de usuario -->
+    <string name="role">Tu rol:</string>
+    <string name="role_fa">Facilitador</string>
+    <string name="role_ap">Aprendiz</string>
+    <string name="role_ad">Administrador</string>
+    <string name="role_unknown">Desconocido</string>
+
+    <!-- Formulario de acción -->
+    <string name="description_label">Descripción</string>
+    <string name="description_error">Por favor, ingresa una descripción</string>
+    <string name="obligation_label">Obligación</string>
+    <string name="obligation_error">Por favor, selecciona una obligación</string>
+    <string name="date_label">Fecha</string>
+    <string name="select_image_source">Selecciona la fuente de la imagen</string>
+    <string name="image_source_gallery">Galería de fotos</string>
+    <string name="image_source_camera">Cámara</string>
+    <string name="images_label">Imágenes</string>
+    <string name="button_add_image">Agregar imagen</string>
+    <string name="button_add_action">Agregar acción</string>
+
+    <!-- Administración -->
+    <string name="manage_roles_title">Gestionar roles de usuario</string>
+
+    <!-- Mensajes de error -->
+    <string name="unknown_error_message">Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo</string>
+    <string name="network_error_message">Error de conexión de red. Verifica tu conexión a internet e inténtalo de nuevo</string>
+    <string name="invalid_credentials_title">Credenciales inválidas</string>
+    <string name="invalid_credentials_message">El correo electrónico o la contraseña que ingresaste son incorrectos. Por favor, inténtalo de nuevo.</string>
+    <string name="user_already_exists_title">La cuenta ya existe</string>
+    <string name="user_already_exists_message">Ya existe una cuenta con este correo electrónico. Por favor, inicia sesión en su lugar.</string>
+    <string name="dni_not_registered_title">Número de documento no registrado</string>
+    <string name="dni_not_registered_message">Este número de documento no está registrado en nuestro sistema. Verifica el número o contacta a Tecnoacademia para obtener acceso.</string>
+    <string name="dni_already_linked_title">Número de documento ya asociado</string>
+    <string name="dni_already_linked_message">Este número de documento ya está vinculado a otra cuenta. Por favor, inicia sesión con el correo y contraseña que usaste durante el registro.</string>
+</resources>

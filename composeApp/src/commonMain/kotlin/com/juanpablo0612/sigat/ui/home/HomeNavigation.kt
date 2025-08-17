@@ -1,38 +1,41 @@
 package com.juanpablo0612.sigat.ui.home
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Report
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.juanpablo0612.sigat.domain.model.Role
+import com.juanpablo0612.sigat.domain.model.RoleType
 import com.juanpablo0612.sigat.ui.admin.manage_roles.ManageRolesScreen
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 import sigat.composeapp.generated.resources.Res
+import sigat.composeapp.generated.resources.actions_title
+import sigat.composeapp.generated.resources.manage_roles_title
 import sigat.composeapp.generated.resources.reports_title
 
-sealed class Features(val nameId: StringResource) {
-    data object Reports : Features(Res.string.reports_title)
+enum class HomeDestinations(
+    val label: StringResource,
+    val icon: ImageVector
+) {
+    Actions(Res.string.actions_title, Icons.Default.History),
+    Reports(Res.string.reports_title, Icons.Default.Report),
+    ManageRoles(Res.string.manage_roles_title, Icons.Default.People)
 }
 
-fun NavGraphBuilder.addManageRolesScreen(navController: NavController, windowSize: WindowSizeClass) {
-    composable<ManageRoles> {
-        ManageRolesScreen(windowSize = windowSize)
-    }
-}
-
-fun NavGraphBuilder.addActionScreen(navController: NavController) {
-    composable<Actions> { }
-}
-
-fun getScreenListForRole(role: Role): List<Any> {
-    return when (role.id) {
-        "admin" -> listOf(
-            ManageRoles
+fun getScreenListForRole(role: Role): List<HomeDestinations> {
+    return when (role.type) {
+        RoleType.ADMIN -> listOf(
+            HomeDestinations.ManageRoles
         )
 
-        "facilitador" -> {
-            listOf(Actions)
+        RoleType.TEACHER -> {
+            listOf(HomeDestinations.Actions, HomeDestinations.Reports)
         }
 
         else -> {
@@ -40,12 +43,3 @@ fun getScreenListForRole(role: Role): List<Any> {
         }
     }
 }
-
-@Serializable
-object ManageRoles
-
-@Serializable
-object Actions
-
-@Serializable
-object Reports
