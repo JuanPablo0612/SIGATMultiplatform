@@ -45,6 +45,16 @@ class AppNavigationViewModel(
             )
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            userStateHolder.clearUser()
+            uiState = uiState.copy(
+                userState = userStateHolder.userState
+            )
+        }
+    }
 }
 
 data class AppNavigationUiState(
