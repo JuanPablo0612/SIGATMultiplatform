@@ -16,17 +16,23 @@ sealed class Screen {
     object EditProfile: Screen()
 
     @Serializable
-    object Home: Screen()
-
-    @Serializable
     object AddAction: Screen()
-
-    @Serializable
-    object GenerateReport: Screen()
 
     @Serializable
     object AddTrainingProgram: Screen()
 
     @Serializable
     data class TrainingProgramDetail(val programId: String): Screen()
+
+    @Serializable
+    object ManageRoles : Screen()
+
+    @Serializable
+    object TrainingPrograms : Screen()
+
+    @Serializable
+    object Actions : Screen()
+
+    @Serializable
+    object Reports : Screen()
 }

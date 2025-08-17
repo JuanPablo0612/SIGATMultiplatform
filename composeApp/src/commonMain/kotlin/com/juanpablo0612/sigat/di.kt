@@ -34,7 +34,6 @@ import com.juanpablo0612.sigat.ui.training_programs.detail.TrainingProgramDetail
 import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListViewModel
 import com.juanpablo0612.sigat.ui.auth.login.LoginViewModel
 import com.juanpablo0612.sigat.ui.auth.register.RegisterViewModel
-import com.juanpablo0612.sigat.ui.home.HomeViewModel
 import com.juanpablo0612.sigat.ui.navigation.AppNavigationViewModel
 import com.juanpablo0612.sigat.ui.reports.generate_report.GenerateReportViewModel
 import dev.gitlive.firebase.Firebase
@@ -59,7 +58,6 @@ val viewModelModule = module {
     viewModelOf(::RegisterViewModel)
     viewModelOf(::AddActionViewModel)
     viewModelOf(::AppNavigationViewModel)
-    viewModelOf(::HomeViewModel)
     viewModelOf(::ManageRolesViewModel)
     viewModelOf(::GenerateReportViewModel)
     viewModelOf(::ActionListViewModel)
