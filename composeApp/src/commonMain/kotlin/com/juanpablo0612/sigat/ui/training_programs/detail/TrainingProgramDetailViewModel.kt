@@ -35,8 +35,8 @@ class TrainingProgramDetailViewModel(
                         id = program.id,
                         name = program.name,
                         code = program.code.toString(),
-                        startDate = program.startDate.toString(),
-                        endDate = program.endDate.toString(),
+                        startDate = program.startDate,
+                        endDate = program.endDate,
                         schedule = program.schedule,
                         teacherUserId = program.teacherUserId,
                         students = program.students
@@ -57,20 +57,14 @@ class TrainingProgramDetailViewModel(
         uiState = uiState.copy(code = newCode, validCode = newCode.toIntOrNull() != null)
     }
 
-    fun onStartDateChange(newStartDate: String) {
-        val valid = newStartDate.toLongOrNull() != null
-        val validEnd = uiState.endDate.toLongOrNull()?.let { end ->
-            newStartDate.toLongOrNull()?.let { start -> start <= end } ?: false
-        } ?: true
-        uiState = uiState.copy(startDate = newStartDate, validStartDate = valid && validEnd)
-        if (!validEnd) uiState = uiState.copy(validEndDate = false)
+    fun onStartDateChange(newStartDate: Long) {
+        uiState = uiState.copy(startDate = newStartDate)
+        validateDates()
     }
 
-    fun onEndDateChange(newEndDate: String) {
-        val endLong = newEndDate.toLongOrNull()
-        val startLong = uiState.startDate.toLongOrNull()
-        val valid = endLong != null && (startLong == null || startLong <= endLong)
-        uiState = uiState.copy(endDate = newEndDate, validEndDate = valid)
+    fun onEndDateChange(newEndDate: Long) {
+        uiState = uiState.copy(endDate = newEndDate)
+        validateDates()
     }
 
     fun onScheduleChange(newSchedule: String) {
@@ -84,8 +78,7 @@ class TrainingProgramDetailViewModel(
     private fun validateFields() {
         onNameChange(uiState.name)
         onCodeChange(uiState.code)
-        onStartDateChange(uiState.startDate)
-        onEndDateChange(uiState.endDate)
+        validateDates()
         onScheduleChange(uiState.schedule)
     }
 
@@ -105,8 +98,8 @@ class TrainingProgramDetailViewModel(
                         id = uiState.id,
                         name = uiState.name,
                         code = uiState.code.toInt(),
-                        startDate = uiState.startDate.toLong(),
-                        endDate = uiState.endDate.toLong(),
+                        startDate = uiState.startDate!!,
+                        endDate = uiState.endDate!!,
                         schedule = uiState.schedule,
                         teacherUserId = uiState.teacherUserId,
                         students = uiState.students
@@ -151,6 +144,16 @@ class TrainingProgramDetailViewModel(
             }
         }
     }
+
+    private fun validateDates() {
+        val start = uiState.startDate
+        val end = uiState.endDate
+        val orderValid = if (start != null && end != null) start <= end else true
+        uiState = uiState.copy(
+            validStartDate = start != null && orderValid,
+            validEndDate = end != null && orderValid
+        )
+    }
 }
 
 data class TrainingProgramDetailUiState(
@@ -159,9 +162,9 @@ data class TrainingProgramDetailUiState(
     val validName: Boolean = true,
     val code: String = "",
     val validCode: Boolean = true,
-    val startDate: String = "",
+    val startDate: Long? = null,
     val validStartDate: Boolean = true,
-    val endDate: String = "",
+    val endDate: Long? = null,
     val validEndDate: Boolean = true,
     val schedule: String = "",
     val validSchedule: Boolean = true,
