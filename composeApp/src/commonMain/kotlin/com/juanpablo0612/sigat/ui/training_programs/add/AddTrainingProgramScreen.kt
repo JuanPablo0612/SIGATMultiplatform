@@ -9,8 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,7 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,8 +28,11 @@ import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.add_training_program_title
 import sigat.composeapp.generated.resources.button_save
 import sigat.composeapp.generated.resources.code_label
+import sigat.composeapp.generated.resources.end_date_label
 import sigat.composeapp.generated.resources.name_label
+import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.schedule_label
+import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,14 +42,15 @@ fun AddTrainingProgramScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState = viewModel.uiState
-    val datePickerState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input)
+    val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
+    val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.endDate)
 
-    LaunchedEffect(datePickerState.selectedStartDateMillis) {
-        datePickerState.selectedStartDateMillis?.let { viewModel.onStartDateChange(it) }
+    LaunchedEffect(startDatePickerState.selectedDateMillis) {
+        startDatePickerState.selectedDateMillis?.let { viewModel.onStartDateChange(it) }
     }
 
-    LaunchedEffect(datePickerState.selectedEndDateMillis) {
-        datePickerState.selectedEndDateMillis?.let { viewModel.onEndDateChange(it) }
+    LaunchedEffect(endDatePickerState.selectedDateMillis) {
+        endDatePickerState.selectedDateMillis?.let { viewModel.onEndDateChange(it) }
     }
 
     if (uiState.saved) {
@@ -88,9 +90,15 @@ fun AddTrainingProgramScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = !uiState.validCode
             )
-            DateRangePicker(
-                state = datePickerState,
-                showModeToggle = false
+            DatePickerTextField(
+                label = stringResource(Res.string.start_date_label),
+                state = startDatePickerState,
+                isError = !uiState.validStartDate
+            )
+            DatePickerTextField(
+                label = stringResource(Res.string.end_date_label),
+                state = endDatePickerState,
+                isError = !uiState.validEndDate
             )
             OutlinedTextField(
                 value = uiState.schedule,

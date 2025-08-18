@@ -11,11 +11,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,16 +21,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -41,14 +34,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.ui.components.LoadingContent
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
-import sigat.composeapp.generated.resources.button_accept
-import sigat.composeapp.generated.resources.button_cancel
 import sigat.composeapp.generated.resources.button_delete
 import sigat.composeapp.generated.resources.button_save
 import sigat.composeapp.generated.resources.code_label
@@ -58,8 +46,7 @@ import sigat.composeapp.generated.resources.schedule_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.student_id_label
 import sigat.composeapp.generated.resources.training_program_detail_title
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -222,60 +209,4 @@ fun TrainingProgramDetailScreen(
             )
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DatePickerTextField(
-    label: String,
-    state: DatePickerState,
-    isError: Boolean
-) {
-    var showDialog by remember { mutableStateOf(false) }
-
-    OutlinedTextField(
-        value = formatEpochMillisAsDMY(state.selectedDateMillis ?: 0),
-        onValueChange = {},
-        readOnly = true,
-        label = { Text(label) },
-        trailingIcon = {
-            IconButton(onClick = { showDialog = true }) {
-                Icon(Icons.Filled.DateRange, contentDescription = null)
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        isError = isError
-    )
-
-    if (showDialog) {
-        DatePickerDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) { Text(stringResource(Res.string.button_accept)) }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                }) { Text(stringResource(Res.string.button_cancel)) }
-            }
-        ) {
-            DatePicker(state = state)
-        }
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-private fun formatEpochMillisAsDMY(
-    epochMillis: Long,
-    timeZone: TimeZone = TimeZone.currentSystemDefault()
-): String {
-    val date = Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(timeZone).date
-    val y = date.year.toString().padStart(4, '0')
-    val m = date.month.number.toString().padStart(2, '0')
-    val d = date.day.toString().padStart(2, '0')
-    return "$d/$m/$y"
 }

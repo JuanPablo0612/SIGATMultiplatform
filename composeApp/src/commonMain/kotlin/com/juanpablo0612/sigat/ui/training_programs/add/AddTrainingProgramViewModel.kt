@@ -29,12 +29,12 @@ class AddTrainingProgramViewModel(
 
     fun onStartDateChange(newStartDate: Long) {
         uiState = uiState.copy(startDate = newStartDate)
-        validateStartDate()
+        validateDates()
     }
 
     fun onEndDateChange(newEndDate: Long) {
         uiState = uiState.copy(endDate = newEndDate)
-        validateEndDate()
+        validateDates()
     }
 
     fun onScheduleChange(newSchedule: String) {
@@ -50,14 +50,6 @@ class AddTrainingProgramViewModel(
         uiState = uiState.copy(validCode = uiState.code.toIntOrNull() != null)
     }
 
-    private fun validateStartDate() {
-        uiState = uiState.copy(validStartDate = uiState.startDate != null)
-    }
-
-    private fun validateEndDate() {
-        uiState = uiState.copy(validEndDate = uiState.endDate != null)
-    }
-
     private fun validateSchedule() {
         uiState = uiState.copy(validSchedule = uiState.schedule.isNotBlank())
     }
@@ -65,13 +57,22 @@ class AddTrainingProgramViewModel(
     private fun validateFields() {
         validateName()
         validateCode()
-        validateStartDate()
-        validateEndDate()
+        validateDates()
         validateSchedule()
     }
 
     private fun allFieldsValid(): Boolean {
         return uiState.validName && uiState.validCode && uiState.validStartDate && uiState.validEndDate && uiState.validSchedule
+    }
+
+    private fun validateDates() {
+        val start = uiState.startDate
+        val end = uiState.endDate
+        val orderValid = if (start != null && end != null) start <= end else true
+        uiState = uiState.copy(
+            validStartDate = start != null && orderValid,
+            validEndDate = end != null && orderValid
+        )
     }
 
     fun addTrainingProgram() {
