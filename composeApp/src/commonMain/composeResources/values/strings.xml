@@ -27,6 +27,7 @@
     <string name="button_accept">Accept</string>
     <string name="button_select">Select</string>
     <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
 
     <!-- Authentication -->
     <string name="login_title">Welcome Back</string>
