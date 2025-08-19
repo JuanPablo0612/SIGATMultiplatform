@@ -128,7 +128,8 @@ fun PasswordTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction
-        )
+        ),
+        singleLine = true
     )
 }
 
@@ -162,7 +163,8 @@ fun ConfirmPasswordTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction
-        )
+        ),
+        singleLine = true
     )
 }
 
