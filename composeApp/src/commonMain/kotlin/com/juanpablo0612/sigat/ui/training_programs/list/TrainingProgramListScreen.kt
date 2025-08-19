@@ -37,8 +37,10 @@ fun TrainingProgramListScreen(
     Scaffold(
         topBar = { TrainingProgramListTopBar() },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddProgramClick) {
-                Icon(Icons.Filled.Add, contentDescription = null)
+            if (!uiState.loading) {
+                FloatingActionButton(onClick = onAddProgramClick) {
+                    Icon(Icons.Filled.Add, contentDescription = null)
+                }
             }
         }
     ) { innerPadding ->

@@ -30,7 +30,8 @@ fun DatePickerTextField(
     label: String,
     state: DatePickerState,
     isError: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -39,8 +40,9 @@ fun DatePickerTextField(
         onValueChange = {},
         readOnly = true,
         label = { Text(label) },
+        enabled = enabled,
         trailingIcon = {
-            IconButton(onClick = { showDialog = true }) {
+            IconButton(onClick = { showDialog = true }, enabled = enabled) {
                 Icon(Icons.Filled.DateRange, contentDescription = null)
             }
         },

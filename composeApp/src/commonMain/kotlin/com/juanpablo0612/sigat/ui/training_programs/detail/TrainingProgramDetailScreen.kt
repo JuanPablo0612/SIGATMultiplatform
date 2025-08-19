@@ -1,10 +1,12 @@
 package com.juanpablo0612.sigat.ui.training_programs.detail
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,9 +58,22 @@ fun TrainingProgramDetailScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState = viewModel.uiState
+    val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
+    val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.endDate)
 
     if (uiState.finished) {
         LaunchedEffect(Unit) { onNavigateBack() }
+    }
+    LaunchedEffect(startDatePickerState.selectedDateMillis) {
+        startDatePickerState.selectedDateMillis?.let {
+            viewModel.onStartDateChange(it)
+        }
+    }
+
+    LaunchedEffect(endDatePickerState.selectedDateMillis) {
+        endDatePickerState.selectedDateMillis?.let {
+            viewModel.onEndDateChange(it)
+        }
     }
 
     Scaffold(
@@ -66,38 +81,22 @@ fun TrainingProgramDetailScreen(
             TopAppBar(
                 title = { Text(stringResource(Res.string.training_program_detail_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onNavigateBack, enabled = !uiState.loading) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 }
             )
         }
     ) { innerPadding ->
-        if (!uiState.loading && uiState.id.isNotEmpty()) {
-            val startDatePickerState =
-                rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
-            val endDatePickerState =
-                rememberDatePickerState(initialSelectedDateMillis = uiState.endDate)
-
-            LaunchedEffect(startDatePickerState.selectedDateMillis) {
-                startDatePickerState.selectedDateMillis?.let {
-                    viewModel.onStartDateChange(it)
-                }
-            }
-
-            LaunchedEffect(endDatePickerState.selectedDateMillis) {
-                endDatePickerState.selectedDateMillis?.let {
-                    viewModel.onEndDateChange(it)
-                }
-            }
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 16.dp)
-            ) {
+        Box(modifier = Modifier.padding(innerPadding)) {
+            if (uiState.id.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp)
+                ) {
                 item {
                     OutlinedTextField(
                         value = uiState.name,
@@ -106,6 +105,7 @@ fun TrainingProgramDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         isError = !uiState.validName,
                         singleLine = true,
+                        enabled = !uiState.loading,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
                     )
                 }
@@ -117,6 +117,7 @@ fun TrainingProgramDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         isError = !uiState.validCode,
                         singleLine = true,
+                        enabled = !uiState.loading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
@@ -125,14 +126,16 @@ fun TrainingProgramDetailScreen(
                     DatePickerTextField(
                         label = stringResource(Res.string.start_date_label),
                         state = startDatePickerState,
-                        isError = !uiState.validStartDate
+                        isError = !uiState.validStartDate,
+                        enabled = !uiState.loading
                     )
                 }
                 item {
                     DatePickerTextField(
                         label = stringResource(Res.string.end_date_label),
                         state = endDatePickerState,
-                        isError = !uiState.validEndDate
+                        isError = !uiState.validEndDate,
+                        enabled = !uiState.loading
                     )
                 }
 
@@ -143,7 +146,8 @@ fun TrainingProgramDetailScreen(
                         label = { Text(stringResource(Res.string.schedule_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         isError = !uiState.validSchedule,
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                        enabled = !uiState.loading
                     )
                 }
 
@@ -158,9 +162,10 @@ fun TrainingProgramDetailScreen(
                             label = { Text(stringResource(Res.string.student_id_label)) },
                             modifier = Modifier.weight(1f),
                             singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            enabled = !uiState.loading
                         )
-                        IconButton(onClick = { viewModel.addStudent() }) {
+                        IconButton(onClick = { viewModel.addStudent() }, enabled = !uiState.loading) {
                             Icon(Icons.Filled.Add, contentDescription = null)
                         }
                     }
@@ -178,7 +183,7 @@ fun TrainingProgramDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = student, fontWeight = FontWeight.Bold)
-                        IconButton(onClick = { viewModel.removeStudent(student) }) {
+                        IconButton(onClick = { viewModel.removeStudent(student) }, enabled = !uiState.loading) {
                             Icon(Icons.Filled.Delete, contentDescription = null)
                         }
                     }
@@ -188,25 +193,25 @@ fun TrainingProgramDetailScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(
                             onClick = { viewModel.updateTrainingProgram() },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            enabled = !uiState.loading
                         ) {
                             Text(stringResource(Res.string.button_save))
                         }
                         OutlinedButton(
                             onClick = { viewModel.deleteTrainingProgram() },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            enabled = !uiState.loading
                         ) {
                             Text(stringResource(Res.string.button_delete))
                         }
                     }
                 }
             }
-        } else {
-            LoadingContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
+            }
+            if (uiState.loading) {
+                LoadingContent(modifier = Modifier.matchParentSize())
+            }
         }
     }
 }
