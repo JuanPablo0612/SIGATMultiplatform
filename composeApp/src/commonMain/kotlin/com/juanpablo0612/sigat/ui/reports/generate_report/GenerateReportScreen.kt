@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.generate_report_button
 import sigat.composeapp.generated.resources.generate_report_title
+import sigat.composeapp.generated.resources.default_report_file_name
 import sigat.composeapp.generated.resources.select_output_file
 import sigat.composeapp.generated.resources.select_template
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,10 +49,10 @@ fun GenerateReportScreen(viewModel: GenerateReportViewModel = koinViewModel()) {
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(Res.string.generate_report_title)) }) }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ContractFields(
                 contract = uiState.contract,
@@ -73,8 +74,9 @@ fun GenerateReportScreen(viewModel: GenerateReportViewModel = koinViewModel()) {
             TemplateSelector(
                 onClick = { templateFileLauncher.launch() }
             )
+            val defaultFileName = stringResource(Res.string.default_report_file_name)
             OutputFileSelector(
-                onClick = { outputFileLauncher.launch("informe", "docx") }
+                onClick = { outputFileLauncher.launch(defaultFileName, "docx") }
             )
             Button(onClick = viewModel::onGenerateReportClick) {
                 Text(text = stringResource(Res.string.generate_report_button))
