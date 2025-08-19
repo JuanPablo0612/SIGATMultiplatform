@@ -8,6 +8,7 @@ import com.juanpablo0612.sigat.data.auth.remote.AuthRemoteDataSource
 import com.juanpablo0612.sigat.data.auth.remote.BaseAuthRemoteDataSource
 import com.juanpablo0612.sigat.data.obligations.ObligationsRepository
 import com.juanpablo0612.sigat.data.obligations.remote.ObligationsRemoteDataSource
+import com.juanpablo0612.sigat.data.contracts.ContractsRepository
 import com.juanpablo0612.sigat.data.reports.ReportsRepository
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSource
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSourceImpl
@@ -92,6 +93,7 @@ val dataModule = module {
     singleOf(::ObligationsRepository)
     single<ReportsLocalDataSource> { ReportsLocalDataSourceImpl() }
     singleOf(::ReportsRepository)
+    singleOf(::ContractsRepository)
     singleOf(::TrainingProgramsRemoteDataSource)
     singleOf(::TrainingProgramsRepository)
 }

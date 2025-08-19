@@ -2,6 +2,7 @@ package com.juanpablo0612.sigat.data.reports.local
 
 import com.juanpablo0612.sigat.data.actions.model.ActionModel
 import com.juanpablo0612.sigat.data.users.model.UserModel
+import com.juanpablo0612.sigat.data.contracts.model.ContractModel
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.write
@@ -26,6 +27,9 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
     @OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
     private fun mapInfoToReportData(
         user: UserModel,
+        contract: ContractModel,
+        startTimestamp: Long,
+        endTimestamp: Long,
     ): Map<String, String> {
         val now = Clock.System.now()
         val localDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -35,6 +39,9 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
         }
         val decimalFormat = DecimalFormat.getInstance(Locale.US)
 
+        val startDate = formatDate(startTimestamp)
+        val endDate = formatDate(endTimestamp)
+
         return mapOf(
             "dia" to localDate.day.toString(),
             "mes" to localDate.format(monthFormat),
@@ -42,7 +49,10 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
             "año" to localDate.year.toString(),
             "NombreCompleto" to "${user.firstName} ${user.lastName}",
             "cc" to decimalFormat.format(user.idNumber.toDouble()),
-            "MES" to localDate.format(monthFormat).uppercase()
+            "MES" to localDate.format(monthFormat).uppercase(),
+            "numeroContrato" to contract.number,
+            "fechaInicio" to startDate,
+            "fechaFin" to endDate,
         )
     }
 
@@ -50,9 +60,12 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
         template: PlatformFile,
         output: PlatformFile,
         user: UserModel,
+        contract: ContractModel,
+        startTimestamp: Long,
+        endTimestamp: Long,
         actions: List<ActionModel>
     ) {
-        val data = mapInfoToReportData(user)
+        val data = mapInfoToReportData(user, contract, startTimestamp, endTimestamp)
         val document = XWPFDocument(template.readBytes().inputStream())
         val outputByteArray = ByteArrayOutputStream()
 

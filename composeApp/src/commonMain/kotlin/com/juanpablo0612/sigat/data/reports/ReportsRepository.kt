@@ -1,6 +1,7 @@
 package com.juanpablo0612.sigat.data.reports
 
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSource
+import com.juanpablo0612.sigat.domain.model.Contract
 import com.juanpablo0612.sigat.domain.model.Action
 import com.juanpablo0612.sigat.domain.model.User
 import io.github.vinceglb.filekit.PlatformFile
@@ -10,12 +11,18 @@ class ReportsRepository(private val localDataSource: ReportsLocalDataSource) {
         template: PlatformFile,
         output: PlatformFile,
         user: User,
+        contract: Contract,
+        startTimestamp: Long,
+        endTimestamp: Long,
         actions: List<Action>
     ) {
         localDataSource.generateReport(
             template,
             output,
             user.toModel(),
+            contract.toModel(),
+            startTimestamp,
+            endTimestamp,
             actions.map { it.toModel() })
     }
 }
