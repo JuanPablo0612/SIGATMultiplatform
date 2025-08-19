@@ -47,7 +47,8 @@ fun DatePickerTextField(
             }
         },
         modifier = modifier.fillMaxWidth(),
-        isError = isError
+        isError = isError,
+        singleLine = true
     )
 
     if (showDialog) {

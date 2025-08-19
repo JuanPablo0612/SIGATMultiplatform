@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import org.jetbrains.compose.resources.stringResource
@@ -106,7 +107,10 @@ fun TrainingProgramDetailScreen(
                         isError = !uiState.validName,
                         singleLine = true,
                         enabled = !uiState.loading,
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Next
+                        )
                     )
                 }
                 item {
@@ -118,10 +122,28 @@ fun TrainingProgramDetailScreen(
                         isError = !uiState.validCode,
                         singleLine = true,
                         enabled = !uiState.loading,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        )
                     )
                 }
 
+                item {
+                    OutlinedTextField(
+                        value = uiState.schedule,
+                        onValueChange = viewModel::onScheduleChange,
+                        label = { Text(stringResource(Res.string.schedule_label)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !uiState.validSchedule,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Done
+                        ),
+                        enabled = !uiState.loading
+                    )
+                }
                 item {
                     DatePickerTextField(
                         label = stringResource(Res.string.start_date_label),
@@ -140,18 +162,6 @@ fun TrainingProgramDetailScreen(
                 }
 
                 item {
-                    OutlinedTextField(
-                        value = uiState.schedule,
-                        onValueChange = viewModel::onScheduleChange,
-                        label = { Text(stringResource(Res.string.schedule_label)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = !uiState.validSchedule,
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                        enabled = !uiState.loading
-                    )
-                }
-
-                item {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -162,7 +172,10 @@ fun TrainingProgramDetailScreen(
                             label = { Text(stringResource(Res.string.student_id_label)) },
                             modifier = Modifier.weight(1f),
                             singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
                             enabled = !uiState.loading
                         )
                         IconButton(onClick = { viewModel.addStudent() }, enabled = !uiState.loading) {

@@ -19,6 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -84,7 +88,12 @@ fun AddTrainingProgramScreen(
                     label = { Text(stringResource(Res.string.name_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = !uiState.validName,
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Next
+                    )
                 )
                 OutlinedTextField(
                     value = uiState.code,
@@ -92,7 +101,25 @@ fun AddTrainingProgramScreen(
                     label = { Text(stringResource(Res.string.code_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = !uiState.validCode,
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+                OutlinedTextField(
+                    value = uiState.schedule,
+                    onValueChange = viewModel::onScheduleChange,
+                    label = { Text(stringResource(Res.string.schedule_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.validSchedule,
+                    enabled = !uiState.loading,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Done
+                    )
                 )
                 DatePickerTextField(
                     label = stringResource(Res.string.start_date_label),
@@ -104,14 +131,6 @@ fun AddTrainingProgramScreen(
                     label = stringResource(Res.string.end_date_label),
                     state = endDatePickerState,
                     isError = !uiState.validEndDate,
-                    enabled = !uiState.loading
-                )
-                OutlinedTextField(
-                    value = uiState.schedule,
-                    onValueChange = viewModel::onScheduleChange,
-                    label = { Text(stringResource(Res.string.schedule_label)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = !uiState.validSchedule,
                     enabled = !uiState.loading
                 )
                 Button(
