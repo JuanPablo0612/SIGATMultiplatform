@@ -1,6 +1,7 @@
 package com.juanpablo0612.sigat.ui.training_programs.add
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ import sigat.composeapp.generated.resources.name_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.schedule_label
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
+import com.juanpablo0612.sigat.ui.components.LoadingContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,56 +64,66 @@ fun AddTrainingProgramScreen(
             TopAppBar(
                 title = { Text(stringResource(Res.string.add_training_program_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onNavigateBack, enabled = !uiState.loading) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 }
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            OutlinedTextField(
-                value = uiState.name,
-                onValueChange = viewModel::onNameChange,
-                label = { Text(stringResource(Res.string.name_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.validName
-            )
-            OutlinedTextField(
-                value = uiState.code,
-                onValueChange = viewModel::onCodeChange,
-                label = { Text(stringResource(Res.string.code_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.validCode
-            )
-            DatePickerTextField(
-                label = stringResource(Res.string.start_date_label),
-                state = startDatePickerState,
-                isError = !uiState.validStartDate
-            )
-            DatePickerTextField(
-                label = stringResource(Res.string.end_date_label),
-                state = endDatePickerState,
-                isError = !uiState.validEndDate
-            )
-            OutlinedTextField(
-                value = uiState.schedule,
-                onValueChange = viewModel::onScheduleChange,
-                label = { Text(stringResource(Res.string.schedule_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.validSchedule
-            )
-            Button(
-                onClick = { viewModel.addTrainingProgram() },
-                modifier = Modifier.fillMaxWidth()
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(stringResource(Res.string.button_save))
+                OutlinedTextField(
+                    value = uiState.name,
+                    onValueChange = viewModel::onNameChange,
+                    label = { Text(stringResource(Res.string.name_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.validName,
+                    enabled = !uiState.loading
+                )
+                OutlinedTextField(
+                    value = uiState.code,
+                    onValueChange = viewModel::onCodeChange,
+                    label = { Text(stringResource(Res.string.code_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.validCode,
+                    enabled = !uiState.loading
+                )
+                DatePickerTextField(
+                    label = stringResource(Res.string.start_date_label),
+                    state = startDatePickerState,
+                    isError = !uiState.validStartDate,
+                    enabled = !uiState.loading
+                )
+                DatePickerTextField(
+                    label = stringResource(Res.string.end_date_label),
+                    state = endDatePickerState,
+                    isError = !uiState.validEndDate,
+                    enabled = !uiState.loading
+                )
+                OutlinedTextField(
+                    value = uiState.schedule,
+                    onValueChange = viewModel::onScheduleChange,
+                    label = { Text(stringResource(Res.string.schedule_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.validSchedule,
+                    enabled = !uiState.loading
+                )
+                Button(
+                    onClick = { viewModel.addTrainingProgram() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !uiState.loading
+                ) {
+                    Text(stringResource(Res.string.button_save))
+                }
+            }
+            if (uiState.loading) {
+                LoadingContent(modifier = Modifier.matchParentSize())
             }
         }
     }
