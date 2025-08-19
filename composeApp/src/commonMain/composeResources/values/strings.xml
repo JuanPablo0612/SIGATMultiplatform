@@ -95,9 +95,16 @@
     <string name="reports_message">View and manage your generated reports</string>
     <string name="no_reports">No reports generated yet</string>
     <string name="generate_report_title">Generate Report</string>
-    <string name="generate_report_button">Generate Report</string>
+    <string name="button_generate_report">Generate Report</string>
     <string name="select_template">Select Template</string>
     <string name="select_output_file">Select Output File</string>
+    <string name="report_default_filename">report</string>
+    <string name="report_table_header_number">No</string>
+    <string name="report_table_header_obligations">Obligations</string>
+    <string name="report_table_header_actions_performed">Actions Performed</string>
+    <string name="report_table_header_evidence">Evidence</string>
+    <string name="report_action_prefix">Activity</string>
+    <string name="report_evidence_prefix">Evidence</string>
 
     <!-- User Roles -->
     <string name="role">Your Role:</string>

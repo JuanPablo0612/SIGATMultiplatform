@@ -21,6 +21,8 @@ import java.util.Date
 import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import org.jetbrains.compose.resources.getString
+import sigat.composeapp.generated.resources.Res
 
 actual class ReportsLocalDataSourceImpl actual constructor() :
     ReportsLocalDataSource {
@@ -69,7 +71,7 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
         val document = XWPFDocument(template.readBytes().inputStream())
         val outputByteArray = ByteArrayOutputStream()
 
-        document.paragraphs.forEach { paragraph ->
+        for (paragraph in document.paragraphs) {
             data.forEach { (key, value) ->
                 if (paragraph.text.contains(key)) {
                     val newText = paragraph.text.replace("[$key]", value)
@@ -89,7 +91,7 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
         output.write(outputByteArray.toByteArray())
     }
 
-    private fun createActionTable(
+    private suspend fun createActionTable(
         document: XWPFDocument,
         paragraph: XWPFParagraph,
         actions: List<ActionModel>
@@ -97,7 +99,12 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
         val cursor = paragraph.ctp.newCursor()
         val table = document.insertNewTbl(cursor)
 
-        val headers = listOf("No", "Obligaciones", "Acciones realizadas", "Evidencias")
+        val headers = listOf(
+            getString(Res.string.report_table_header_number),
+            getString(Res.string.report_table_header_obligations),
+            getString(Res.string.report_table_header_actions_performed),
+            getString(Res.string.report_table_header_evidence)
+        )
         val headerRow = table.getRow(0)
         headers.forEachIndexed { index, text ->
             if (index == 0) {
@@ -107,14 +114,17 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
             }
         }
 
+        val actionPrefix = getString(Res.string.report_action_prefix)
+        val evidencePrefix = getString(Res.string.report_evidence_prefix)
+
         actions.forEachIndexed { index, action ->
             val row = table.createRow()
-            row.getCell(0).setText((index + 1).toString()) // Column No
-            row.getCell(1).setText(action.obligationName) // Column Obligaciones
+            row.getCell(0).setText((index + 1).toString())
+            row.getCell(1).setText(action.obligationName)
             row.getCell(2)
-                .setText("Actividad ${action.obligationNumber}.1 (${formatDate(action.timestamp)})") // Acciones realizadas
+                .setText("$actionPrefix ${action.obligationNumber}.1 (${formatDate(action.timestamp)})")
             row.getCell(3)
-                .setText("Evidencia ${action.obligationNumber}.1 (${formatDate(action.timestamp)})") // Evidencias
+                .setText("$evidencePrefix ${action.obligationNumber}.1 (${formatDate(action.timestamp)})")
         }
     }
 

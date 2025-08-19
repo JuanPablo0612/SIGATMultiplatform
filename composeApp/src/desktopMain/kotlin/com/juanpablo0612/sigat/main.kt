@@ -5,6 +5,8 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import org.jetbrains.compose.resources.stringResource
+import sigat.composeapp.generated.resources.Res
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.FirebasePlatform
@@ -20,7 +22,7 @@ fun main() {
 
         Window(
             onCloseRequest = ::exitApplication,
-            title = "SIGAT",
+            title = stringResource(Res.string.app_name),
         ) {
             App(windowSize = calculateWindowSizeClass())
         }

@@ -24,10 +24,11 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
 import sigat.composeapp.generated.resources.Res
-import sigat.composeapp.generated.resources.generate_report_button
+import sigat.composeapp.generated.resources.button_generate_report
 import sigat.composeapp.generated.resources.generate_report_title
 import sigat.composeapp.generated.resources.select_output_file
 import sigat.composeapp.generated.resources.select_template
+import sigat.composeapp.generated.resources.report_default_filename
 import androidx.compose.material3.ExperimentalMaterial3Api
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,11 +74,12 @@ fun GenerateReportScreen(viewModel: GenerateReportViewModel = koinViewModel()) {
             TemplateSelector(
                 onClick = { templateFileLauncher.launch() }
             )
+            val defaultReportFileName = stringResource(Res.string.report_default_filename)
             OutputFileSelector(
-                onClick = { outputFileLauncher.launch("informe", "docx") }
+                onClick = { outputFileLauncher.launch(defaultReportFileName, "docx") }
             )
             Button(onClick = viewModel::onGenerateReportClick) {
-                Text(text = stringResource(Res.string.generate_report_button))
+                Text(text = stringResource(Res.string.button_generate_report))
             }
         }
     }

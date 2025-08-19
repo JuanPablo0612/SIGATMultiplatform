@@ -93,9 +93,16 @@
     <string name="reports_message">Visualiza y gestiona tus informes generados</string>
     <string name="no_reports">Aún no hay informes generados</string>
     <string name="generate_report_title">Generar informe</string>
-    <string name="generate_report_button">Generar informe</string>
+    <string name="button_generate_report">Generar informe</string>
     <string name="select_template">Seleccionar plantilla</string>
     <string name="select_output_file">Seleccionar archivo de salida</string>
+    <string name="report_default_filename">informe</string>
+    <string name="report_table_header_number">No</string>
+    <string name="report_table_header_obligations">Obligaciones</string>
+    <string name="report_table_header_actions_performed">Acciones realizadas</string>
+    <string name="report_table_header_evidence">Evidencias</string>
+    <string name="report_action_prefix">Actividad</string>
+    <string name="report_evidence_prefix">Evidencia</string>
 
     <!-- Roles de usuario -->
     <string name="role">Tu rol:</string>
