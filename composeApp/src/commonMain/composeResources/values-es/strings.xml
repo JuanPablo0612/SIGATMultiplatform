@@ -96,12 +96,13 @@
     <string name="generate_report_button">Generar informe</string>
     <string name="select_template">Seleccionar plantilla</string>
     <string name="select_output_file">Seleccionar archivo de salida</string>
+    <string name="default_report_file_name">informe</string>
 
     <!-- Roles de usuario -->
-    <string name="role">Tu rol:</string>
-    <string name="role_fa">Facilitador</string>
-    <string name="role_ap">Aprendiz</string>
-    <string name="role_ad">Administrador</string>
+    <string name="role_label">Tu rol:</string>
+    <string name="role_facilitator">Facilitador</string>
+    <string name="role_apprentice">Aprendiz</string>
+    <string name="role_administrator">Administrador</string>
     <string name="role_unknown">Desconocido</string>
 
     <!-- Formulario de acción -->
