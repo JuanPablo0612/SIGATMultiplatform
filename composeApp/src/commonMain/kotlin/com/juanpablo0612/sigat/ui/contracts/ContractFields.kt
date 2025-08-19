@@ -3,7 +3,6 @@ package com.juanpablo0612.sigat.ui.contracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,10 +46,11 @@ fun ContractFields(
     onPaymentMethodChange: (String) -> Unit,
     onElaborationDateChange: (String) -> Unit,
     onEndDateChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
+        modifier = modifier
     ) {
         OutlinedTextField(
             value = contract.city,
