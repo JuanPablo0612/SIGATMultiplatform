@@ -16,7 +16,7 @@ androidx-navigation = "2.9.0-beta05"
 kotlinx-serialization = "1.9.0"
 google-services = "4.4.3"
 material3-window-size = "1.8.2"
-firebase-kotlin-sdk = "2.2.0"
+firebase-kotlin-sdk = "2.3.0"
 apache-poi = "5.4.1"
 
 [libraries]
