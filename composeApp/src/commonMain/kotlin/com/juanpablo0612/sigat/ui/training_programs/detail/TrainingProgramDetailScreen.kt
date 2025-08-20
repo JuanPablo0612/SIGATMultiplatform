@@ -43,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import org.jetbrains.compose.resources.stringResource
@@ -114,21 +114,21 @@ fun TrainingProgramDetailScreen(
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
+        Box(modifier = Modifier.padding(innerPadding).padding(horizontal = Dimens.PaddingMedium)) {
             if (uiState.id.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
-                        .padding(vertical = 16.dp)
+                        .padding(vertical = Dimens.PaddingMedium)
                         .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+                    contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
                 ) {
                     item {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .padding(4.dp),
+                                .padding(vertical = Dimens.PaddingSmall)
+                                .padding(Dimens.PaddingExtraSmall),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -156,9 +156,9 @@ fun TrainingProgramDetailScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
-                                    .padding(bottom = 8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    .padding(Dimens.PaddingSmall)
+                                    .padding(bottom = Dimens.PaddingSmall),
+                                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
                             ) {
                                 OutlinedTextField(
                                     value = uiState.name,
@@ -217,7 +217,7 @@ fun TrainingProgramDetailScreen(
                     item {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
                         ) {
                             OutlinedTextField(
                                 value = uiState.newStudentId,
@@ -250,7 +250,7 @@ fun TrainingProgramDetailScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 2.dp),
+                                .padding(vertical = Dimens.PaddingExtraSmall),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -268,7 +268,7 @@ fun TrainingProgramDetailScreen(
                     }
 
                     item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
                             Button(
                                 onClick = { viewModel.updateTrainingProgram() },
                                 modifier = Modifier.weight(1f),

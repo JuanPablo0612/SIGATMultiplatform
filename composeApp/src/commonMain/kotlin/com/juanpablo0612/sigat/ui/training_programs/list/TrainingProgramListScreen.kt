@@ -20,9 +20,9 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
 import com.juanpablo0612.sigat.ui.components.LoadingContent
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
 import sigat.composeapp.generated.resources.Res
@@ -53,7 +53,7 @@ fun TrainingProgramListScreen(
         if (!uiState.loading) {
             LazyColumn(
                 modifier = Modifier.padding(innerPadding).fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
             ) {
                 items(uiState.programs, key = { it.id }) {
                     TrainingProgramItem(program = it, onClick = { onProgramClick(it.id) })
@@ -67,8 +67,8 @@ fun TrainingProgramListScreen(
 
 @Composable
 private fun TrainingProgramItem(program: TrainingProgram, onClick: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable { onClick() }) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.PaddingMedium).clickable { onClick() }) {
+        Column(modifier = Modifier.padding(Dimens.PaddingMedium), verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall)) {
             Text(text = program.name, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             Text(text = program.schedule, style = MaterialTheme.typography.bodyMedium)
         }

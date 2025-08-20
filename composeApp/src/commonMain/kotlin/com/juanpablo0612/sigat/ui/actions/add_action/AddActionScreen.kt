@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import coil3.compose.AsyncImage
 import com.juanpablo0612.sigat.domain.model.Obligation
 import com.juanpablo0612.sigat.ui.camera_launcher.isCameraLauncherAvailable
@@ -108,8 +109,8 @@ fun AddActionScreen(
         Box(modifier = Modifier.padding(innerPadding)) {
             if (screenRows > 1) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = Dimens.PaddingMedium)
                 ) {
                     ObligationSelector(
                         obligations = uiState.obligations,
@@ -141,8 +142,8 @@ fun AddActionScreen(
                 }
             } else {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = Dimens.PaddingMedium)
                 ) {
                     ObligationSelector(
                         obligations = uiState.obligations,
@@ -206,7 +207,7 @@ private fun ObligationSelector(
     onObligationChange: (Obligation) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier) {
+    Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall), modifier = modifier) {
         Row {
             Text(
                 text = stringResource(Res.string.obligation_label),
@@ -230,7 +231,7 @@ private fun ObligationSelector(
 
         AnimatedVisibility(visible = if (alwaysExpand) true else expandObligationList) {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(obligations, key = { it.id }) { obligation ->
@@ -271,7 +272,7 @@ fun ActionDetails(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
         modifier = modifier
     ) {
         OutlinedTextField(
@@ -295,7 +296,7 @@ fun ActionDetails(
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -356,7 +357,7 @@ fun SelectedObligationCard(obligation: Obligation, onClick: () -> Unit) {
         Text(
             text = obligation.name,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(Dimens.PaddingMedium)
         )
     }
 }
@@ -367,7 +368,7 @@ fun UnselectedObligationCard(obligation: Obligation, onClick: () -> Unit) {
         Text(
             text = obligation.name,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(Dimens.PaddingMedium)
         )
     }
 }
@@ -380,13 +381,13 @@ fun SelectedImageItem(
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(modifier = modifier) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(Dimens.PaddingMedium)) {
             AsyncImage(
                 model = image,
                 contentDescription = stringResource(Res.string.content_description_selected_image, number),
                 modifier = Modifier
                     .size(size = 50.dp)
-                    .padding(end = 8.dp),
+                    .padding(end = Dimens.PaddingSmall),
                 contentScale = ContentScale.Crop
             )
 
@@ -395,7 +396,7 @@ fun SelectedImageItem(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 16.dp)
+                    .padding(end = Dimens.PaddingMedium)
             )
 
             IconButton(onClick = onDeleteClick) {
