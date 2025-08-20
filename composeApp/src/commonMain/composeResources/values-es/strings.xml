@@ -27,6 +27,16 @@
     <string name="button_save">Guardar</string>
     <string name="button_cancel">Cancel</string>
 
+    <!-- Accesibilidad -->
+    <string name="content_description_navigate_back">Volver atrás</string>
+    <string name="content_description_expand">Expandir</string>
+    <string name="content_description_collapse">Contraer</string>
+    <string name="content_description_show_password">Mostrar contraseña</string>
+    <string name="content_description_hide_password">Ocultar contraseña</string>
+    <string name="content_description_select_date">Seleccionar fecha</string>
+    <string name="content_description_selected_image">Imagen seleccionada %1$d</string>
+    <string name="content_description_action_image">Imagen asociada a la acción</string>
+
     <!-- Autenticación -->
     <string name="login_title">Bienvenido de vuelta</string>
     <string name="login_message">Inicia sesión en tu cuenta para continuar</string>

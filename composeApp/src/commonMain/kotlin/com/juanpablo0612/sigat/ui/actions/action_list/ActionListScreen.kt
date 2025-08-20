@@ -32,6 +32,10 @@ import com.juanpablo0612.sigat.domain.model.Action
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.utils.timestampToDayMonthYearFormat
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import sigat.composeapp.generated.resources.Res
+import sigat.composeapp.generated.resources.button_add_action
+import sigat.composeapp.generated.resources.content_description_action_image
 
 @Composable
 fun ActionListScreen(
@@ -52,7 +56,10 @@ fun ActionListScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onAddActionClick) {
-                Icon(Icons.Filled.Add, contentDescription = null)
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(Res.string.button_add_action)
+                )
             }
         },
         topBar = {
@@ -92,7 +99,7 @@ private fun ActionCard(action: Action, modifier: Modifier = Modifier) {
                 action.images.forEach {
                     AsyncImage(
                         model = it,
-                        contentDescription = null,
+                        contentDescription = stringResource(Res.string.content_description_action_image),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.width(50.dp).height(50.dp)
                     )

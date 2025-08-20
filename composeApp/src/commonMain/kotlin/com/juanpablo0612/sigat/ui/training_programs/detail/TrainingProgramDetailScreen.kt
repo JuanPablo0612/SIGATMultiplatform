@@ -58,6 +58,10 @@ import sigat.composeapp.generated.resources.schedule_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.student_id_label
 import sigat.composeapp.generated.resources.training_program_detail_title
+import sigat.composeapp.generated.resources.button_add_student
+import sigat.composeapp.generated.resources.content_description_collapse
+import sigat.composeapp.generated.resources.content_description_expand
+import sigat.composeapp.generated.resources.content_description_navigate_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +105,10 @@ fun TrainingProgramDetailScreen(
                 title = { Text(stringResource(Res.string.training_program_detail_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack, enabled = !uiState.loading) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.content_description_navigate_back)
+                        )
                     }
                 }
             )
@@ -133,7 +140,9 @@ fun TrainingProgramDetailScreen(
                             IconButton(onClick = { expandedFields.value = !expandedFields.value }) {
                                 Icon(
                                     imageVector = if (expandedFields.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                                    contentDescription = null
+                                    contentDescription = stringResource(
+                                        if (expandedFields.value) Res.string.content_description_collapse else Res.string.content_description_expand
+                                    )
                                 )
                             }
                         }
@@ -226,7 +235,10 @@ fun TrainingProgramDetailScreen(
                                 onClick = { viewModel.addStudent() },
                                 enabled = !uiState.loading
                             ) {
-                                Icon(Icons.Filled.Add, contentDescription = null)
+                                Icon(
+                                    Icons.Filled.Add,
+                                    contentDescription = stringResource(Res.string.button_add_student)
+                                )
                             }
                         }
                     }
@@ -247,7 +259,10 @@ fun TrainingProgramDetailScreen(
                                 onClick = { viewModel.removeStudent(student) },
                                 enabled = !uiState.loading
                             ) {
-                                Icon(Icons.Filled.Delete, contentDescription = null)
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    contentDescription = stringResource(Res.string.button_delete)
+                                )
                             }
                         }
                     }

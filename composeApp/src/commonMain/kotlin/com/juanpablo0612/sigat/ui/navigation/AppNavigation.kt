@@ -147,7 +147,7 @@ fun BottomNavigationBar(
                 icon = {
                     Icon(
                         imageVector = destination.icon,
-                        contentDescription = null
+                        contentDescription = stringResource(destination.label)
                     )
                 },
                 label = {

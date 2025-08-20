@@ -34,6 +34,8 @@ import sigat.composeapp.generated.resources.last_name_error
 import sigat.composeapp.generated.resources.last_name_label
 import sigat.composeapp.generated.resources.password_error
 import sigat.composeapp.generated.resources.password_label
+import sigat.composeapp.generated.resources.content_description_hide_password
+import sigat.composeapp.generated.resources.content_description_show_password
 
 @Composable
 fun EmailTextField(
@@ -107,12 +109,12 @@ fun PasswordTextField(
                     if (visiblePassword) {
                         Icon(
                             imageVector = Icons.Default.VisibilityOff,
-                            contentDescription = null
+                            contentDescription = stringResource(Res.string.content_description_hide_password)
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Default.Visibility,
-                            contentDescription = null
+                            contentDescription = stringResource(Res.string.content_description_show_password)
                         )
                     }
                 }

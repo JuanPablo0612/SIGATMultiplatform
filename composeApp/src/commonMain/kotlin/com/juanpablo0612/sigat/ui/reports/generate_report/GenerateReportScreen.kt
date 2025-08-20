@@ -110,7 +110,7 @@ fun TemplateSelector(selectedFileName: String?, onClick: () -> Unit, modifier: M
             IconButton(onClick = onClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.Input,
-                    contentDescription = null
+                    contentDescription = stringResource(Res.string.select_template)
                 )
             }
         },
@@ -132,7 +132,7 @@ fun OutputFileSelector(selectedFileName: String?, onClick: () -> Unit, modifier:
             IconButton(onClick = onClick) {
                 Icon(
                     imageVector = Icons.Default.Output,
-                    contentDescription = null
+                    contentDescription = stringResource(Res.string.select_output_file)
                 )
             }
         },
