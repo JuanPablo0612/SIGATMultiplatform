@@ -50,11 +50,7 @@ class AddActionViewModel(
     }
 
     fun onTimestampChange(newTimestamp: Long) {
-        uiState = uiState.copy(timestamp = newTimestamp)
-    }
-
-    fun onDatePickerVisibilityChange(newVisibility: Boolean) {
-        uiState = uiState.copy(showDatePicker = newVisibility)
+        uiState = uiState.copy(timestamp = newTimestamp, validTimestamp = newTimestamp > 0)
     }
 
     fun onAddImages(selectedImages: List<PlatformFile>) {
@@ -93,7 +89,7 @@ class AddActionViewModel(
                 )
 
                 actionsRepository.addAction(action, uiState.images)
-                uiState = uiState.copy(success = true)
+                uiState = uiState.copy(success = true, saved = true)
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)
             } finally {
@@ -108,13 +104,14 @@ data class AddActionUiState(
     val obligations: List<Obligation> = emptyList(),
     val expandObligationList: Boolean = false,
     val obligation: Obligation? = null,
-    val validObligation: Boolean = false,
+    val validObligation: Boolean = true,
     val description: String = "",
-    val validDescription: Boolean = false,
-    val showDatePicker: Boolean = false,
+    val validDescription: Boolean = true,
     val timestamp: Long? = null,
+    val validTimestamp: Boolean = true,
     val images: List<PlatformFile> = emptyList(),
     val success: Boolean = false,
+    val saved: Boolean = false,
     val loading: Boolean = false,
     val exception: Exception? = null
 )
