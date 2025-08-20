@@ -22,7 +22,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import com.juanpablo0612.sigat.ui.auth.components.ConfirmPasswordTextField
 import com.juanpablo0612.sigat.ui.auth.components.EmailTextField
 import com.juanpablo0612.sigat.ui.auth.components.FirstNameTextField
@@ -90,9 +90,9 @@ fun RegisterScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = Dimens.PaddingMedium)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             FirstNameTextField(

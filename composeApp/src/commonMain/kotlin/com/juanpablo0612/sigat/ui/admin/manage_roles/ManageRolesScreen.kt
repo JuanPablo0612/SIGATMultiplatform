@@ -29,6 +29,7 @@ import com.juanpablo0612.sigat.domain.model.Role
 import com.juanpablo0612.sigat.domain.model.User
 import com.juanpablo0612.sigat.ui.components.ErrorCard
 import com.juanpablo0612.sigat.ui.components.LoadingContent
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
@@ -55,7 +56,7 @@ fun ManageRolesScreen(
         }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)
+            modifier = Modifier.padding(innerPadding).padding(horizontal = Dimens.PaddingMedium)
         ) {
             if (uiState.initialLoading) {
                 LoadingContent(modifier = Modifier.fillMaxSize())
@@ -83,8 +84,8 @@ private fun ManageRolesContent(
 ) {
     LazyVerticalGrid(
         columns = cols,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+        horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
         modifier = Modifier.fillMaxWidth()
     ) {
         items(users) {
@@ -111,11 +112,11 @@ private fun UserRoleCard(
 ) {
     Card(modifier = modifier) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(Dimens.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -136,7 +137,7 @@ private fun UserRoleCard(
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
                 roles.forEach {
                     UserRoleChip(
                         role = it,

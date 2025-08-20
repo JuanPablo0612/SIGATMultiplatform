@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import coil3.compose.AsyncImage
 import com.juanpablo0612.sigat.domain.model.Action
 import com.juanpablo0612.sigat.ui.components.LoadingContent
@@ -70,8 +71,8 @@ fun ActionListScreen(
             LazyVerticalGrid(
                 columns = cols,
                 modifier = Modifier.padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
             ) {
                 items(uiState.actions, key = { it.id }) {
                     ActionCard(action = it, modifier = Modifier.fillMaxWidth())
@@ -87,15 +88,15 @@ fun ActionListScreen(
 private fun ActionCard(action: Action, modifier: Modifier = Modifier) {
     Card(modifier = modifier) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(Dimens.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingExtraSmall)
         ) {
             Text(
                 text = timestampToDayMonthYearFormat(action.timestamp),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(text = action.description, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
                 action.images.forEach {
                     AsyncImage(
                         model = it,

@@ -22,7 +22,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import com.juanpablo0612.sigat.ui.auth.components.EmailTextField
 import com.juanpablo0612.sigat.ui.auth.components.PasswordTextField
 import org.jetbrains.compose.resources.stringResource
@@ -73,9 +73,9 @@ fun LoginScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = Dimens.PaddingMedium)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
