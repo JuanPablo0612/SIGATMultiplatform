@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import sigat.composeapp.generated.resources.Res
+import sigat.composeapp.generated.resources.add_training_program_title
 
 @Composable
 fun TrainingProgramListScreen(
@@ -39,7 +42,10 @@ fun TrainingProgramListScreen(
         floatingActionButton = {
             if (!uiState.loading) {
                 FloatingActionButton(onClick = onAddProgramClick) {
-                    Icon(Icons.Filled.Add, contentDescription = null)
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = stringResource(Res.string.add_training_program_title)
+                    )
                 }
             }
         }

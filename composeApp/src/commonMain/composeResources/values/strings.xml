@@ -29,6 +29,16 @@
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
 
+    <!-- Accessibility -->
+    <string name="content_description_navigate_back">Navigate back</string>
+    <string name="content_description_expand">Expand</string>
+    <string name="content_description_collapse">Collapse</string>
+    <string name="content_description_show_password">Show password</string>
+    <string name="content_description_hide_password">Hide password</string>
+    <string name="content_description_select_date">Select date</string>
+    <string name="content_description_selected_image">Selected image %1$d</string>
+    <string name="content_description_action_image">Image associated with action</string>
+
     <!-- Authentication -->
     <string name="login_title">Welcome Back</string>
     <string name="login_message">Sign in to your account to continue</string>

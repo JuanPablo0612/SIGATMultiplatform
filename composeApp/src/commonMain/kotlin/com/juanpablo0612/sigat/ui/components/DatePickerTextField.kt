@@ -22,6 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.button_accept
 import sigat.composeapp.generated.resources.button_cancel
+import sigat.composeapp.generated.resources.content_description_select_date
 import com.juanpablo0612.sigat.utils.timestampToDayMonthYearFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +44,10 @@ fun DatePickerTextField(
         enabled = enabled,
         trailingIcon = {
             IconButton(onClick = { showDialog = true }, enabled = enabled) {
-                Icon(Icons.Filled.DateRange, contentDescription = null)
+                Icon(
+                    Icons.Filled.DateRange,
+                    contentDescription = stringResource(Res.string.content_description_select_date)
+                )
             }
         },
         modifier = modifier.fillMaxWidth(),

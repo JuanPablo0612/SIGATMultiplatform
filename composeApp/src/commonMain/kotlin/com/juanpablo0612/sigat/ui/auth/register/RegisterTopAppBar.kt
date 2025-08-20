@@ -16,6 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.app_name
 import sigat.composeapp.generated.resources.register_title
+import sigat.composeapp.generated.resources.content_description_navigate_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +40,7 @@ fun RegisterTopAppBar(onNavigateBack: () -> Unit) {
             IconButton(onClick = onNavigateBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null
+                    contentDescription = stringResource(Res.string.content_description_navigate_back)
                 )
             }
         }

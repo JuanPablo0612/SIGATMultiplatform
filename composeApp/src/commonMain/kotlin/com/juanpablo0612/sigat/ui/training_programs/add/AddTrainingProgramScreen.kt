@@ -37,6 +37,7 @@ import sigat.composeapp.generated.resources.end_date_label
 import sigat.composeapp.generated.resources.name_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.schedule_label
+import sigat.composeapp.generated.resources.content_description_navigate_back
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 
@@ -69,7 +70,10 @@ fun AddTrainingProgramScreen(
                 title = { Text(stringResource(Res.string.add_training_program_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack, enabled = !uiState.loading) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.content_description_navigate_back)
+                        )
                     }
                 }
             )

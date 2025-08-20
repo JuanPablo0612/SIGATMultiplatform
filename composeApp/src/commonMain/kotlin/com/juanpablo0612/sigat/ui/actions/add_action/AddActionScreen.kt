@@ -67,6 +67,11 @@ import sigat.composeapp.generated.resources.image_source_gallery
 import sigat.composeapp.generated.resources.images_label
 import sigat.composeapp.generated.resources.obligation_error
 import sigat.composeapp.generated.resources.obligation_label
+import sigat.composeapp.generated.resources.button_delete
+import sigat.composeapp.generated.resources.content_description_collapse
+import sigat.composeapp.generated.resources.content_description_expand
+import sigat.composeapp.generated.resources.content_description_navigate_back
+import sigat.composeapp.generated.resources.content_description_selected_image
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,7 +187,10 @@ private fun AddActionTopAppBar(onBack: () -> Unit) {
         title = { Text(text = stringResource(Res.string.button_add_action)) },
         navigationIcon = {
             IconButton(onClick = onBack) {
-                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(Res.string.content_description_navigate_back)
+                )
             }
         }
     )
@@ -210,7 +218,12 @@ private fun ObligationSelector(
                 IconButton(onClick = { onExpandObligationListChange(!expandObligationList) }) {
                     val icon =
                         if (expandObligationList) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
-                    Icon(imageVector = icon, contentDescription = null)
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = stringResource(
+                            if (expandObligationList) Res.string.content_description_collapse else Res.string.content_description_expand
+                        )
+                    )
                 }
             }
         }
@@ -295,7 +308,10 @@ fun ActionDetails(
                     onClick = onCameraClick,
                     label = { Text(text = stringResource(Res.string.image_source_camera)) },
                     leadingIcon = {
-                        Icon(imageVector = Icons.Default.CameraAlt, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = stringResource(Res.string.image_source_camera)
+                        )
                     }
                 )
             }
@@ -304,7 +320,10 @@ fun ActionDetails(
                 onClick = onGalleryClick,
                 label = { Text(text = stringResource(Res.string.image_source_gallery)) },
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.Photo, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.Photo,
+                        contentDescription = stringResource(Res.string.image_source_gallery)
+                    )
                 }
             )
         }
@@ -364,7 +383,7 @@ fun SelectedImageItem(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
             AsyncImage(
                 model = image,
-                contentDescription = null,
+                contentDescription = stringResource(Res.string.content_description_selected_image, number),
                 modifier = Modifier
                     .size(size = 50.dp)
                     .padding(end = 8.dp),
@@ -380,7 +399,10 @@ fun SelectedImageItem(
             )
 
             IconButton(onClick = onDeleteClick) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(Res.string.button_delete)
+                )
             }
         }
     }
