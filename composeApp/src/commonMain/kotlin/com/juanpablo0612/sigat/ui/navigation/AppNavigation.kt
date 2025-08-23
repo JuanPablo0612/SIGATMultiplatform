@@ -1,18 +1,18 @@
 package com.juanpablo0612.sigat.ui.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,9 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -112,16 +112,16 @@ fun AppNavigation(
                         startDestination = startDestination,
                         modifier = Modifier.weight(1f).imePadding(),
                         enterTransition = {
-                            slideInHorizontally { height -> height }
+                            slideInHorizontally { height -> height } + fadeIn()
                         },
                         exitTransition = {
-                            slideOutHorizontally { height -> -height }
+                            slideOutHorizontally { height -> -height } + fadeOut()
                         },
                         popEnterTransition = {
-                            slideInHorizontally { height -> -height }
+                            slideInHorizontally { height -> -height } + fadeIn()
                         },
                         popExitTransition = {
-                            slideOutHorizontally { height -> height }
+                            slideOutHorizontally { height -> height } + fadeOut()
                         }
                     ) {
                         addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
@@ -137,8 +137,8 @@ fun AppNavigation(
 
                     AnimatedVisibility(
                         visible = showBottomBar,
-                        enter = slideInVertically { it },
-                        exit = slideOutVertically { it }
+                        enter = slideInVertically { it } + fadeIn(),
+                        exit = slideOutVertically { it } + fadeOut()
                     ) {
                         BottomNavigationBar(
                             destinations = destinations,
@@ -151,8 +151,8 @@ fun AppNavigation(
                 Row {
                     AnimatedVisibility(
                         visible = showBottomBar,
-                        enter = slideInHorizontally { -it },
-                        exit = slideOutHorizontally { -it }
+                        enter = slideInHorizontally { -it } + fadeIn(),
+                        exit = slideOutHorizontally { -it } + fadeOut()
                     ) {
                         NavigationRailBar(
                             destinations = destinations,
@@ -165,16 +165,16 @@ fun AppNavigation(
                         startDestination = startDestination,
                         modifier = Modifier.weight(1f).imePadding(),
                         enterTransition = {
-                            slideInHorizontally { height -> height }
+                            slideInHorizontally { height -> height } + fadeIn()
                         },
                         exitTransition = {
-                            slideOutHorizontally { height -> -height }
+                            slideOutHorizontally { height -> -height } + fadeOut()
                         },
                         popEnterTransition = {
-                            slideInHorizontally { height -> -height }
+                            slideInHorizontally { height -> -height } + fadeIn()
                         },
                         popExitTransition = {
-                            slideOutHorizontally { height -> height }
+                            slideOutHorizontally { height -> height } + fadeOut()
                         }
                     ) {
                         addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
