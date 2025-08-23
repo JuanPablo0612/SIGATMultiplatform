@@ -2,10 +2,12 @@ package com.juanpablo0612.sigat.ui.training_programs.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -17,9 +19,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.theme.Dimens
@@ -37,6 +42,12 @@ fun TrainingProgramListScreen(
 ) {
     val uiState = viewModel.uiState
 
+    val listModifier = if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
+        Modifier.width(600.dp)
+    } else {
+        Modifier.fillMaxWidth()
+    }
+
     Scaffold(
         topBar = { TrainingProgramListTopBar() },
         floatingActionButton = {
@@ -51,12 +62,19 @@ fun TrainingProgramListScreen(
         }
     ) { innerPadding ->
         if (!uiState.loading) {
-            LazyColumn(
-                modifier = Modifier.padding(innerPadding).fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
             ) {
-                items(uiState.programs, key = { it.id }) {
-                    TrainingProgramItem(program = it, onClick = { onProgramClick(it.id) })
+                LazyColumn(
+                    modifier = listModifier,
+                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
+                ) {
+                    items(uiState.programs, key = { it.id }) {
+                        TrainingProgramItem(program = it, onClick = { onProgramClick(it.id) })
+                    }
                 }
             }
         } else {

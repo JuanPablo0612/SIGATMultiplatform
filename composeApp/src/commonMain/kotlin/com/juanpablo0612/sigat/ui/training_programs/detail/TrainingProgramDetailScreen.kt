@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -99,6 +103,12 @@ fun TrainingProgramDetailScreen(
         }
     }
 
+    val listModifier = if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
+        Modifier.width(600.dp).fillMaxHeight()
+    } else {
+        Modifier.fillMaxSize()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -114,12 +124,15 @@ fun TrainingProgramDetailScreen(
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding).padding(horizontal = Dimens.PaddingMedium)) {
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
             if (uiState.id.isNotEmpty()) {
                 LazyColumn(
-                    modifier = Modifier
-                        .padding(vertical = Dimens.PaddingMedium)
-                        .fillMaxSize(),
+                    modifier = listModifier.padding(vertical = Dimens.PaddingMedium),
                     verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
                     contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
                 ) {

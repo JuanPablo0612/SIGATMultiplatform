@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -50,13 +51,22 @@ fun ManageRolesScreen(
         }
     }
 
+    val gridModifier = if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
+        Modifier.width(800.dp)
+    } else {
+        Modifier.fillMaxWidth()
+    }
+
     Scaffold(
         topBar = {
             ManageRolesTopBar()
         }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.padding(innerPadding).padding(horizontal = Dimens.PaddingMedium)
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
             if (uiState.initialLoading) {
                 LoadingContent(modifier = Modifier.fillMaxSize())
@@ -67,7 +77,8 @@ fun ManageRolesScreen(
                     users = uiState.users,
                     roles = uiState.roles,
                     cols = cols,
-                    onUserRoleChange = viewModel::updateUserRole
+                    onUserRoleChange = viewModel::updateUserRole,
+                    modifier = gridModifier.padding(horizontal = Dimens.PaddingMedium)
                 )
             }
         }
@@ -80,13 +91,14 @@ private fun ManageRolesContent(
     roles: List<Role>,
     cols: GridCells,
     applyingChangesToUser: User? = null,
-    onUserRoleChange: (User, Role) -> Unit
+    onUserRoleChange: (User, Role) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
         columns = cols,
         verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
         horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         items(users) {
             UserRoleCard(
