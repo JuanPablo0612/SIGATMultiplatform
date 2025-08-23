@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -12,9 +13,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -71,6 +75,7 @@ fun AppNavigation(
             val currentDestination = backStackEntry?.destination
             val bottomRoutes = destinations.map { it.screen::class.qualifiedName }
             val showBottomBar = currentDestination?.route in bottomRoutes
+            val isCompact = windowSize.widthSizeClass == WindowWidthSizeClass.Compact
 
             LaunchedEffect(userState.isLoggedIn) {
                 if (userState.isLoggedIn) {
@@ -85,49 +90,90 @@ fun AppNavigation(
                 }
             }
 
-            Column {
-                NavHost(
-                    navController = navController,
-                    startDestination = startDestination,
-                    modifier = Modifier.weight(1f).imePadding(),
-                    enterTransition = {
-                        slideInHorizontally { height -> height }
-                    },
-                    exitTransition = {
-                        slideOutHorizontally { height -> -height }
-                    },
-                    popEnterTransition = {
-                        slideInHorizontally { height -> -height }
-                    },
-                    popExitTransition = {
-                        slideOutHorizontally { height -> height }
+            val navigateTo: (Screen) -> Unit = {
+                navController.navigate(it) {
+                    launchSingleTop = true
+                    restoreState = true
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
                     }
-                ) {
-                    addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
-                    addRegisterScreen(navController, windowSize, viewModel::loadCurrentUser)
-                    addManageRolesScreen(windowSize)
-                    addTrainingProgramsScreen(navController, windowSize)
-                    addActionsScreen(navController, windowSize)
-                    addReportsScreen(windowSize)
-                    addAddActionScreen(navController, windowSize)
-                    addAddTrainingProgramScreen(navController, windowSize)
-                    addTrainingProgramDetailScreen(navController, windowSize)
                 }
+            }
 
-                AnimatedVisibility(showBottomBar) {
-                    BottomNavigationBar(
-                        destinations = destinations,
-                        currentDestination = currentDestination!!,
-                        onNavigate = {
-                            navController.navigate(it) {
-                                launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                            }
+            if (isCompact) {
+                Column {
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination,
+                        modifier = Modifier.weight(1f).imePadding(),
+                        enterTransition = {
+                            slideInHorizontally { height -> height }
+                        },
+                        exitTransition = {
+                            slideOutHorizontally { height -> -height }
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally { height -> -height }
+                        },
+                        popExitTransition = {
+                            slideOutHorizontally { height -> height }
                         }
-                    )
+                    ) {
+                        addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
+                        addRegisterScreen(navController, windowSize, viewModel::loadCurrentUser)
+                        addManageRolesScreen(windowSize)
+                        addTrainingProgramsScreen(navController, windowSize)
+                        addActionsScreen(navController, windowSize)
+                        addReportsScreen(windowSize)
+                        addAddActionScreen(navController, windowSize)
+                        addAddTrainingProgramScreen(navController, windowSize)
+                        addTrainingProgramDetailScreen(navController, windowSize)
+                    }
+
+                    AnimatedVisibility(showBottomBar) {
+                        BottomNavigationBar(
+                            destinations = destinations,
+                            currentDestination = currentDestination!!,
+                            onNavigate = navigateTo
+                        )
+                    }
+                }
+            } else {
+                Row {
+                    if (showBottomBar) {
+                        NavigationRailBar(
+                            destinations = destinations,
+                            currentDestination = currentDestination!!,
+                            onNavigate = navigateTo
+                        )
+                    }
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination,
+                        modifier = Modifier.weight(1f).imePadding(),
+                        enterTransition = {
+                            slideInHorizontally { height -> height }
+                        },
+                        exitTransition = {
+                            slideOutHorizontally { height -> -height }
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally { height -> -height }
+                        },
+                        popExitTransition = {
+                            slideOutHorizontally { height -> height }
+                        }
+                    ) {
+                        addLoginScreen(navController, windowSize, viewModel::loadCurrentUser)
+                        addRegisterScreen(navController, windowSize, viewModel::loadCurrentUser)
+                        addManageRolesScreen(windowSize)
+                        addTrainingProgramsScreen(navController, windowSize)
+                        addActionsScreen(navController, windowSize)
+                        addReportsScreen(windowSize)
+                        addAddActionScreen(navController, windowSize)
+                        addAddTrainingProgramScreen(navController, windowSize)
+                        addTrainingProgramDetailScreen(navController, windowSize)
+                    }
                 }
             }
         }
@@ -143,6 +189,37 @@ fun BottomNavigationBar(
     NavigationBar {
         destinations.forEach { destination ->
             NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = destination.icon,
+                        contentDescription = stringResource(destination.label)
+                    )
+                },
+                label = {
+                    Text(
+                        stringResource(destination.label),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                selected = currentDestination.hierarchy.any {
+                    it.hasRoute(destination.screen::class)
+                },
+                onClick = { onNavigate(destination.screen) }
+            )
+        }
+    }
+}
+
+@Composable
+fun NavigationRailBar(
+    destinations: List<HomeDestinations>,
+    currentDestination: NavDestination,
+    onNavigate: (Screen) -> Unit
+) {
+    NavigationRail {
+        destinations.forEach { destination ->
+            NavigationRailItem(
                 icon = {
                     Icon(
                         imageVector = destination.icon,
