@@ -2,13 +2,17 @@ package com.juanpablo0612.sigat.ui.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -25,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -130,7 +135,11 @@ fun AppNavigation(
                         addTrainingProgramDetailScreen(navController, windowSize)
                     }
 
-                    AnimatedVisibility(showBottomBar) {
+                    AnimatedVisibility(
+                        visible = showBottomBar,
+                        enter = slideInVertically { it },
+                        exit = slideOutVertically { it }
+                    ) {
                         BottomNavigationBar(
                             destinations = destinations,
                             currentDestination = currentDestination!!,
@@ -140,7 +149,11 @@ fun AppNavigation(
                 }
             } else {
                 Row {
-                    if (showBottomBar) {
+                    AnimatedVisibility(
+                        visible = showBottomBar,
+                        enter = slideInHorizontally { -it },
+                        exit = slideOutHorizontally { -it }
+                    ) {
                         NavigationRailBar(
                             destinations = destinations,
                             currentDestination = currentDestination!!,
@@ -217,27 +230,33 @@ fun NavigationRailBar(
     currentDestination: NavDestination,
     onNavigate: (Screen) -> Unit
 ) {
-    NavigationRail {
-        destinations.forEach { destination ->
-            NavigationRailItem(
-                icon = {
-                    Icon(
-                        imageVector = destination.icon,
-                        contentDescription = stringResource(destination.label)
-                    )
-                },
-                label = {
-                    Text(
-                        stringResource(destination.label),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                selected = currentDestination.hierarchy.any {
-                    it.hasRoute(destination.screen::class)
-                },
-                onClick = { onNavigate(destination.screen) }
-            )
+    NavigationRail(modifier = Modifier.fillMaxHeight()) {
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            destinations.forEach { destination ->
+                NavigationRailItem(
+                    icon = {
+                        Icon(
+                            imageVector = destination.icon,
+                            contentDescription = stringResource(destination.label)
+                        )
+                    },
+                    label = {
+                        Text(
+                            stringResource(destination.label),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    selected = currentDestination.hierarchy.any {
+                        it.hasRoute(destination.screen::class)
+                    },
+                    onClick = { onNavigate(destination.screen) }
+                )
+            }
         }
     }
 }
@@ -305,7 +324,7 @@ fun NavGraphBuilder.addActionsScreen(
 
 fun NavGraphBuilder.addReportsScreen(windowSize: WindowSizeClass) {
     composable<Screen.Reports> {
-        GenerateReportScreen()
+        GenerateReportScreen(windowSize = windowSize)
     }
 }
 

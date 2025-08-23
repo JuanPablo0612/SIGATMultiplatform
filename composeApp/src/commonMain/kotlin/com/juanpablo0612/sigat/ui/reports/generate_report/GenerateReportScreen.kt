@@ -1,10 +1,13 @@
 package com.juanpablo0612.sigat.ui.reports.generate_report
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,8 +21,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.ui.contracts.ContractFields
 import com.juanpablo0612.sigat.ui.theme.Dimens
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -37,7 +44,10 @@ import sigat.composeapp.generated.resources.select_template
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GenerateReportScreen(viewModel: GenerateReportViewModel = koinViewModel()) {
+fun GenerateReportScreen(
+    viewModel: GenerateReportViewModel = koinViewModel(),
+    windowSize: WindowSizeClass
+) {
     val uiState = viewModel.uiState
 
     val templateFileLauncher = rememberFilePickerLauncher(type = FileKitType.File("doc", "docx")) { file ->
@@ -51,17 +61,27 @@ fun GenerateReportScreen(viewModel: GenerateReportViewModel = koinViewModel()) {
         }
     }
 
+    val contentModifier = if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
+        Modifier.widthIn(max = 600.dp)
+    } else {
+        Modifier.fillMaxWidth()
+    }
+
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(Res.string.generate_report_title)) }) }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = Dimens.PaddingMedium)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
+                .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter
         ) {
+            Column(
+                modifier = contentModifier
+                    .padding(horizontal = Dimens.PaddingMedium)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
+            ) {
             ContractFields(
                 contract = uiState.contract,
                 onCityChange = viewModel::onCityChange,
