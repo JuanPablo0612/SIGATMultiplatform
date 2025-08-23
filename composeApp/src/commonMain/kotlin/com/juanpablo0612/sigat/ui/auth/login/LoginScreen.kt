@@ -90,58 +90,62 @@ fun LoginScreenContent(
                 modifier = columnWidthModifier
                     .padding(horizontal = Dimens.PaddingMedium)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium, Alignment.CenterVertically),
+                verticalArrangement = Arrangement.spacedBy(
+                    Dimens.PaddingMedium,
+                    Alignment.CenterVertically
+                ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-            Text(
-                text = stringResource(Res.string.login_title),
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-            )
+                Text(
+                    text = stringResource(Res.string.login_title),
+                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                )
 
-            Text(
-                text = stringResource(Res.string.login_message),
-                style = MaterialTheme.typography.bodyLarge
-            )
+                Text(
+                    text = stringResource(Res.string.login_message),
+                    style = MaterialTheme.typography.bodyLarge
+                )
 
-            EmailTextField(
-                value = uiState.email,
-                onValueChange = onEmailChange,
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.isValidEmail
-            )
+                EmailTextField(
+                    value = uiState.email,
+                    onValueChange = onEmailChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.isValidEmail
+                )
 
-            PasswordTextField(
-                value = uiState.password,
-                onValueChange = onPasswordChange,
-                showPassword = uiState.showPassword,
-                onVisibilityChange = onPasswordVisibilityChange,
-                modifier = Modifier.fillMaxWidth(),
-                isError = !uiState.isValidPassword
-            )
+                PasswordTextField(
+                    value = uiState.password,
+                    onValueChange = onPasswordChange,
+                    showPassword = uiState.showPassword,
+                    onVisibilityChange = onPasswordVisibilityChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.isValidPassword
+                )
 
-            Button(
-                onClick = onLoginClick,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.loading
-            ) {
-                if (uiState.loading) {
-                    CircularProgressIndicator()
-                } else {
-                    Text(text = stringResource(Res.string.login_button))
-                }
-            }
-
-            Text(
-                text = buildAnnotatedString {
-                    append(stringResource(Res.string.dont_have_an_account))
-                    append(" ")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append(stringResource(Res.string.create_one_here))
+                Button(
+                    onClick = onLoginClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !uiState.loading
+                ) {
+                    if (uiState.loading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(text = stringResource(Res.string.login_button))
                     }
-                },
-                modifier = Modifier.clickable(onClick = onNavigateToRegister),
-                style = MaterialTheme.typography.bodyLarge
-            )
+                }
+
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(Res.string.dont_have_an_account))
+                        append(" ")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                            append(stringResource(Res.string.create_one_here))
+                        }
+                    },
+                    modifier = Modifier.clickable(onClick = onNavigateToRegister),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
     }
 }
