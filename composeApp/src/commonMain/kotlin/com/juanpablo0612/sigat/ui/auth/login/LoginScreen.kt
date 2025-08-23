@@ -2,10 +2,12 @@ package com.juanpablo0612.sigat.ui.auth.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -14,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.ui.theme.Dimens
 import com.juanpablo0612.sigat.ui.auth.components.EmailTextField
 import com.juanpablo0612.sigat.ui.auth.components.PasswordTextField
@@ -55,7 +59,8 @@ fun LoginScreen(
         onPasswordChange = viewModel::onPasswordChange,
         onPasswordVisibilityChange = viewModel::onPasswordVisibilityChange,
         onLoginClick = viewModel::onLoginClick,
-        onNavigateToRegister = onNavigateToRegister
+        onNavigateToRegister = onNavigateToRegister,
+        windowSize = windowSize
     )
 }
 
@@ -66,18 +71,28 @@ fun LoginScreenContent(
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
     onLoginClick: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    windowSize: WindowSizeClass
 ) {
+    val columnWidthModifier = if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
+        Modifier.width(400.dp)
+    } else {
+        Modifier.fillMaxWidth()
+    }
     Scaffold { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = Dimens.PaddingMedium)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
         ) {
+            Column(
+                modifier = columnWidthModifier
+                    .padding(horizontal = Dimens.PaddingMedium)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingMedium, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             Text(
                 text = stringResource(Res.string.login_title),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
