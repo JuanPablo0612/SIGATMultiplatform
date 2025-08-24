@@ -1,7 +1,6 @@
 package com.juanpablo0612.sigat.ui.reports.generate_report
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,10 +23,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.sigat.ui.contracts.ContractFields
 import com.juanpablo0612.sigat.ui.theme.Dimens
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
@@ -41,14 +40,18 @@ import sigat.composeapp.generated.resources.generate_report_button
 import sigat.composeapp.generated.resources.generate_report_title
 import sigat.composeapp.generated.resources.select_output_file
 import sigat.composeapp.generated.resources.select_template
+import sigat.composeapp.generated.resources.contract_missing_message
+import sigat.composeapp.generated.resources.add_contract_info_button
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenerateReportScreen(
     viewModel: GenerateReportViewModel = koinViewModel(),
-    windowSize: WindowSizeClass
+    windowSize: WindowSizeClass,
+    onAddContractInfo: () -> Unit,
 ) {
     val uiState = viewModel.uiState
+    LaunchedEffect(Unit) { viewModel.loadContract() }
 
     val templateFileLauncher = rememberFilePickerLauncher(type = FileKitType.File("doc", "docx")) { file ->
         file?.let {
@@ -82,36 +85,27 @@ fun GenerateReportScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
             ) {
-            ContractFields(
-                contract = uiState.contract,
-                onCityChange = viewModel::onCityChange,
-                onSupervisorNameChange = viewModel::onSupervisorNameChange,
-                onSupervisorPositionChange = viewModel::onSupervisorPositionChange,
-                onSupervisorDependencyChange = viewModel::onSupervisorDependencyChange,
-                onContractNumberChange = viewModel::onContractNumberChange,
-                onContractYearChange = viewModel::onContractYearChange,
-                onContractorNameChange = viewModel::onContractorNameChange,
-                onContractorIdNumberChange = viewModel::onContractorIdNumberChange,
-                onContractorIdExpeditionChange = viewModel::onContractorIdExpeditionChange,
-                onContractObjectChange = viewModel::onContractObjectChange,
-                onContractValueChange = viewModel::onContractValueChange,
-                onPaymentMethodChange = viewModel::onPaymentMethodChange,
-                onElaborationDateChange = viewModel::onElaborationDateChange,
-                onEndDateChange = viewModel::onEndDateChange,
-            )
-            TemplateSelector(
-                selectedFileName = uiState.templateFile?.name,
-                onClick = { templateFileLauncher.launch() },
-                modifier = Modifier.fillMaxWidth()
-            )
-            val defaultFileName = stringResource(Res.string.default_report_file_name)
-            OutputFileSelector(
-                selectedFileName = uiState.outputFile?.name,
-                onClick = { outputFileLauncher.launch(defaultFileName, "docx") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Button(onClick = viewModel::onGenerateReportClick) {
-                Text(text = stringResource(Res.string.generate_report_button))
+                if (uiState.contract == null) {
+                    Text(text = stringResource(Res.string.contract_missing_message))
+                    Button(onClick = onAddContractInfo) {
+                        Text(text = stringResource(Res.string.add_contract_info_button))
+                    }
+                } else {
+                    TemplateSelector(
+                        selectedFileName = uiState.templateFile?.name,
+                        onClick = { templateFileLauncher.launch() },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    val defaultFileName = stringResource(Res.string.default_report_file_name)
+                    OutputFileSelector(
+                        selectedFileName = uiState.outputFile?.name,
+                        onClick = { outputFileLauncher.launch(defaultFileName, "docx") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Button(onClick = viewModel::onGenerateReportClick) {
+                        Text(text = stringResource(Res.string.generate_report_button))
+                    }
+                }
             }
         }
     }

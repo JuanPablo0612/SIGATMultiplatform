@@ -89,16 +89,31 @@
 
     <!-- Contract -->
     <string name="city_label">City</string>
+    <string name="city_error">Please enter a city</string>
     <string name="supervisor_name_label">Supervisor Name</string>
+    <string name="supervisor_name_error">Please enter a supervisor name</string>
     <string name="supervisor_position_label">Supervisor Position</string>
+    <string name="supervisor_position_error">Please enter a supervisor position</string>
     <string name="supervisor_dependency_label">Supervisor Department</string>
+    <string name="supervisor_dependency_error">Please enter a supervisor department</string>
     <string name="contract_number_label">Contract Number</string>
+    <string name="contract_number_error">Please enter a contract number</string>
     <string name="contract_year_label">Contract Year</string>
+    <string name="contract_year_error">Please enter a contract year</string>
     <string name="contractor_name_label">Contractor Name</string>
+    <string name="contractor_name_error">Please enter a contractor name</string>
     <string name="contract_object_label">Contract Object</string>
+    <string name="contract_object_error">Please enter a contract object</string>
     <string name="contract_value_label">Contract Value</string>
+    <string name="contract_value_error">Please enter a contract value</string>
     <string name="payment_method_label">Payment Method</string>
+    <string name="payment_method_error">Please enter a payment method</string>
     <string name="elaboration_date_label">Elaboration Date</string>
+    <string name="elaboration_date_error">Please enter an elaboration date</string>
+    <string name="end_date_error">Please enter an end date</string>
+    <string name="contract_info_title">Contract Information</string>
+    <string name="contract_missing_message">Please add your contract information before generating a report</string>
+    <string name="add_contract_info_button">Add contract info</string>
 
     <!-- Reports -->
     <string name="reports_title">Reports</string>

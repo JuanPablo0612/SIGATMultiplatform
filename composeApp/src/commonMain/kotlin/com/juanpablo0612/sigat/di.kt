@@ -9,6 +9,7 @@ import com.juanpablo0612.sigat.data.auth.remote.BaseAuthRemoteDataSource
 import com.juanpablo0612.sigat.data.obligations.ObligationsRepository
 import com.juanpablo0612.sigat.data.obligations.remote.ObligationsRemoteDataSource
 import com.juanpablo0612.sigat.data.contracts.ContractsRepository
+import com.juanpablo0612.sigat.data.contracts.remote.ContractsRemoteDataSource
 import com.juanpablo0612.sigat.data.reports.ReportsRepository
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSource
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSourceImpl
@@ -30,6 +31,7 @@ import com.juanpablo0612.sigat.state_holders.UserStateHolderImpl
 import com.juanpablo0612.sigat.ui.actions.action_list.ActionListViewModel
 import com.juanpablo0612.sigat.ui.actions.add_action.AddActionViewModel
 import com.juanpablo0612.sigat.ui.admin.manage_roles.ManageRolesViewModel
+import com.juanpablo0612.sigat.ui.contracts.ContractInfoViewModel
 import com.juanpablo0612.sigat.ui.training_programs.add.AddTrainingProgramViewModel
 import com.juanpablo0612.sigat.ui.training_programs.detail.TrainingProgramDetailViewModel
 import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListViewModel
@@ -61,6 +63,7 @@ val viewModelModule = module {
     viewModelOf(::AppNavigationViewModel)
     viewModelOf(::ManageRolesViewModel)
     viewModelOf(::GenerateReportViewModel)
+    viewModelOf(::ContractInfoViewModel)
     viewModelOf(::ActionListViewModel)
     viewModelOf(::TrainingProgramListViewModel)
     viewModelOf(::AddTrainingProgramViewModel)
@@ -93,6 +96,7 @@ val dataModule = module {
     singleOf(::ObligationsRepository)
     single<ReportsLocalDataSource> { ReportsLocalDataSourceImpl() }
     singleOf(::ReportsRepository)
+    singleOf(::ContractsRemoteDataSource)
     singleOf(::ContractsRepository)
     singleOf(::TrainingProgramsRemoteDataSource)
     singleOf(::TrainingProgramsRepository)

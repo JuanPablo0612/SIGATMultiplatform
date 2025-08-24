@@ -87,16 +87,31 @@
 
     <!-- Contrato -->
     <string name="city_label">Ciudad</string>
+    <string name="city_error">Ingrese una ciudad</string>
     <string name="supervisor_name_label">Nombre del supervisor</string>
+    <string name="supervisor_name_error">Ingrese el nombre del supervisor</string>
     <string name="supervisor_position_label">Cargo del supervisor</string>
+    <string name="supervisor_position_error">Ingrese el cargo del supervisor</string>
     <string name="supervisor_dependency_label">Dependencia del supervisor</string>
+    <string name="supervisor_dependency_error">Ingrese la dependencia del supervisor</string>
     <string name="contract_number_label">Número del contrato</string>
+    <string name="contract_number_error">Ingrese el número de contrato</string>
     <string name="contract_year_label">Año del contrato</string>
+    <string name="contract_year_error">Ingrese el año del contrato</string>
     <string name="contractor_name_label">Nombre del contratista</string>
+    <string name="contractor_name_error">Ingrese el nombre del contratista</string>
     <string name="contract_object_label">Objeto del contrato</string>
+    <string name="contract_object_error">Ingrese el objeto del contrato</string>
     <string name="contract_value_label">Valor del contrato</string>
+    <string name="contract_value_error">Ingrese el valor del contrato</string>
     <string name="payment_method_label">Forma de pago</string>
+    <string name="payment_method_error">Ingrese el método de pago</string>
     <string name="elaboration_date_label">Fecha de elaboración</string>
+    <string name="elaboration_date_error">Ingrese la fecha de elaboración</string>
+    <string name="end_date_error">Ingrese la fecha de finalización</string>
+    <string name="contract_info_title">Información del contrato</string>
+    <string name="contract_missing_message">Agrega la información de tu contrato antes de generar un informe</string>
+    <string name="add_contract_info_button">Agregar información del contrato</string>
 
     <!-- Informes -->
     <string name="reports_title">Informes</string>

@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ContractModel(
+    val userId: String = "",
     val city: String = "",
     val elaborationDate: String = "",
     val supervisorName: String = "",
@@ -24,6 +25,7 @@ data class ContractModel(
     val endDate: String = "",
 ) {
     fun toDomain() = Contract(
+        userId = userId,
         city = city,
         elaborationDate = elaborationDate,
         supervisorName = supervisorName,

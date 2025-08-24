@@ -1,18 +1,20 @@
 package com.juanpablo0612.sigat.data.contracts
 
-import com.juanpablo0612.sigat.data.contracts.model.ContractModel
+import com.juanpablo0612.sigat.data.contracts.remote.ContractsRemoteDataSource
 import com.juanpablo0612.sigat.domain.model.Contract
 
 /**
- * Repository in charge of persisting contract data locally in memory.
+ * Repository in charge of persisting contract data remotely in Firebase.
  */
-class ContractsRepository {
-    private var contract: ContractModel? = null
-
+class ContractsRepository(
+    private val remoteDataSource: ContractsRemoteDataSource,
+) {
     suspend fun saveContract(contract: Contract) {
-        this.contract = contract.toModel()
+        remoteDataSource.saveContract(contract.userId, contract.toModel())
     }
 
-    suspend fun getContract(): Contract? = contract?.toDomain()
+    suspend fun getContract(userId: String): Contract? {
+        return remoteDataSource.getContract(userId)?.toDomain()
+    }
 }
 
