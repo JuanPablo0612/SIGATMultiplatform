@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -31,7 +30,6 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -71,7 +69,6 @@ import sigat.composeapp.generated.resources.obligation_label
 import sigat.composeapp.generated.resources.button_delete
 import sigat.composeapp.generated.resources.content_description_collapse
 import sigat.composeapp.generated.resources.content_description_expand
-import sigat.composeapp.generated.resources.content_description_navigate_back
 import sigat.composeapp.generated.resources.content_description_selected_image
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,22 +176,6 @@ fun AddActionScreen(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddActionTopAppBar(onBack: () -> Unit) {
-    TopAppBar(
-        title = { Text(text = stringResource(Res.string.button_add_action)) },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = stringResource(Res.string.content_description_navigate_back)
-                )
-            }
-        }
-    )
 }
 
 @Composable

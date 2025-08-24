@@ -6,40 +6,33 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import com.juanpablo0612.sigat.ui.components.DatePickerTextField
+import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
-import sigat.composeapp.generated.resources.add_training_program_title
 import sigat.composeapp.generated.resources.button_save
 import sigat.composeapp.generated.resources.code_label
 import sigat.composeapp.generated.resources.end_date_label
 import sigat.composeapp.generated.resources.name_label
-import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.schedule_label
-import sigat.composeapp.generated.resources.content_description_navigate_back
-import com.juanpablo0612.sigat.ui.components.DatePickerTextField
-import com.juanpablo0612.sigat.ui.components.LoadingContent
+import sigat.composeapp.generated.resources.start_date_label
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +42,8 @@ fun AddTrainingProgramScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState = viewModel.uiState
-    val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
+    val startDatePickerState =
+        rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
     val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.endDate)
 
     LaunchedEffect(startDatePickerState.selectedDateMillis) {
@@ -66,17 +60,7 @@ fun AddTrainingProgramScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.add_training_program_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack, enabled = !uiState.loading) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.content_description_navigate_back)
-                        )
-                    }
-                }
-            )
+            AddTrainingProgramTopAppBar(onNavigateBack = onNavigateBack)
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {

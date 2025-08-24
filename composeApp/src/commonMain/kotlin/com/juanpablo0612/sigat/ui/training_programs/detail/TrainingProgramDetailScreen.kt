@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
@@ -30,7 +29,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -43,25 +41,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import com.juanpablo0612.sigat.ui.theme.Dimens
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 import com.juanpablo0612.sigat.ui.components.LoadingContent
+import com.juanpablo0612.sigat.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
+import sigat.composeapp.generated.resources.button_add_student
 import sigat.composeapp.generated.resources.button_delete
 import sigat.composeapp.generated.resources.button_save
 import sigat.composeapp.generated.resources.code_label
+import sigat.composeapp.generated.resources.content_description_collapse
+import sigat.composeapp.generated.resources.content_description_expand
 import sigat.composeapp.generated.resources.end_date_label
 import sigat.composeapp.generated.resources.name_label
 import sigat.composeapp.generated.resources.schedule_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.student_id_label
-import sigat.composeapp.generated.resources.training_program_detail_title
-import sigat.composeapp.generated.resources.button_add_student
-import sigat.composeapp.generated.resources.content_description_collapse
-import sigat.composeapp.generated.resources.content_description_expand
-import sigat.composeapp.generated.resources.content_description_navigate_back
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,17 +97,7 @@ fun TrainingProgramDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.training_program_detail_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack, enabled = !uiState.loading) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.content_description_navigate_back)
-                        )
-                    }
-                }
-            )
+            TrainingProgramDetailTopAppBar(onNavigateBack = onNavigateBack)
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).padding(horizontal = Dimens.PaddingMedium)) {

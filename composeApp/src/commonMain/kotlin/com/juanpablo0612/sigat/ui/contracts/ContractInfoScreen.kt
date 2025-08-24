@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -30,7 +29,6 @@ import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.button_save
 import sigat.composeapp.generated.resources.city_error
 import sigat.composeapp.generated.resources.city_label
-import sigat.composeapp.generated.resources.contract_info_title
 import sigat.composeapp.generated.resources.contract_number_error
 import sigat.composeapp.generated.resources.contract_number_label
 import sigat.composeapp.generated.resources.contract_object_error
@@ -77,7 +75,11 @@ fun ContractInfoScreen(
         Modifier.fillMaxWidth()
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(Res.string.contract_info_title)) }) }) { innerPadding ->
+    Scaffold(
+        topBar = {
+            ContractInfoTopAppBar(onNavigateBack = onNavigateBack)
+        }
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

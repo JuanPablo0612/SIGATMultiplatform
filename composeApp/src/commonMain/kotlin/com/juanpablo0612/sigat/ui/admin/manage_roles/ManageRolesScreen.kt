@@ -52,7 +52,7 @@ fun ManageRolesScreen(
 
     Scaffold(
         topBar = {
-            ManageRolesTopBar()
+            ManageRolesTopAppBar()
         }
     ) { innerPadding ->
         Box(

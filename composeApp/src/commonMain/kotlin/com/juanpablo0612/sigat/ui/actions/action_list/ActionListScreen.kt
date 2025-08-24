@@ -64,7 +64,7 @@ fun ActionListScreen(
             }
         },
         topBar = {
-            ActionListTopBar()
+            ActionListTopAppBar()
         }
     ) { innerPadding ->
         if (!uiState.loading) {
