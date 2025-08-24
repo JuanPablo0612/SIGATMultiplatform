@@ -48,9 +48,11 @@ import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.home.HomeDestinations
 import com.juanpablo0612.sigat.ui.home.getScreenListForRole
 import com.juanpablo0612.sigat.ui.reports.generate_report.GenerateReportScreen
+import com.juanpablo0612.sigat.ui.contracts.ContractInfoScreen
 import com.juanpablo0612.sigat.ui.training_programs.add.AddTrainingProgramScreen
 import com.juanpablo0612.sigat.ui.training_programs.detail.TrainingProgramDetailScreen
 import com.juanpablo0612.sigat.ui.training_programs.list.TrainingProgramListScreen
+import com.juanpablo0612.sigat.domain.model.RoleType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -70,6 +72,7 @@ fun AppNavigation(
             val destinations = remember(userState.user) {
                 userState.user?.let { getScreenListForRole(it.role) } ?: emptyList()
             }
+            val isTeacher = userState.user?.role?.type == RoleType.TEACHER
             val startDestination = if (userState.isLoggedIn && destinations.isNotEmpty()) {
                 destinations.first().screen
             } else {
@@ -129,7 +132,10 @@ fun AppNavigation(
                         addManageRolesScreen(windowSize)
                         addTrainingProgramsScreen(navController, windowSize)
                         addActionsScreen(navController, windowSize)
-                        addReportsScreen(windowSize)
+                        if (isTeacher) {
+                            addReportsScreen(navController, windowSize)
+                            addContractInfoScreen(navController, windowSize)
+                        }
                         addAddActionScreen(navController, windowSize)
                         addAddTrainingProgramScreen(navController, windowSize)
                         addTrainingProgramDetailScreen(navController, windowSize)
@@ -182,7 +188,10 @@ fun AppNavigation(
                         addManageRolesScreen(windowSize)
                         addTrainingProgramsScreen(navController, windowSize)
                         addActionsScreen(navController, windowSize)
-                        addReportsScreen(windowSize)
+                        if (isTeacher) {
+                            addReportsScreen(navController, windowSize)
+                            addContractInfoScreen(navController, windowSize)
+                        }
                         addAddActionScreen(navController, windowSize)
                         addAddTrainingProgramScreen(navController, windowSize)
                         addTrainingProgramDetailScreen(navController, windowSize)
@@ -322,9 +331,21 @@ fun NavGraphBuilder.addActionsScreen(
     }
 }
 
-fun NavGraphBuilder.addReportsScreen(windowSize: WindowSizeClass) {
+fun NavGraphBuilder.addReportsScreen(navController: NavController, windowSize: WindowSizeClass) {
     composable<Screen.Reports> {
-        GenerateReportScreen(windowSize = windowSize)
+        GenerateReportScreen(
+            windowSize = windowSize,
+            onAddContractInfo = { navController.navigate(Screen.ContractInfo) }
+        )
+    }
+}
+
+fun NavGraphBuilder.addContractInfoScreen(navController: NavController, windowSize: WindowSizeClass) {
+    composable<Screen.ContractInfo> {
+        ContractInfoScreen(
+            windowSize = windowSize,
+            onNavigateBack = { navController.navigateUp() }
+        )
     }
 }
 

@@ -35,4 +35,7 @@ sealed class Screen {
 
     @Serializable
     object Reports : Screen()
+
+    @Serializable
+    object ContractInfo : Screen()
 }

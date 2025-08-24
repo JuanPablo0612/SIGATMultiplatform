@@ -22,14 +22,17 @@ class GenerateReportViewModel(
     private val reportsRepository: ReportsRepository,
     private val contractsRepository: ContractsRepository,
 ) : ViewModel() {
-    var uiState by mutableStateOf((GenerateReportUiState()))
+    var uiState by mutableStateOf(GenerateReportUiState())
         private set
 
     init {
+        loadContract()
+    }
+
+    fun loadContract() {
         viewModelScope.launch {
-            contractsRepository.getContract()?.let { contract ->
-                uiState = uiState.copy(contract = contract)
-            }
+            val uid = authRepository.getUid()
+            uiState = uiState.copy(contract = contractsRepository.getContract(uid))
         }
     }
 
@@ -40,25 +43,6 @@ class GenerateReportViewModel(
     fun onOutputFileSelected(file: PlatformFile) {
         uiState = uiState.copy(outputFile = file)
     }
-
-    private fun updateContract(update: Contract.() -> Contract) {
-        uiState = uiState.copy(contract = uiState.contract.update())
-    }
-
-    fun onCityChange(city: String) = updateContract { copy(city = city) }
-    fun onSupervisorNameChange(name: String) = updateContract { copy(supervisorName = name) }
-    fun onSupervisorPositionChange(position: String) = updateContract { copy(supervisorPosition = position) }
-    fun onSupervisorDependencyChange(dependency: String) = updateContract { copy(supervisorDependency = dependency) }
-    fun onContractNumberChange(number: String) = updateContract { copy(number = number) }
-    fun onContractYearChange(year: String) = updateContract { copy(year = year) }
-    fun onContractorNameChange(name: String) = updateContract { copy(contractorName = name) }
-    fun onContractorIdNumberChange(id: String) = updateContract { copy(contractorIdNumber = id) }
-    fun onContractorIdExpeditionChange(place: String) = updateContract { copy(contractorIdExpeditionPlace = place) }
-    fun onContractObjectChange(obj: String) = updateContract { copy(contractObject = obj) }
-    fun onContractValueChange(value: String) = updateContract { copy(value = value) }
-    fun onPaymentMethodChange(method: String) = updateContract { copy(paymentMethod = method) }
-    fun onEndDateChange(date: String) = updateContract { copy(endDate = date) }
-    fun onElaborationDateChange(date: String) = updateContract { copy(elaborationDate = date) }
 
     fun onStartTimestampChange(timestamp: Long) {
         uiState = uiState.copy(startTimestamp = timestamp)
@@ -78,14 +62,18 @@ class GenerateReportViewModel(
 
                 userResult.fold(
                     onSuccess = { user ->
+                        val contract = uiState.contract
+                        if (contract == null) {
+                            uiState = uiState.copy(exception = IllegalStateException("Contract required"))
+                            return@fold
+                        }
                         val actions = actionsRepository.getActions(user.uid).first()
                             .filter { it.timestamp in uiState.startTimestamp..uiState.endTimestamp }
-                        contractsRepository.saveContract(uiState.contract)
                         reportsRepository.generateReport(
                             template = uiState.templateFile!!,
                             output = uiState.outputFile!!,
                             user = user,
-                            contract = uiState.contract,
+                            contract = contract,
                             startTimestamp = uiState.startTimestamp,
                             endTimestamp = uiState.endTimestamp,
                             actions = actions
@@ -109,7 +97,7 @@ data class GenerateReportUiState(
     val exception: Exception? = null,
     val templateFile: PlatformFile? = null,
     val outputFile: PlatformFile? = null,
-    val contract: Contract = Contract(),
+    val contract: Contract? = null,
     val startTimestamp: Long = 0,
     val endTimestamp: Long = 0,
 )

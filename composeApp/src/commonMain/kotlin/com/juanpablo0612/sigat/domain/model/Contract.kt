@@ -6,6 +6,7 @@ import com.juanpablo0612.sigat.data.contracts.model.ContractModel
  * Domain representation of a contract used across the application layers.
  */
 data class Contract(
+    val userId: String = "",
     val city: String = "",
     val elaborationDate: String = "",
     val supervisorName: String = "",
@@ -22,6 +23,7 @@ data class Contract(
     val endDate: String = "",
 ) {
     fun toModel() = ContractModel(
+        userId = userId,
         city = city,
         elaborationDate = elaborationDate,
         supervisorName = supervisorName,
