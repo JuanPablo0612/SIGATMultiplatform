@@ -19,6 +19,8 @@ import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
 import com.juanpablo0612.sigat.data.training_programs.remote.TrainingProgramsRemoteDataSource
 import com.juanpablo0612.sigat.data.users.UsersRepository
 import com.juanpablo0612.sigat.data.users.remote.UsersRemoteDataSource
+import com.juanpablo0612.sigat.data.assistance.AssistanceRepository
+import com.juanpablo0612.sigat.data.assistance.remote.AssistanceRemoteDataSource
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateEmailUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidatePasswordUseCase
 import com.juanpablo0612.sigat.domain.usecase.auth.ValidateFirstNameUseCase
@@ -100,6 +102,8 @@ val dataModule = module {
     singleOf(::ContractsRepository)
     singleOf(::TrainingProgramsRemoteDataSource)
     singleOf(::TrainingProgramsRepository)
+    singleOf(::AssistanceRemoteDataSource)
+    singleOf(::AssistanceRepository)
 }
 
 fun initKoin(koinAppDeclaration: KoinAppDeclaration? = null) {

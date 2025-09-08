@@ -87,6 +87,13 @@
     <string name="button_add_student">Add Student</string>
     <string name="button_delete">Delete</string>
 
+    <!-- Attendance -->
+    <string name="attendance_label">Attendance</string>
+    <string name="attendance_date_label">Date</string>
+    <string name="present_label">Present</string>
+    <string name="absent_label">Absent</string>
+    <string name="save_attendance_button">Save attendance</string>
+
     <!-- Contract -->
     <string name="city_label">City</string>
     <string name="city_error">Please enter a city</string>

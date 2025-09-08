@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -60,6 +61,11 @@ import sigat.composeapp.generated.resources.name_label
 import sigat.composeapp.generated.resources.schedule_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.student_id_label
+import sigat.composeapp.generated.resources.attendance_label
+import sigat.composeapp.generated.resources.attendance_date_label
+import sigat.composeapp.generated.resources.present_label
+import sigat.composeapp.generated.resources.absent_label
+import sigat.composeapp.generated.resources.save_attendance_button
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +78,7 @@ fun TrainingProgramDetailScreen(
     val startDatePickerState =
         rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
     val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.endDate)
+    val attendanceDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.selectedDate)
     val expandedFields = remember { mutableStateOf(false) }
 
     if (uiState.finished) {
@@ -82,6 +89,7 @@ fun TrainingProgramDetailScreen(
         if (uiState.id.isNotEmpty()) {
             startDatePickerState.selectedDateMillis = uiState.startDate
             endDatePickerState.selectedDateMillis = uiState.endDate
+            attendanceDatePickerState.selectedDateMillis = uiState.selectedDate
         }
     }
 
@@ -94,6 +102,12 @@ fun TrainingProgramDetailScreen(
     LaunchedEffect(endDatePickerState.selectedDateMillis) {
         endDatePickerState.selectedDateMillis?.let {
             viewModel.onEndDateChange(it)
+        }
+    }
+
+    LaunchedEffect(attendanceDatePickerState.selectedDateMillis) {
+        attendanceDatePickerState.selectedDateMillis?.let {
+            viewModel.loadAttendance(it)
         }
     }
 
@@ -260,6 +274,59 @@ fun TrainingProgramDetailScreen(
                             }
                         }
                     }
+                    item {
+                        Text(
+                            text = stringResource(Res.string.attendance_label),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(vertical = Dimens.PaddingSmall)
+                        )
+                    }
+                    item {
+                        DatePickerTextField(
+                            label = stringResource(Res.string.attendance_date_label),
+                            state = attendanceDatePickerState,
+                            isError = false,
+                            enabled = !uiState.loadingAttendance && !uiState.loading
+                        )
+                    }
+
+                    items(
+                        items = uiState.students,
+                        key = { it + "_attendance" }
+                    ) { student ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = Dimens.PaddingExtraSmall),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = student, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = if (uiState.attendance[student] == true)
+                                        stringResource(Res.string.present_label)
+                                    else
+                                        stringResource(Res.string.absent_label)
+                                )
+                                Checkbox(
+                                    checked = uiState.attendance[student] == true,
+                                    onCheckedChange = { viewModel.toggleAttendance(student) },
+                                    enabled = !uiState.loadingAttendance && !uiState.loading
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Button(
+                            onClick = { viewModel.saveAttendance() },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = !uiState.loadingAttendance && !uiState.loading
+                        ) {
+                            Text(stringResource(Res.string.save_attendance_button))
+                        }
+                    }
 
                     item {
                         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
@@ -281,7 +348,7 @@ fun TrainingProgramDetailScreen(
                     }
                 }
             }
-            if (uiState.loading) {
+            if (uiState.loading || uiState.loadingAttendance) {
                 LoadingContent(modifier = Modifier.matchParentSize())
             }
         }

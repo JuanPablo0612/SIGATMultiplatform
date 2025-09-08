@@ -8,12 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
+import com.juanpablo0612.sigat.data.assistance.AssistanceRepository
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
 import com.juanpablo0612.sigat.ui.navigation.Screen
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.datetime.Clock
 
 class TrainingProgramDetailViewModel(
     private val repository: TrainingProgramsRepository,
+    private val assistanceRepository: AssistanceRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var uiState by mutableStateOf(TrainingProgramDetailUiState())
@@ -41,11 +45,53 @@ class TrainingProgramDetailViewModel(
                         teacherUserId = program.teacherUserId,
                         students = program.students
                     )
+                    loadAttendance(uiState.selectedDate)
                 }
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)
             } finally {
                 uiState = uiState.copy(loading = false)
+            }
+        }
+    }
+
+    fun loadAttendance(date: Long) {
+        viewModelScope.launch {
+            uiState = uiState.copy(loadingAttendance = true, selectedDate = date)
+            try {
+                val attendance = assistanceRepository
+                    .getAssistanceForProgramAndDate(uiState.id, date)
+                    .first()
+                uiState = uiState.copy(
+                    attendance = attendance.associate { it.studentId to it.present }
+                )
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loadingAttendance = false)
+            }
+        }
+    }
+
+    fun toggleAttendance(studentId: String) {
+        val current = uiState.attendance[studentId] ?: false
+        uiState = uiState.copy(
+            attendance = uiState.attendance.toMutableMap().apply { put(studentId, !current) }
+        )
+    }
+
+    fun saveAttendance() {
+        viewModelScope.launch {
+            uiState = uiState.copy(loadingAttendance = true)
+            try {
+                val date = uiState.selectedDate
+                uiState.attendance.forEach { (studentId, present) ->
+                    assistanceRepository.setAttendance(uiState.id, studentId, date, present)
+                }
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loadingAttendance = false)
             }
         }
     }
@@ -172,6 +218,9 @@ data class TrainingProgramDetailUiState(
     val students: List<String> = emptyList(),
     val newStudentId: String = "",
     val loading: Boolean = false,
+    val selectedDate: Long = Clock.System.now().toEpochMilliseconds(),
+    val attendance: Map<String, Boolean> = emptyMap(),
+    val loadingAttendance: Boolean = false,
     val exception: Exception? = null,
     val finished: Boolean = false
 )

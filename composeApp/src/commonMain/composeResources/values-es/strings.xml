@@ -85,6 +85,13 @@
     <string name="button_add_student">Agregar estudiante</string>
     <string name="button_delete">Eliminar</string>
 
+    <!-- Asistencia -->
+    <string name="attendance_label">Asistencia</string>
+    <string name="attendance_date_label">Fecha</string>
+    <string name="present_label">Presente</string>
+    <string name="absent_label">Ausente</string>
+    <string name="save_attendance_button">Guardar asistencia</string>
+
     <!-- Contrato -->
     <string name="city_label">Ciudad</string>
     <string name="city_error">Ingrese una ciudad</string>
