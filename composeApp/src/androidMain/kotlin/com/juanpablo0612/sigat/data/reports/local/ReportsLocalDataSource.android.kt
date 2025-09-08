@@ -6,6 +6,7 @@ import com.juanpablo0612.sigat.data.contracts.model.ContractModel
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.write
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -19,7 +20,6 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 actual class ReportsLocalDataSourceImpl actual constructor() :
@@ -43,7 +43,7 @@ actual class ReportsLocalDataSourceImpl actual constructor() :
         val endDate = formatDate(endTimestamp)
 
         return mapOf(
-            "dia" to localDate.day.toString(),
+            "dia" to localDate.dayOfMonth.toString(),
             "mes" to localDate.format(monthFormat),
             "Mes" to localDate.format(monthFormat).replaceFirstChar { it.uppercase() },
             "año" to localDate.year.toString(),

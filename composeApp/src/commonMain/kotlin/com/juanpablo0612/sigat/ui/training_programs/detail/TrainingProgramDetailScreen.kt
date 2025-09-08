@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.theme.Dimens
@@ -100,12 +102,18 @@ fun TrainingProgramDetailScreen(
             TrainingProgramDetailTopAppBar(onNavigateBack = onNavigateBack)
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding).padding(horizontal = Dimens.PaddingMedium)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter
+        ) {
             if (uiState.id.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
-                        .padding(vertical = Dimens.PaddingMedium)
-                        .fillMaxSize(),
+                        .widthIn(max = 400.dp)
+                        .fillMaxSize()
+                        .padding(vertical = Dimens.PaddingMedium),
                     verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
                     contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
                 ) {
