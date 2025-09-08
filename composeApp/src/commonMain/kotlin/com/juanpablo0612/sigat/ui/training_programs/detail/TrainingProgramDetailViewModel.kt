@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Clock
 
+enum class TrainingProgramDetailTab { Students, Attendance }
+
 class TrainingProgramDetailViewModel(
     private val repository: TrainingProgramsRepository,
     private val assistanceRepository: AssistanceRepository,
@@ -94,6 +96,10 @@ class TrainingProgramDetailViewModel(
                 uiState = uiState.copy(loadingAttendance = false)
             }
         }
+    }
+
+    fun onTabChange(tab: TrainingProgramDetailTab) {
+        uiState = uiState.copy(selectedTab = tab)
     }
     fun onNameChange(newName: String) {
         uiState = uiState.copy(name = newName, validName = newName.isNotBlank())
@@ -218,6 +224,7 @@ data class TrainingProgramDetailUiState(
     val students: List<String> = emptyList(),
     val newStudentId: String = "",
     val loading: Boolean = false,
+    val selectedTab: TrainingProgramDetailTab = TrainingProgramDetailTab.Students,
     val selectedDate: Long = Clock.System.now().toEpochMilliseconds(),
     val attendance: Map<String, Boolean> = emptyMap(),
     val loadingAttendance: Boolean = false,

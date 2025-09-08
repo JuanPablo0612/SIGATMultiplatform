@@ -29,12 +29,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -123,233 +128,290 @@ fun TrainingProgramDetailScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             if (uiState.id.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .widthIn(max = 400.dp)
-                        .fillMaxSize()
-                        .padding(vertical = Dimens.PaddingMedium),
-                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
-                    contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
-                ) {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = Dimens.PaddingSmall)
-                                .padding(Dimens.PaddingExtraSmall),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "${uiState.code} - ${uiState.name}",
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(1f)
-                            )
-                            IconButton(onClick = { expandedFields.value = !expandedFields.value }) {
-                                Icon(
-                                    imageVector = if (expandedFields.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                                    contentDescription = stringResource(
-                                        if (expandedFields.value) Res.string.content_description_collapse else Res.string.content_description_expand
-                                    )
-                                )
-                            }
-                        }
+                val contentModifier = when (windowSize.widthSizeClass) {
+                    WindowWidthSizeClass.Compact -> Modifier.fillMaxWidth()
+                    else -> Modifier.widthIn(max = 600.dp)
+                }
+                Column(modifier = contentModifier.fillMaxSize()) {
+                    TabRow(selectedTabIndex = uiState.selectedTab.ordinal) {
+                        Tab(
+                            selected = uiState.selectedTab == TrainingProgramDetailTab.Students,
+                            onClick = { viewModel.onTabChange(TrainingProgramDetailTab.Students) }
+                        ) { Text("Students") }
+                        Tab(
+                            selected = uiState.selectedTab == TrainingProgramDetailTab.Attendance,
+                            onClick = { viewModel.onTabChange(TrainingProgramDetailTab.Attendance) }
+                        ) { Text("Attendance") }
                     }
-                    item {
-                        AnimatedVisibility(
-                            visible = expandedFields.value,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically()
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(Dimens.PaddingSmall)
-                                    .padding(bottom = Dimens.PaddingSmall),
-                                verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
-                            ) {
-                                OutlinedTextField(
-                                    value = uiState.name,
-                                    onValueChange = viewModel::onNameChange,
-                                    label = { Text(stringResource(Res.string.name_label)) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    isError = !uiState.validName,
-                                    singleLine = true,
-                                    enabled = !uiState.loading,
-                                    keyboardOptions = KeyboardOptions(
-                                        capitalization = KeyboardCapitalization.Sentences,
-                                        imeAction = ImeAction.Next
-                                    )
-                                )
-                                OutlinedTextField(
-                                    value = uiState.code,
-                                    onValueChange = viewModel::onCodeChange,
-                                    label = { Text(stringResource(Res.string.code_label)) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    isError = !uiState.validCode,
-                                    singleLine = true,
-                                    enabled = !uiState.loading,
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = ImeAction.Next
-                                    )
-                                )
-                                OutlinedTextField(
-                                    value = uiState.schedule,
-                                    onValueChange = viewModel::onScheduleChange,
-                                    label = { Text(stringResource(Res.string.schedule_label)) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    isError = !uiState.validSchedule,
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(
-                                        capitalization = KeyboardCapitalization.Sentences,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    enabled = !uiState.loading
-                                )
-                                DatePickerTextField(
-                                    label = stringResource(Res.string.start_date_label),
-                                    state = startDatePickerState,
-                                    isError = !uiState.validStartDate,
-                                    enabled = !uiState.loading
-                                )
-                                DatePickerTextField(
-                                    label = stringResource(Res.string.end_date_label),
-                                    state = endDatePickerState,
-                                    isError = !uiState.validEndDate,
-                                    enabled = !uiState.loading
-                                )
-                            }
-                        }
-                    }
-                    item {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
-                        ) {
-                            OutlinedTextField(
-                                value = uiState.newStudentId,
-                                onValueChange = viewModel::onStudentIdChange,
-                                label = { Text(stringResource(Res.string.student_id_label)) },
-                                modifier = Modifier.weight(1f),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Done
-                                ),
-                                enabled = !uiState.loading
-                            )
-                            IconButton(
-                                onClick = { viewModel.addStudent() },
-                                enabled = !uiState.loading
-                            ) {
-                                Icon(
-                                    Icons.Filled.Add,
-                                    contentDescription = stringResource(Res.string.button_add_student)
-                                )
-                            }
-                        }
-                    }
-
-                    items(
-                        items = uiState.students,
-                        key = { it }
-                    ) { student ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = Dimens.PaddingExtraSmall),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = student, fontWeight = FontWeight.Bold)
-                            IconButton(
-                                onClick = { viewModel.removeStudent(student) },
-                                enabled = !uiState.loading
-                            ) {
-                                Icon(
-                                    Icons.Filled.Delete,
-                                    contentDescription = stringResource(Res.string.button_delete)
-                                )
-                            }
-                        }
-                    }
-                    item {
-                        Text(
-                            text = stringResource(Res.string.attendance_label),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = Dimens.PaddingSmall)
+                    when (uiState.selectedTab) {
+                        TrainingProgramDetailTab.Students -> StudentsTabContent(
+                            uiState = uiState,
+                            viewModel = viewModel,
+                            startDatePickerState = startDatePickerState,
+                            endDatePickerState = endDatePickerState,
+                            expandedFields = expandedFields,
+                            modifier = Modifier.weight(1f)
                         )
-                    }
-                    item {
-                        DatePickerTextField(
-                            label = stringResource(Res.string.attendance_date_label),
-                            state = attendanceDatePickerState,
-                            isError = false,
-                            enabled = !uiState.loadingAttendance && !uiState.loading
+                        TrainingProgramDetailTab.Attendance -> AttendanceTabContent(
+                            uiState = uiState,
+                            viewModel = viewModel,
+                            attendanceDatePickerState = attendanceDatePickerState,
+                            modifier = Modifier.weight(1f)
                         )
-                    }
-
-                    items(
-                        items = uiState.students,
-                        key = { it + "_attendance" }
-                    ) { student ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = Dimens.PaddingExtraSmall),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = student, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = if (uiState.attendance[student] == true)
-                                        stringResource(Res.string.present_label)
-                                    else
-                                        stringResource(Res.string.absent_label)
-                                )
-                                Checkbox(
-                                    checked = uiState.attendance[student] == true,
-                                    onCheckedChange = { viewModel.toggleAttendance(student) },
-                                    enabled = !uiState.loadingAttendance && !uiState.loading
-                                )
-                            }
-                        }
-                    }
-
-                    item {
-                        Button(
-                            onClick = { viewModel.saveAttendance() },
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = !uiState.loadingAttendance && !uiState.loading
-                        ) {
-                            Text(stringResource(Res.string.save_attendance_button))
-                        }
-                    }
-
-                    item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
-                            Button(
-                                onClick = { viewModel.updateTrainingProgram() },
-                                modifier = Modifier.weight(1f),
-                                enabled = !uiState.loading
-                            ) {
-                                Text(stringResource(Res.string.button_save))
-                            }
-                            OutlinedButton(
-                                onClick = { viewModel.deleteTrainingProgram() },
-                                modifier = Modifier.weight(1f),
-                                enabled = !uiState.loading
-                            ) {
-                                Text(stringResource(Res.string.button_delete))
-                            }
-                        }
                     }
                 }
             }
             if (uiState.loading || uiState.loadingAttendance) {
                 LoadingContent(modifier = Modifier.matchParentSize())
+            }
+        }
+    }
+}
+
+@Composable
+private fun StudentsTabContent(
+    uiState: TrainingProgramDetailUiState,
+    viewModel: TrainingProgramDetailViewModel,
+    startDatePickerState: DatePickerState,
+    endDatePickerState: DatePickerState,
+    expandedFields: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .padding(vertical = Dimens.PaddingMedium),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+        contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
+    ) {
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.PaddingSmall)
+                    .padding(Dimens.PaddingExtraSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${uiState.code} - ${uiState.name}",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = { expandedFields.value = !expandedFields.value }) {
+                    Icon(
+                        imageVector = if (expandedFields.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        contentDescription = stringResource(
+                            if (expandedFields.value) Res.string.content_description_collapse else Res.string.content_description_expand
+                        )
+                    )
+                }
+            }
+        }
+        item {
+            AnimatedVisibility(
+                visible = expandedFields.value,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Dimens.PaddingSmall)
+                        .padding(bottom = Dimens.PaddingSmall),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
+                ) {
+                    OutlinedTextField(
+                        value = uiState.name,
+                        onValueChange = viewModel::onNameChange,
+                        label = { Text(stringResource(Res.string.name_label)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !uiState.validName,
+                        singleLine = true,
+                        enabled = !uiState.loading,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Next
+                        )
+                    )
+                    OutlinedTextField(
+                        value = uiState.code,
+                        onValueChange = viewModel::onCodeChange,
+                        label = { Text(stringResource(Res.string.code_label)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !uiState.validCode,
+                        singleLine = true,
+                        enabled = !uiState.loading,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        )
+                    )
+                    OutlinedTextField(
+                        value = uiState.schedule,
+                        onValueChange = viewModel::onScheduleChange,
+                        label = { Text(stringResource(Res.string.schedule_label)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !uiState.validSchedule,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            imeAction = ImeAction.Done
+                        ),
+                        enabled = !uiState.loading
+                    )
+                    DatePickerTextField(
+                        label = stringResource(Res.string.start_date_label),
+                        state = startDatePickerState,
+                        isError = !uiState.validStartDate,
+                        enabled = !uiState.loading
+                    )
+                    DatePickerTextField(
+                        label = stringResource(Res.string.end_date_label),
+                        state = endDatePickerState,
+                        isError = !uiState.validEndDate,
+                        enabled = !uiState.loading
+                    )
+                }
+            }
+        }
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)
+            ) {
+                OutlinedTextField(
+                    value = uiState.newStudentId,
+                    onValueChange = viewModel::onStudentIdChange,
+                    label = { Text(stringResource(Res.string.student_id_label)) },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    enabled = !uiState.loading
+                )
+                IconButton(
+                    onClick = { viewModel.addStudent() },
+                    enabled = !uiState.loading
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = stringResource(Res.string.button_add_student)
+                    )
+                }
+            }
+        }
+
+        items(
+            items = uiState.students,
+            key = { it }
+        ) { student ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.PaddingExtraSmall),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = student, fontWeight = FontWeight.Bold)
+                IconButton(
+                    onClick = { viewModel.removeStudent(student) },
+                    enabled = !uiState.loading
+                ) {
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = stringResource(Res.string.button_delete)
+                    )
+                }
+            }
+        }
+
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
+                Button(
+                    onClick = { viewModel.updateTrainingProgram() },
+                    modifier = Modifier.weight(1f),
+                    enabled = !uiState.loading
+                ) {
+                    Text(stringResource(Res.string.button_save))
+                }
+                OutlinedButton(
+                    onClick = { viewModel.deleteTrainingProgram() },
+                    modifier = Modifier.weight(1f),
+                    enabled = !uiState.loading
+                ) {
+                    Text(stringResource(Res.string.button_delete))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AttendanceTabContent(
+    uiState: TrainingProgramDetailUiState,
+    viewModel: TrainingProgramDetailViewModel,
+    attendanceDatePickerState: DatePickerState,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .padding(vertical = Dimens.PaddingMedium),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+        contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
+    ) {
+        item {
+            Text(
+                text = stringResource(Res.string.attendance_label),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = Dimens.PaddingSmall)
+            )
+        }
+        item {
+            DatePickerTextField(
+                label = stringResource(Res.string.attendance_date_label),
+                state = attendanceDatePickerState,
+                isError = false,
+                enabled = !uiState.loadingAttendance && !uiState.loading
+            )
+        }
+
+        items(
+            items = uiState.students,
+            key = { it + "_attendance" }
+        ) { student ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.PaddingExtraSmall),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = student, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = if (uiState.attendance[student] == true)
+                            stringResource(Res.string.present_label)
+                        else
+                            stringResource(Res.string.absent_label)
+                    )
+                    Checkbox(
+                        checked = uiState.attendance[student] == true,
+                        onCheckedChange = { viewModel.toggleAttendance(student) },
+                        enabled = !uiState.loadingAttendance && !uiState.loading
+                    )
+                }
+            }
+        }
+
+        item {
+            Button(
+                onClick = { viewModel.saveAttendance() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.loadingAttendance && !uiState.loading
+            ) {
+                Text(stringResource(Res.string.save_attendance_button))
             }
         }
     }
