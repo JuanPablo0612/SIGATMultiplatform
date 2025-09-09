@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.theme.Dimens
+import com.juanpablo0612.sigat.domain.model.fullName
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
@@ -336,7 +337,7 @@ private fun StudentsTabContent(
 
         items(
             items = uiState.students,
-            key = { it }
+            key = { it.uid }
         ) { student ->
             Row(
                 modifier = Modifier
@@ -345,9 +346,9 @@ private fun StudentsTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = student, fontWeight = FontWeight.Bold)
+                Text(text = student.fullName, fontWeight = FontWeight.Bold)
                 IconButton(
-                    onClick = { viewModel.removeStudent(student) },
+                    onClick = { viewModel.removeStudent(student.uid) },
                     enabled = !uiState.loading
                 ) {
                     Icon(
@@ -411,7 +412,7 @@ private fun AttendanceTabContent(
 
         items(
             items = uiState.students,
-            key = { it + "_attendance" }
+            key = { it.uid + "_attendance" }
         ) { student ->
             Row(
                 modifier = Modifier
@@ -420,17 +421,17 @@ private fun AttendanceTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = student, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Text(text = student.fullName, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = if (uiState.attendance[student] == true)
+                        text = if (uiState.attendance[student.uid] == true)
                             stringResource(Res.string.present_label)
                         else
                             stringResource(Res.string.absent_label)
                     )
                     Checkbox(
-                        checked = uiState.attendance[student] == true,
-                        onCheckedChange = { viewModel.toggleAttendance(student) },
+                        checked = uiState.attendance[student.uid] == true,
+                        onCheckedChange = { viewModel.toggleAttendance(student.uid) },
                         enabled = !uiState.loadingAttendance && !uiState.loading
                     )
                 }
