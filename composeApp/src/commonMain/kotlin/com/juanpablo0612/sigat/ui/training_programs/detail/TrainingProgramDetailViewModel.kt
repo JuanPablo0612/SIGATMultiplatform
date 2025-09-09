@@ -7,9 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
 import com.juanpablo0612.sigat.data.assistance.AssistanceRepository
+import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
+import com.juanpablo0612.sigat.data.users.UsersRepository
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
+import com.juanpablo0612.sigat.domain.model.User
 import com.juanpablo0612.sigat.ui.navigation.Screen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
@@ -20,6 +22,7 @@ enum class TrainingProgramDetailTab { Students, Attendance }
 class TrainingProgramDetailViewModel(
     private val repository: TrainingProgramsRepository,
     private val assistanceRepository: AssistanceRepository,
+    private val usersRepository: UsersRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var uiState by mutableStateOf(TrainingProgramDetailUiState())
@@ -37,6 +40,7 @@ class TrainingProgramDetailViewModel(
             try {
                 val program = repository.getTrainingProgram(id)
                 if (program != null) {
+                    val students = usersRepository.getUsersByIds(program.students).getOrThrow()
                     uiState = uiState.copy(
                         id = program.id,
                         name = program.name,
@@ -45,7 +49,8 @@ class TrainingProgramDetailViewModel(
                         endDate = program.endDate,
                         schedule = program.schedule,
                         teacherUserId = program.teacherUserId,
-                        students = program.students
+                        studentIds = program.students,
+                        students = students
                     )
                     loadAttendance(uiState.selectedDate)
                 }
@@ -154,7 +159,7 @@ class TrainingProgramDetailViewModel(
                         endDate = uiState.endDate!!,
                         schedule = uiState.schedule,
                         teacherUserId = uiState.teacherUserId,
-                        students = uiState.students
+                        students = uiState.studentIds
                     )
                 )
             } catch (e: Exception) {
@@ -221,7 +226,8 @@ data class TrainingProgramDetailUiState(
     val schedule: String = "",
     val validSchedule: Boolean = true,
     val teacherUserId: String = "",
-    val students: List<String> = emptyList(),
+    val studentIds: List<String> = emptyList(),
+    val students: List<User> = emptyList(),
     val newStudentId: String = "",
     val loading: Boolean = false,
     val selectedTab: TrainingProgramDetailTab = TrainingProgramDetailTab.Students,

@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.sigat.domain.model.User
 import com.juanpablo0612.sigat.ui.components.DatePickerTextField
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.theme.Dimens
@@ -336,8 +337,8 @@ private fun StudentsTabContent(
 
         items(
             items = uiState.students,
-            key = { it }
-        ) { student ->
+            key = { it.uid }
+        ) { student: User ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -345,9 +346,12 @@ private fun StudentsTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = student, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "${student.firstName} ${student.lastName}",
+                    fontWeight = FontWeight.Bold
+                )
                 IconButton(
-                    onClick = { viewModel.removeStudent(student) },
+                    onClick = { viewModel.removeStudent(student.uid) },
                     enabled = !uiState.loading
                 ) {
                     Icon(
@@ -409,10 +413,11 @@ private fun AttendanceTabContent(
             )
         }
 
+
         items(
             items = uiState.students,
-            key = { it + "_attendance" }
-        ) { student ->
+            key = { it.uid + "_attendance" }
+        ) { student: User ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -420,17 +425,21 @@ private fun AttendanceTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = student, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Text(
+                    text = "${student.firstName} ${student.lastName}",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = if (uiState.attendance[student] == true)
+                        text = if (uiState.attendance[student.uid] == true)
                             stringResource(Res.string.present_label)
                         else
-                            stringResource(Res.string.absent_label)
+                            stringResource(Res.string.absent_label),
                     )
                     Checkbox(
-                        checked = uiState.attendance[student] == true,
-                        onCheckedChange = { viewModel.toggleAttendance(student) },
+                        checked = uiState.attendance[student.uid] == true,
+                        onCheckedChange = { viewModel.toggleAttendance(student.uid) },
                         enabled = !uiState.loadingAttendance && !uiState.loading
                     )
                 }
