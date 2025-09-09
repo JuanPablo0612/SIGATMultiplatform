@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.sigat.domain.model.Role
 import com.juanpablo0612.sigat.domain.model.User
+import com.juanpablo0612.sigat.domain.model.fullName
 import com.juanpablo0612.sigat.ui.components.ErrorCard
 import com.juanpablo0612.sigat.ui.components.LoadingContent
 import com.juanpablo0612.sigat.ui.theme.Dimens
@@ -129,7 +130,7 @@ private fun UserRoleCard(
                 }
             }
             Text(
-                text = "${user.firstName} ${user.lastName}",
+                text = user.fullName,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
