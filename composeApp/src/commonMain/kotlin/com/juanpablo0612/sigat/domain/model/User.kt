@@ -22,3 +22,6 @@ data class User(
         role = role.toModel()
     )
 }
+
+val User.fullName: String
+    get() = "$firstName $lastName".trim()
