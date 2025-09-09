@@ -12,6 +12,7 @@ data class User(
     val lastDataUpdate: Timestamp = Timestamp.now(),
     val role: Role = Role()
 ) {
+    val fullName: String get() = "$firstName $lastName".trim()
     fun toModel() = UserModel(
         uid = uid,
         idNumber = idNumber,

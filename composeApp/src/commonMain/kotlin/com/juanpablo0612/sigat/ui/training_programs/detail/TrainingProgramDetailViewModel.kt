@@ -10,6 +10,7 @@ import androidx.navigation.toRoute
 import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
 import com.juanpablo0612.sigat.data.assistance.AssistanceRepository
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
+import com.juanpablo0612.sigat.domain.model.User
 import com.juanpablo0612.sigat.ui.navigation.Screen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
@@ -45,7 +46,7 @@ class TrainingProgramDetailViewModel(
                         endDate = program.endDate,
                         schedule = program.schedule,
                         teacherUserId = program.teacherUserId,
-                        students = program.students
+                        students = program.students.map { User(uid = it) }
                     )
                     loadAttendance(uiState.selectedDate)
                 }
@@ -154,7 +155,7 @@ class TrainingProgramDetailViewModel(
                         endDate = uiState.endDate!!,
                         schedule = uiState.schedule,
                         teacherUserId = uiState.teacherUserId,
-                        students = uiState.students
+                        students = uiState.students.map { it.uid }
                     )
                 )
             } catch (e: Exception) {
@@ -221,7 +222,7 @@ data class TrainingProgramDetailUiState(
     val schedule: String = "",
     val validSchedule: Boolean = true,
     val teacherUserId: String = "",
-    val students: List<String> = emptyList(),
+    val students: List<User> = emptyList(),
     val newStudentId: String = "",
     val loading: Boolean = false,
     val selectedTab: TrainingProgramDetailTab = TrainingProgramDetailTab.Students,
