@@ -1,10 +1,14 @@
 package com.juanpablo0612.sigat.ui.training_programs.detail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,16 +27,16 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -55,6 +59,9 @@ import com.juanpablo0612.sigat.ui.theme.Dimens
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sigat.composeapp.generated.resources.Res
+import sigat.composeapp.generated.resources.absent_label
+import sigat.composeapp.generated.resources.attendance_date_label
+import sigat.composeapp.generated.resources.attendance_label
 import sigat.composeapp.generated.resources.button_add_student
 import sigat.composeapp.generated.resources.button_delete
 import sigat.composeapp.generated.resources.button_save
@@ -63,14 +70,13 @@ import sigat.composeapp.generated.resources.content_description_collapse
 import sigat.composeapp.generated.resources.content_description_expand
 import sigat.composeapp.generated.resources.end_date_label
 import sigat.composeapp.generated.resources.name_label
+import sigat.composeapp.generated.resources.present_label
+import sigat.composeapp.generated.resources.save_attendance_button
 import sigat.composeapp.generated.resources.schedule_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.student_id_label
-import sigat.composeapp.generated.resources.attendance_label
-import sigat.composeapp.generated.resources.attendance_date_label
-import sigat.composeapp.generated.resources.present_label
-import sigat.composeapp.generated.resources.absent_label
-import sigat.composeapp.generated.resources.save_attendance_button
+import sigat.composeapp.generated.resources.training_program_attendance_tab
+import sigat.composeapp.generated.resources.training_program_students_tab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +89,8 @@ fun TrainingProgramDetailScreen(
     val startDatePickerState =
         rememberDatePickerState(initialSelectedDateMillis = uiState.startDate)
     val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.endDate)
-    val attendanceDatePickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.selectedDate)
+    val attendanceDatePickerState =
+        rememberDatePickerState(initialSelectedDateMillis = uiState.selectedDate)
     val expandedFields = remember { mutableStateOf(false) }
 
     if (uiState.finished) {
@@ -132,32 +139,55 @@ fun TrainingProgramDetailScreen(
                     WindowWidthSizeClass.Compact -> Modifier.fillMaxWidth()
                     else -> Modifier.widthIn(max = 600.dp)
                 }
-                Column(modifier = contentModifier.fillMaxSize()) {
-                    TabRow(selectedTabIndex = uiState.selectedTab.ordinal) {
+                Column(
+                    modifier = contentModifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    SecondaryTabRow(selectedTabIndex = uiState.selectedTab.ordinal) {
                         Tab(
                             selected = uiState.selectedTab == TrainingProgramDetailTab.Students,
                             onClick = { viewModel.onTabChange(TrainingProgramDetailTab.Students) }
-                        ) { Text("Students") }
+                        ) {
+                            Text(stringResource(Res.string.training_program_students_tab), modifier = Modifier.padding(8.dp))
+                        }
                         Tab(
                             selected = uiState.selectedTab == TrainingProgramDetailTab.Attendance,
                             onClick = { viewModel.onTabChange(TrainingProgramDetailTab.Attendance) }
-                        ) { Text("Attendance") }
+                        ) {
+                            Text(stringResource(Res.string.training_program_attendance_tab), modifier = Modifier.padding(8.dp))
+                        }
                     }
-                    when (uiState.selectedTab) {
-                        TrainingProgramDetailTab.Students -> StudentsTabContent(
-                            uiState = uiState,
-                            viewModel = viewModel,
-                            startDatePickerState = startDatePickerState,
-                            endDatePickerState = endDatePickerState,
-                            expandedFields = expandedFields,
-                            modifier = Modifier.weight(1f)
-                        )
-                        TrainingProgramDetailTab.Attendance -> AttendanceTabContent(
-                            uiState = uiState,
-                            viewModel = viewModel,
-                            attendanceDatePickerState = attendanceDatePickerState,
-                            modifier = Modifier.weight(1f)
-                        )
+
+                    AnimatedContent(
+                        targetState = uiState.selectedTab,
+                        transitionSpec = {
+                            if (targetState.ordinal > initialState.ordinal) {
+                                fadeIn() + slideInHorizontally { it } togetherWith
+                                        fadeOut() + slideOutHorizontally { -it }
+                            } else {
+                                fadeIn() + slideInHorizontally { -it } togetherWith
+                                        fadeOut() + slideOutHorizontally { it }
+                            }
+                        }
+                    ) { targetState ->
+                        when (targetState) {
+                            TrainingProgramDetailTab.Students -> StudentsTabContent(
+                                uiState = uiState,
+                                viewModel = viewModel,
+                                startDatePickerState = startDatePickerState,
+                                endDatePickerState = endDatePickerState,
+                                expandedFields = expandedFields,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            TrainingProgramDetailTab.Attendance -> AttendanceTabContent(
+                                uiState = uiState,
+                                viewModel = viewModel,
+                                attendanceDatePickerState = attendanceDatePickerState,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
             }
@@ -168,6 +198,7 @@ fun TrainingProgramDetailScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StudentsTabContent(
     uiState: TrainingProgramDetailUiState,
@@ -348,6 +379,7 @@ private fun StudentsTabContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AttendanceTabContent(
     uiState: TrainingProgramDetailUiState,

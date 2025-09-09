@@ -78,6 +78,8 @@
     <string name="training_programs_title">Training Programs</string>
     <string name="add_training_program_title">Add Training Program</string>
     <string name="training_program_detail_title">Training Program Detail</string>
+    <string name="training_program_students_tab">Students</string>
+    <string name="training_program_attendance_tab">Attendance</string>
     <string name="name_label">Name</string>
     <string name="code_label">Code</string>
     <string name="start_date_label">Start Date</string>

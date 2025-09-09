@@ -16,7 +16,7 @@ class AssistanceRemoteDataSource(firestore: FirebaseFirestore) {
     }
 
     suspend fun setAttendance(programId: String, studentId: String, dateMillis: Long, present: Boolean) {
-        val id = "${'$'}programId_${'$'}dateMillis_${'$'}studentId"
+        val id = "${programId}_${dateMillis}_${studentId}"
         assistanceCollection.document(id).set(
             AssistanceModel(
                 id = id,
