@@ -21,7 +21,7 @@ class UsersRemoteDataSource(firestore: FirebaseFirestore) {
     suspend fun getUsersByIds(ids: List<String>): List<UserModel> {
         return handleExceptions {
             val users = usersCollection.where {
-                "uid" inArray ids
+                "idNumber" inArray ids
             }.get()
 
             users.documents.map { it.data(UserModel.serializer()) }

@@ -138,7 +138,8 @@ fun TrainingProgramDetailScreen(
             if (uiState.id.isNotEmpty()) {
                 val contentModifier = when (windowSize.widthSizeClass) {
                     WindowWidthSizeClass.Compact -> Modifier.fillMaxWidth()
-                    else -> Modifier.widthIn(max = 600.dp)
+                    WindowWidthSizeClass.Medium -> Modifier.widthIn(max = 600.dp)
+                    else -> Modifier.widthIn(max = 800.dp)
                 }
                 Column(
                     modifier = contentModifier
@@ -412,7 +413,7 @@ private fun AttendanceTabContent(
 
         items(
             items = uiState.students,
-            key = { it.uid + "_attendance" }
+            key = { it.uid }
         ) { student ->
             Row(
                 modifier = Modifier
