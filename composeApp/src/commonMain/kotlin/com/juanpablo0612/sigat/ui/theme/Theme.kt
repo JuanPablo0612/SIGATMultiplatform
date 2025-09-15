@@ -4,8 +4,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import com.example.ui.theme.AppTypography
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -85,17 +85,20 @@ private val darkScheme = darkColorScheme(
 
 @Composable
 fun SIGATTheme(
+    windowSize: WindowSizeClass,
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         darkTheme -> darkScheme
         else -> lightScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
-    )
+    ProvideSpacing(windowSize) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = appTypography(windowSize),
+            content = content
+        )
+    }
 }

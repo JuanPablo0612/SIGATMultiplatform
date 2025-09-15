@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -26,7 +26,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.sigat.ui.theme.Dimens
+import com.juanpablo0612.sigat.ui.theme.LocalSpacing
 import com.juanpablo0612.sigat.ui.auth.components.EmailTextField
 import com.juanpablo0612.sigat.ui.auth.components.PasswordTextField
 import org.jetbrains.compose.resources.stringResource
@@ -74,11 +74,16 @@ fun LoginScreenContent(
     onNavigateToRegister: () -> Unit,
     windowSize: WindowSizeClass
 ) {
-    val columnWidthModifier = if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
-        Modifier.width(400.dp)
-    } else {
-        Modifier.fillMaxWidth()
-    }
+    val spacing = LocalSpacing.current
+    val columnWidthModifier = Modifier
+        .fillMaxWidth()
+        .then(
+            if (windowSize.widthSizeClass > WindowWidthSizeClass.Compact) {
+                Modifier.widthIn(max = 400.dp)
+            } else {
+                Modifier
+            }
+        )
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -88,10 +93,10 @@ fun LoginScreenContent(
         ) {
             Column(
                 modifier = columnWidthModifier
-                    .padding(horizontal = Dimens.PaddingMedium)
+                    .padding(horizontal = spacing.medium)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(
-                    Dimens.PaddingMedium,
+                    spacing.medium,
                     Alignment.CenterVertically
                 ),
                 horizontalAlignment = Alignment.CenterHorizontally
