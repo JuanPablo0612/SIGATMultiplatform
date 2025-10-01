@@ -10,6 +10,8 @@ import com.juanpablo0612.sigat.data.obligations.ObligationsRepository
 import com.juanpablo0612.sigat.data.obligations.remote.ObligationsRemoteDataSource
 import com.juanpablo0612.sigat.data.contracts.ContractsRepository
 import com.juanpablo0612.sigat.data.contracts.remote.ContractsRemoteDataSource
+import com.juanpablo0612.sigat.data.evaluations.EvaluationsRepository
+import com.juanpablo0612.sigat.data.evaluations.remote.EvaluationsRemoteDataSource
 import com.juanpablo0612.sigat.data.reports.ReportsRepository
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSource
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSourceImpl
@@ -104,6 +106,8 @@ val dataModule = module {
     singleOf(::TrainingProgramsRepository)
     singleOf(::AssistanceRemoteDataSource)
     singleOf(::AssistanceRepository)
+    singleOf(::EvaluationsRemoteDataSource)
+    singleOf(::EvaluationsRepository)
 }
 
 fun initKoin(koinAppDeclaration: KoinAppDeclaration? = null) {

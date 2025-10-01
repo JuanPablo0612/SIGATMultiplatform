@@ -44,8 +44,10 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +65,7 @@ import sigat.composeapp.generated.resources.Res
 import sigat.composeapp.generated.resources.absent_label
 import sigat.composeapp.generated.resources.attendance_date_label
 import sigat.composeapp.generated.resources.attendance_label
+import sigat.composeapp.generated.resources.button_add_evaluation
 import sigat.composeapp.generated.resources.button_add_student
 import sigat.composeapp.generated.resources.button_delete
 import sigat.composeapp.generated.resources.button_save
@@ -70,13 +73,18 @@ import sigat.composeapp.generated.resources.code_label
 import sigat.composeapp.generated.resources.content_description_collapse
 import sigat.composeapp.generated.resources.content_description_expand
 import sigat.composeapp.generated.resources.end_date_label
+import sigat.composeapp.generated.resources.evaluation_name_label
+import sigat.composeapp.generated.resources.evaluation_percentage_label
+import sigat.composeapp.generated.resources.evaluations_empty_message
 import sigat.composeapp.generated.resources.name_label
 import sigat.composeapp.generated.resources.present_label
 import sigat.composeapp.generated.resources.save_attendance_button
+import sigat.composeapp.generated.resources.save_evaluation_grades_button
 import sigat.composeapp.generated.resources.schedule_label
 import sigat.composeapp.generated.resources.start_date_label
 import sigat.composeapp.generated.resources.student_id_label
 import sigat.composeapp.generated.resources.training_program_attendance_tab
+import sigat.composeapp.generated.resources.training_program_evaluations_tab
 import sigat.composeapp.generated.resources.training_program_students_tab
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,6 +167,12 @@ fun TrainingProgramDetailScreen(
                         ) {
                             Text(stringResource(Res.string.training_program_attendance_tab), modifier = Modifier.padding(8.dp))
                         }
+                        Tab(
+                            selected = uiState.selectedTab == TrainingProgramDetailTab.Evaluations,
+                            onClick = { viewModel.onTabChange(TrainingProgramDetailTab.Evaluations) }
+                        ) {
+                            Text(stringResource(Res.string.training_program_evaluations_tab), modifier = Modifier.padding(8.dp))
+                        }
                     }
 
                     AnimatedContent(
@@ -189,11 +203,17 @@ fun TrainingProgramDetailScreen(
                                 attendanceDatePickerState = attendanceDatePickerState,
                                 modifier = Modifier.weight(1f)
                             )
+
+                            TrainingProgramDetailTab.Evaluations -> EvaluationsTabContent(
+                                uiState = uiState,
+                                viewModel = viewModel,
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
                 }
             }
-            if (uiState.loading || uiState.loadingAttendance) {
+            if (uiState.loading || uiState.loadingAttendance || uiState.loadingEvaluations) {
                 LoadingContent(modifier = Modifier.matchParentSize())
             }
         }
@@ -260,7 +280,7 @@ private fun StudentsTabContent(
                         modifier = Modifier.fillMaxWidth(),
                         isError = !uiState.validName,
                         singleLine = true,
-                        enabled = !uiState.loading,
+                        enabled = !uiState.loading && !uiState.loadingEvaluations,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences,
                             imeAction = ImeAction.Next
@@ -273,7 +293,7 @@ private fun StudentsTabContent(
                         modifier = Modifier.fillMaxWidth(),
                         isError = !uiState.validCode,
                         singleLine = true,
-                        enabled = !uiState.loading,
+                        enabled = !uiState.loading && !uiState.loadingEvaluations,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
@@ -290,19 +310,19 @@ private fun StudentsTabContent(
                             capitalization = KeyboardCapitalization.Sentences,
                             imeAction = ImeAction.Done
                         ),
-                        enabled = !uiState.loading
+                        enabled = !uiState.loading && !uiState.loadingEvaluations
                     )
                     DatePickerTextField(
                         label = stringResource(Res.string.start_date_label),
                         state = startDatePickerState,
                         isError = !uiState.validStartDate,
-                        enabled = !uiState.loading
+                        enabled = !uiState.loading && !uiState.loadingEvaluations
                     )
                     DatePickerTextField(
                         label = stringResource(Res.string.end_date_label),
                         state = endDatePickerState,
                         isError = !uiState.validEndDate,
-                        enabled = !uiState.loading
+                        enabled = !uiState.loading && !uiState.loadingEvaluations
                     )
                 }
             }
@@ -322,11 +342,11 @@ private fun StudentsTabContent(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading && !uiState.loadingEvaluations
                 )
                 IconButton(
                     onClick = { viewModel.addStudent() },
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading && !uiState.loadingEvaluations
                 ) {
                     Icon(
                         Icons.Filled.Add,
@@ -350,7 +370,7 @@ private fun StudentsTabContent(
                 Text(text = student.fullName, fontWeight = FontWeight.Bold)
                 IconButton(
                     onClick = { viewModel.removeStudent(student.idNumber) },
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading && !uiState.loadingEvaluations
                 ) {
                     Icon(
                         Icons.Filled.Delete,
@@ -365,14 +385,14 @@ private fun StudentsTabContent(
                 Button(
                     onClick = { viewModel.updateTrainingProgram() },
                     modifier = Modifier.weight(1f),
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading && !uiState.loadingEvaluations
                 ) {
                     Text(stringResource(Res.string.button_save))
                 }
                 OutlinedButton(
                     onClick = { viewModel.deleteTrainingProgram() },
                     modifier = Modifier.weight(1f),
-                    enabled = !uiState.loading
+                    enabled = !uiState.loading && !uiState.loadingEvaluations
                 ) {
                     Text(stringResource(Res.string.button_delete))
                 }
@@ -407,7 +427,7 @@ private fun AttendanceTabContent(
                 label = stringResource(Res.string.attendance_date_label),
                 state = attendanceDatePickerState,
                 isError = false,
-                enabled = !uiState.loadingAttendance && !uiState.loading
+                enabled = !uiState.loadingAttendance && !uiState.loading && !uiState.loadingEvaluations
             )
         }
 
@@ -433,7 +453,7 @@ private fun AttendanceTabContent(
                     Checkbox(
                         checked = uiState.attendance[student.idNumber] == true,
                         onCheckedChange = { viewModel.toggleAttendance(student.idNumber) },
-                        enabled = !uiState.loadingAttendance && !uiState.loading
+                        enabled = !uiState.loadingAttendance && !uiState.loading && !uiState.loadingEvaluations
                     )
                 }
             }
@@ -443,9 +463,149 @@ private fun AttendanceTabContent(
             Button(
                 onClick = { viewModel.saveAttendance() },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.loadingAttendance && !uiState.loading
+                enabled = !uiState.loadingAttendance && !uiState.loading && !uiState.loadingEvaluations
             ) {
                 Text(stringResource(Res.string.save_attendance_button))
+            }
+        }
+    }
+}
+
+@Composable
+private fun EvaluationsTabContent(
+    uiState: TrainingProgramDetailUiState,
+    viewModel: TrainingProgramDetailViewModel,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.padding(vertical = Dimens.PaddingMedium),
+        verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+        contentPadding = PaddingValues(bottom = Dimens.PaddingMedium)
+    ) {
+        item {
+            Text(
+                text = stringResource(Res.string.training_program_evaluations_tab),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = Dimens.PaddingSmall)
+            )
+        }
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall)) {
+                OutlinedTextField(
+                    value = uiState.newEvaluationName,
+                    onValueChange = viewModel::onNewEvaluationNameChange,
+                    label = { Text(stringResource(Res.string.evaluation_name_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.validEvaluationName,
+                    singleLine = true,
+                    enabled = !uiState.loading && !uiState.loadingEvaluations,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Next
+                    )
+                )
+                OutlinedTextField(
+                    value = uiState.newEvaluationPercentage,
+                    onValueChange = viewModel::onNewEvaluationPercentageChange,
+                    label = { Text(stringResource(Res.string.evaluation_percentage_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = !uiState.validEvaluationPercentage,
+                    singleLine = true,
+                    enabled = !uiState.loading && !uiState.loadingEvaluations,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Done
+                    )
+                )
+                Button(
+                    onClick = { viewModel.addEvaluation() },
+                    enabled = !uiState.loading && !uiState.loadingEvaluations,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(stringResource(Res.string.button_add_evaluation))
+                }
+            }
+        }
+
+        if (uiState.evaluations.isEmpty()) {
+            item {
+                Text(stringResource(Res.string.evaluations_empty_message))
+            }
+        } else {
+            items(
+                items = uiState.evaluations,
+                key = { it.id }
+            ) { evaluation ->
+                var expanded by remember { mutableStateOf(false) }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Dimens.PaddingExtraSmall)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = evaluation.name, fontWeight = FontWeight.Bold)
+                            Text(text = "${evaluation.percentage}%")
+                        }
+                        IconButton(
+                            onClick = { expanded = !expanded },
+                            enabled = !uiState.loading && !uiState.loadingEvaluations
+                        ) {
+                            Icon(
+                                imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = if (expanded) {
+                                    stringResource(Res.string.content_description_collapse)
+                                } else {
+                                    stringResource(Res.string.content_description_expand)
+                                }
+                            )
+                        }
+                        IconButton(
+                            onClick = { viewModel.deleteEvaluation(evaluation.id) },
+                            enabled = !uiState.loading && !uiState.loadingEvaluations
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = stringResource(Res.string.button_delete)
+                            )
+                        }
+                    }
+
+                    AnimatedVisibility(visible = expanded) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(Dimens.PaddingSmall),
+                            modifier = Modifier.padding(top = Dimens.PaddingSmall)
+                        ) {
+                            uiState.students.forEach { student ->
+                                OutlinedTextField(
+                                    value = uiState.evaluationGrades[evaluation.id]?.get(student.idNumber).orEmpty(),
+                                    onValueChange = {
+                                        viewModel.onEvaluationGradeChange(evaluation.id, student.idNumber, it)
+                                    },
+                                    label = { Text(student.fullName) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true,
+                                    enabled = !uiState.loading && !uiState.loadingEvaluations,
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal,
+                                        imeAction = ImeAction.Next
+                                    )
+                                )
+                            }
+                            Button(
+                                onClick = { viewModel.saveEvaluationGrades(evaluation.id) },
+                                enabled = uiState.students.isNotEmpty() && !uiState.loading && !uiState.loadingEvaluations,
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(stringResource(Res.string.save_evaluation_grades_button))
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -7,21 +7,25 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
 import com.juanpablo0612.sigat.data.assistance.AssistanceRepository
+import com.juanpablo0612.sigat.data.evaluations.EvaluationsRepository
+import com.juanpablo0612.sigat.data.training_programs.TrainingProgramsRepository
 import com.juanpablo0612.sigat.data.users.UsersRepository
+import com.juanpablo0612.sigat.domain.model.Evaluation
 import com.juanpablo0612.sigat.domain.model.TrainingProgram
 import com.juanpablo0612.sigat.domain.model.User
 import com.juanpablo0612.sigat.ui.navigation.Screen
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Clock
 
-enum class TrainingProgramDetailTab { Students, Attendance }
+enum class TrainingProgramDetailTab { Students, Attendance, Evaluations }
 
 class TrainingProgramDetailViewModel(
     private val repository: TrainingProgramsRepository,
     private val assistanceRepository: AssistanceRepository,
+    private val evaluationsRepository: EvaluationsRepository,
     private val usersRepository: UsersRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -29,6 +33,7 @@ class TrainingProgramDetailViewModel(
         private set
 
     private val trainingProgramDetail = savedStateHandle.toRoute(Screen.TrainingProgramDetail::class)
+    private var evaluationsJob: Job? = null
 
     init {
         loadTrainingProgram(trainingProgramDetail.programId)
@@ -53,6 +58,7 @@ class TrainingProgramDetailViewModel(
                         teacherUserId = program.teacherUserId,
                         students = students
                     )
+                    observeEvaluations(program.id)
                     loadAttendance(uiState.selectedDate)
                 }
             } catch (e: Exception) {
@@ -81,6 +87,38 @@ class TrainingProgramDetailViewModel(
         }
     }
 
+    private fun observeEvaluations(programId: String) {
+        evaluationsJob?.cancel()
+        uiState = uiState.copy(loadingEvaluations = true)
+        evaluationsJob = viewModelScope.launch {
+            try {
+                evaluationsRepository
+                    .getEvaluationsByTrainingProgram(programId)
+                    .collect { evaluations ->
+                        val students = uiState.students
+                        val existingGrades = uiState.evaluationGrades
+                        val mergedGrades = evaluations.associate { evaluation ->
+                            val base = students.associate { it.idNumber to "" }.toMutableMap()
+                            evaluation.grades.forEach { (studentId, grade) ->
+                                base[studentId] = grade.toString()
+                            }
+                            existingGrades[evaluation.id]?.forEach { (studentId, value) ->
+                                base[studentId] = value
+                            }
+                            evaluation.id to base.toMap()
+                        }
+                        uiState = uiState.copy(
+                            evaluations = evaluations,
+                            evaluationGrades = mergedGrades,
+                            loadingEvaluations = false
+                        )
+                    }
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e, loadingEvaluations = false)
+            }
+        }
+    }
+
     fun toggleAttendance(studentId: Long) {
         val current = uiState.attendance[studentId] ?: false
         uiState = uiState.copy(
@@ -100,6 +138,125 @@ class TrainingProgramDetailViewModel(
                 uiState = uiState.copy(exception = e)
             } finally {
                 uiState = uiState.copy(loadingAttendance = false)
+            }
+        }
+    }
+
+    fun onNewEvaluationNameChange(newName: String) {
+        uiState = uiState.copy(newEvaluationName = newName, validEvaluationName = true)
+    }
+
+    fun onNewEvaluationPercentageChange(newPercentage: String) {
+        var sanitized = newPercentage.replace(',', '.')
+        if (sanitized.count { it == '.' } > 1) return
+        if (sanitized.any { !it.isDigit() && it != '.' }) return
+        if (sanitized.startsWith('.')) {
+            sanitized = "0$sanitized"
+        }
+        if (sanitized == ".") {
+            sanitized = "0."
+        }
+        uiState = uiState.copy(newEvaluationPercentage = sanitized, validEvaluationPercentage = true)
+    }
+
+    fun addEvaluation() {
+        val programId = uiState.id
+        val name = uiState.newEvaluationName.trim()
+        val percentageText = uiState.newEvaluationPercentage.trim()
+        val percentage = percentageText.toDoubleOrNull()
+        val validName = name.isNotEmpty()
+        val validPercentage = percentage != null && percentage in 0.0..100.0
+
+        uiState = uiState.copy(
+            validEvaluationName = validName,
+            validEvaluationPercentage = validPercentage
+        )
+
+        if (!validName || !validPercentage || programId.isEmpty()) return
+
+        viewModelScope.launch {
+            uiState = uiState.copy(loadingEvaluations = true)
+            try {
+                evaluationsRepository.addEvaluation(
+                    Evaluation(
+                        trainingProgramId = programId,
+                        name = name,
+                        percentage = percentage!!
+                    )
+                )
+                uiState = uiState.copy(
+                    newEvaluationName = "",
+                    newEvaluationPercentage = "",
+                    validEvaluationName = true,
+                    validEvaluationPercentage = true
+                )
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loadingEvaluations = false)
+            }
+        }
+    }
+
+    fun onEvaluationGradeChange(evaluationId: String, studentId: Long, value: String) {
+        var sanitized = value.replace(',', '.')
+        if (sanitized.count { it == '.' } > 1) return
+        if (sanitized.any { !it.isDigit() && it != '.' }) return
+        if (sanitized.startsWith('.')) {
+            sanitized = "0$sanitized"
+        }
+        if (sanitized == ".") {
+            sanitized = "0."
+        }
+
+        val updatedEvaluations = uiState.evaluationGrades.toMutableMap()
+        val evaluationGrades = updatedEvaluations[evaluationId]?.toMutableMap() ?: mutableMapOf()
+
+        if (sanitized.isEmpty()) {
+            evaluationGrades.remove(studentId)
+        } else {
+            evaluationGrades[studentId] = sanitized
+        }
+
+        updatedEvaluations[evaluationId] = evaluationGrades.toMap()
+        uiState = uiState.copy(evaluationGrades = updatedEvaluations)
+    }
+
+    fun saveEvaluationGrades(evaluationId: String) {
+        val grades = uiState.evaluationGrades[evaluationId].orEmpty()
+        val parsedGrades = mutableMapOf<Long, Double>()
+        grades.forEach { (studentId, text) ->
+            val cleaned = text.trim().trimEnd('.')
+            val parsed = cleaned.toDoubleOrNull()
+            if (parsed != null) {
+                parsedGrades[studentId] = parsed
+            }
+        }
+
+        viewModelScope.launch {
+            uiState = uiState.copy(loadingEvaluations = true)
+            try {
+                evaluationsRepository.setGrades(evaluationId, parsedGrades)
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loadingEvaluations = false)
+            }
+        }
+    }
+
+    fun deleteEvaluation(evaluationId: String) {
+        viewModelScope.launch {
+            uiState = uiState.copy(loadingEvaluations = true)
+            try {
+                evaluationsRepository.deleteEvaluation(evaluationId)
+                uiState = uiState.copy(
+                    evaluationGrades = uiState.evaluationGrades - evaluationId
+                )
+            } catch (e: Exception) {
+                uiState = uiState.copy(exception = e)
+            } finally {
+                uiState = uiState.copy(loadingEvaluations = false)
             }
         }
     }
@@ -228,8 +385,15 @@ data class TrainingProgramDetailUiState(
     val validSchedule: Boolean = true,
     val teacherUserId: String = "",
     val students: List<User> = emptyList(),
+    val evaluations: List<Evaluation> = emptyList(),
+    val evaluationGrades: Map<String, Map<Long, String>> = emptyMap(),
+    val newEvaluationName: String = "",
+    val newEvaluationPercentage: String = "",
+    val validEvaluationName: Boolean = true,
+    val validEvaluationPercentage: Boolean = true,
     val newStudentId: String = "",
     val loading: Boolean = false,
+    val loadingEvaluations: Boolean = false,
     val selectedTab: TrainingProgramDetailTab = TrainingProgramDetailTab.Students,
     val selectedDate: Long = Clock.System.now().toEpochMilliseconds(),
     val attendance: Map<Long, Boolean> = emptyMap(),

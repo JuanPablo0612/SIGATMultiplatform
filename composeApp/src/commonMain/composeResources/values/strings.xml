@@ -80,6 +80,7 @@
     <string name="training_program_detail_title">Training Program Detail</string>
     <string name="training_program_students_tab">Students</string>
     <string name="training_program_attendance_tab">Attendance</string>
+    <string name="training_program_evaluations_tab">Evaluations</string>
     <string name="name_label">Name</string>
     <string name="code_label">Code</string>
     <string name="start_date_label">Start Date</string>
@@ -88,6 +89,11 @@
     <string name="student_id_label">Student ID</string>
     <string name="button_add_student">Add Student</string>
     <string name="button_delete">Delete</string>
+    <string name="button_add_evaluation">Add Evaluation</string>
+    <string name="evaluation_name_label">Evaluation name</string>
+    <string name="evaluation_percentage_label">Percentage</string>
+    <string name="save_evaluation_grades_button">Save grades</string>
+    <string name="evaluations_empty_message">No evaluations recorded yet</string>
 
     <!-- Attendance -->
     <string name="attendance_label">Attendance</string>

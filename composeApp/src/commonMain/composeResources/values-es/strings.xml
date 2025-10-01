@@ -78,6 +78,7 @@
     <string name="training_program_detail_title">Detalle del Programa de Formación</string>
     <string name="training_program_students_tab">Aprendices</string>
     <string name="training_program_attendance_tab">Asistencia</string>
+    <string name="training_program_evaluations_tab">Evaluaciones</string>
     <string name="name_label">Nombre</string>
     <string name="code_label">Código</string>
     <string name="start_date_label">Fecha de inicio</string>
@@ -86,6 +87,11 @@
     <string name="student_id_label">ID del estudiante</string>
     <string name="button_add_student">Agregar estudiante</string>
     <string name="button_delete">Eliminar</string>
+    <string name="button_add_evaluation">Agregar evaluación</string>
+    <string name="evaluation_name_label">Nombre de la evaluación</string>
+    <string name="evaluation_percentage_label">Porcentaje</string>
+    <string name="save_evaluation_grades_button">Guardar calificaciones</string>
+    <string name="evaluations_empty_message">Aún no hay evaluaciones registradas</string>
 
     <!-- Asistencia -->
     <string name="attendance_label">Asistencia</string>
