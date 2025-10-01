@@ -337,8 +337,8 @@ private fun StudentsTabContent(
         }
 
         items(
-            items = uiState.studentIds,
-            key = { it }
+            items = uiState.students,
+            key = { it.uid }
         ) { student ->
             Row(
                 modifier = Modifier
@@ -347,9 +347,9 @@ private fun StudentsTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = student, fontWeight = FontWeight.Bold)
+                Text(text = student.fullName, fontWeight = FontWeight.Bold)
                 IconButton(
-                    onClick = { viewModel.removeStudent(student) },
+                    onClick = { viewModel.removeStudent(student.idNumber) },
                     enabled = !uiState.loading
                 ) {
                     Icon(
@@ -412,8 +412,8 @@ private fun AttendanceTabContent(
         }
 
         items(
-            items = uiState.studentIds,
-            key = { it }
+            items = uiState.students,
+            key = { it.uid }
         ) { student ->
             Row(
                 modifier = Modifier
@@ -422,17 +422,17 @@ private fun AttendanceTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = student, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Text(text = student.fullName, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = if (uiState.attendance[student] == true)
+                        text = if (uiState.attendance[student.idNumber] == true)
                             stringResource(Res.string.present_label)
                         else
                             stringResource(Res.string.absent_label)
                     )
                     Checkbox(
-                        checked = uiState.attendance[student] == true,
-                        onCheckedChange = { viewModel.toggleAttendance(student) },
+                        checked = uiState.attendance[student.idNumber] == true,
+                        onCheckedChange = { viewModel.toggleAttendance(student.idNumber) },
                         enabled = !uiState.loadingAttendance && !uiState.loading
                     )
                 }

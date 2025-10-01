@@ -42,7 +42,7 @@ class TrainingProgramDetailViewModel(
                 if (program != null) {
                     val students = usersRepository
                         .getUsersByIds(program.students)
-                        .getOrElse { emptyList() }
+                        .getOrThrow()
                     uiState = uiState.copy(
                         id = program.id,
                         name = program.name,
@@ -51,7 +51,6 @@ class TrainingProgramDetailViewModel(
                         endDate = program.endDate,
                         schedule = program.schedule,
                         teacherUserId = program.teacherUserId,
-                        studentIds = program.students,
                         students = students
                     )
                     loadAttendance(uiState.selectedDate)
@@ -72,7 +71,7 @@ class TrainingProgramDetailViewModel(
                     .getAssistanceForProgramAndDate(uiState.id, date)
                     .first()
                 uiState = uiState.copy(
-                    attendance = attendance.associate { it.studentId to it.present }
+                    attendance = attendance.associate { it.studentIdNumber to it.present }
                 )
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)
@@ -82,7 +81,7 @@ class TrainingProgramDetailViewModel(
         }
     }
 
-    fun toggleAttendance(studentId: String) {
+    fun toggleAttendance(studentId: Long) {
         val current = uiState.attendance[studentId] ?: false
         uiState = uiState.copy(
             attendance = uiState.attendance.toMutableMap().apply { put(studentId, !current) }
@@ -161,7 +160,7 @@ class TrainingProgramDetailViewModel(
                         endDate = uiState.endDate!!,
                         schedule = uiState.schedule,
                         teacherUserId = uiState.teacherUserId,
-                        students = uiState.studentIds
+                        students = uiState.students.map { it.uid }
                     )
                 )
             } catch (e: Exception) {
@@ -193,10 +192,10 @@ class TrainingProgramDetailViewModel(
         }
     }
 
-    fun removeStudent(studentId: String) {
+    fun removeStudent(studentIdNumber: Long) {
         viewModelScope.launch {
             try {
-                repository.removeStudentFromTrainingProgram(uiState.id, studentId)
+                repository.removeStudentFromTrainingProgram(uiState.id, studentIdNumber)
                 loadTrainingProgram(uiState.id)
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)
@@ -228,13 +227,12 @@ data class TrainingProgramDetailUiState(
     val schedule: String = "",
     val validSchedule: Boolean = true,
     val teacherUserId: String = "",
-    val studentIds: List<String> = emptyList(),
     val students: List<User> = emptyList(),
     val newStudentId: String = "",
     val loading: Boolean = false,
     val selectedTab: TrainingProgramDetailTab = TrainingProgramDetailTab.Students,
     val selectedDate: Long = Clock.System.now().toEpochMilliseconds(),
-    val attendance: Map<String, Boolean> = emptyMap(),
+    val attendance: Map<Long, Boolean> = emptyMap(),
     val loadingAttendance: Boolean = false,
     val exception: Exception? = null,
     val finished: Boolean = false

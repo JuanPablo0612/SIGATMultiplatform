@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class AssistanceModel(
     val id: String = "",
     val trainingProgramId: String = "",
-    val studentId: String = "",
+    val studentIdNumber: Long = 0,
     val dateMillis: Long = 0L,
     val present: Boolean = false
 )

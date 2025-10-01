@@ -8,14 +8,14 @@ import com.juanpablo0612.sigat.data.assistance.model.AssistanceModel
 data class Assistance(
     val id: String = "",
     val trainingProgramId: String = "",
-    val studentId: String = "",
+    val studentIdNumber: Long = 0,
     val dateMillis: Long = 0L,
     val present: Boolean = false
 ) {
     fun toModel() = AssistanceModel(
         id = id,
         trainingProgramId = trainingProgramId,
-        studentId = studentId,
+        studentIdNumber = studentIdNumber,
         dateMillis = dateMillis,
         present = present
     )
@@ -24,7 +24,7 @@ data class Assistance(
 fun AssistanceModel.toDomain() = Assistance(
     id = id,
     trainingProgramId = trainingProgramId,
-    studentId = studentId,
+    studentIdNumber = studentIdNumber,
     dateMillis = dateMillis,
     present = present
 )

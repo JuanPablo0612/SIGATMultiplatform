@@ -15,13 +15,13 @@ class AssistanceRemoteDataSource(firestore: FirebaseFirestore) {
         }.snapshots.map { it.documents.map { doc -> doc.data() } }
     }
 
-    suspend fun setAttendance(programId: String, studentId: String, dateMillis: Long, present: Boolean) {
-        val id = "${programId}_${dateMillis}_${studentId}"
+    suspend fun setAttendance(programId: String, studentIdNumber: Long, dateMillis: Long, present: Boolean) {
+        val id = "${programId}_${dateMillis}_${studentIdNumber}"
         assistanceCollection.document(id).set(
             AssistanceModel(
                 id = id,
                 trainingProgramId = programId,
-                studentId = studentId,
+                studentIdNumber = studentIdNumber,
                 dateMillis = dateMillis,
                 present = present
             )

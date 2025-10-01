@@ -33,7 +33,7 @@ class TrainingProgramsRepository(private val remoteDataSource: TrainingProgramsR
         remoteDataSource.addStudentToTrainingProgram(trainingProgramId, studentUserId)
     }
 
-    suspend fun removeStudentFromTrainingProgram(trainingProgramId: String, studentUserId: String) {
-        remoteDataSource.removeStudentFromTrainingProgram(trainingProgramId, studentUserId)
+    suspend fun removeStudentFromTrainingProgram(trainingProgramId: String, studentIdNumber: Long) {
+        remoteDataSource.removeStudentFromTrainingProgram(trainingProgramId, studentIdNumber)
     }
 }

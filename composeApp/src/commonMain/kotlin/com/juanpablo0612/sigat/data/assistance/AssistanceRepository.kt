@@ -13,8 +13,8 @@ class AssistanceRepository(private val remoteDataSource: AssistanceRemoteDataSou
         }
     }
 
-    suspend fun setAttendance(programId: String, studentId: String, dateMillis: Long, present: Boolean) {
-        remoteDataSource.setAttendance(programId, studentId, dateMillis, present)
+    suspend fun setAttendance(programId: String, studentIdNumber: Long, dateMillis: Long, present: Boolean) {
+        remoteDataSource.setAttendance(programId, studentIdNumber, dateMillis, present)
     }
 }
 

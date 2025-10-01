@@ -34,11 +34,11 @@ class TrainingProgramsRemoteDataSource(firestore: FirebaseFirestore) {
         trainingProgramsCollection.document(id).delete()
     }
 
-    suspend fun addStudentToTrainingProgram(trainingProgramId: String, studentUserId: String) {
-        trainingProgramsCollection.document(trainingProgramId).update("students" to arrayUnion(studentUserId))
+    suspend fun addStudentToTrainingProgram(trainingProgramId: String, studentIdNumber: String) {
+        trainingProgramsCollection.document(trainingProgramId).update("students" to arrayUnion(studentIdNumber))
     }
 
-    suspend fun removeStudentFromTrainingProgram(trainingProgramId: String, studentUserId: String) {
-        trainingProgramsCollection.document(trainingProgramId).update("students" to arrayRemove(studentUserId))
+    suspend fun removeStudentFromTrainingProgram(trainingProgramId: String, studentIdNumber: Long) {
+        trainingProgramsCollection.document(trainingProgramId).update("students" to arrayRemove(studentIdNumber))
     }
 }
