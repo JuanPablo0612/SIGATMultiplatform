@@ -29,34 +29,58 @@ class AppNavigationViewModel(
             if (!isSignedIn) {
                 userStateHolder.clearUser()
                 uiState = uiState.copy(
-                    userState = userStateHolder.userState
+                    userState = userStateHolder.userState,
+                    exception = null
                 )
                 return@launch
             }
-            val userId = authRepository.getUid()
-            val userResult = usersRepository.getUserByUid(userId)
-            val user = userResult.getOrNull()
-            if (user != null) {
-                userStateHolder.updateUser(user)
+            val userId = authRepository.getUid().getOrElse { throwable ->
+                userStateHolder.clearUser()
+                uiState = uiState.copy(
+                    userState = userStateHolder.userState,
+                    exception = throwable.asException()
+                )
+                return@launch
             }
-
-            uiState = uiState.copy(
-                userState = userStateHolder.userState
-            )
+            val userResult = usersRepository.getUserByUid(userId)
+            userResult
+                .onSuccess { user ->
+                    userStateHolder.updateUser(user)
+                    uiState = uiState.copy(
+                        userState = userStateHolder.userState,
+                        exception = null
+                    )
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(
+                        userState = userStateHolder.userState,
+                        exception = throwable.asException()
+                    )
+                }
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            authRepository.logout()
-            userStateHolder.clearUser()
-            uiState = uiState.copy(
-                userState = userStateHolder.userState
-            )
+            val logoutResult = authRepository.logout()
+            logoutResult
+                .onSuccess {
+                    userStateHolder.clearUser()
+                    uiState = uiState.copy(
+                        userState = userStateHolder.userState,
+                        exception = null
+                    )
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(exception = throwable.asException())
+                }
         }
     }
 }
 
 data class AppNavigationUiState(
-    val userState: UserState? = null
+    val userState: UserState? = null,
+    val exception: Exception? = null
 )
+
+private fun Throwable.asException(): Exception = this as? Exception ?: Exception(this)

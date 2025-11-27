@@ -1,37 +1,33 @@
 package com.juanpablo0612.sigat.data.auth
 
 import com.juanpablo0612.sigat.data.auth.remote.AuthRemoteDataSource
-import com.juanpablo0612.sigat.data.exceptions.toAppException
-import dev.gitlive.firebase.auth.FirebaseAuthException
+import com.juanpablo0612.sigat.data.exceptions.runBlockingCatchingApp
+import com.juanpablo0612.sigat.data.exceptions.runSuspendCatchingApp
 
 class AuthRepository(private val remoteDataSource: AuthRemoteDataSource) {
     suspend fun login(email: String, password: String): Result<String> {
-        return try {
-            val uid = remoteDataSource.login(email, password)
-            Result.success(uid)
-        } catch (e: FirebaseAuthException) {
-            Result.failure(e.toAppException())
+        return runSuspendCatchingApp {
+            remoteDataSource.login(email, password)
         }
     }
 
     suspend fun register(email: String, password: String): Result<String> {
-        return try {
-            val uid = remoteDataSource.register(email, password)
-            Result.success(uid)
-        } catch (e: FirebaseAuthException) {
-            Result.failure(e.toAppException())
+        return runSuspendCatchingApp {
+            remoteDataSource.register(email, password)
         }
     }
 
-    suspend fun logout() {
-        remoteDataSource.logout()
+    suspend fun logout(): Result<Unit> {
+        return runSuspendCatchingApp {
+            remoteDataSource.logout()
+        }
     }
 
     fun isSignedIn(): Boolean {
         return remoteDataSource.isSignedIn()
     }
 
-    fun getUid(): String {
-        return remoteDataSource.getUid()
+    fun getUid(): Result<String> {
+        return runBlockingCatchingApp { remoteDataSource.getUid() }
     }
 }

@@ -1,5 +1,6 @@
 package com.juanpablo0612.sigat.data.auth.remote
 
+import com.juanpablo0612.sigat.data.exceptions.UserIsNotSignedInException
 import dev.gitlive.firebase.auth.FirebaseAuth
 
 interface AuthRemoteDataSource {
@@ -29,6 +30,7 @@ class BaseAuthRemoteDataSource(private val auth: FirebaseAuth) :
     }
 
     override fun getUid(): String {
-        return auth.currentUser!!.uid
+        val currentUser = auth.currentUser ?: throw UserIsNotSignedInException()
+        return currentUser.uid
     }
 }

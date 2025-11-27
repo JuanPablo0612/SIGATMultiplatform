@@ -31,8 +31,14 @@ class GenerateReportViewModel(
 
     fun loadContract() {
         viewModelScope.launch {
-            val uid = authRepository.getUid()
-            uiState = uiState.copy(contract = contractsRepository.getContract(uid))
+            val uid = authRepository.getUid().getOrElse { throwable ->
+                uiState = uiState.copy(exception = throwable.asException())
+                return@launch
+            }
+            val contractResult = contractsRepository.getContract(uid)
+            contractResult
+                .onSuccess { contract -> uiState = uiState.copy(contract = contract) }
+                .onFailure { exception -> uiState = uiState.copy(exception = exception.asException()) }
         }
     }
 
@@ -56,37 +62,50 @@ class GenerateReportViewModel(
         viewModelScope.launch {
             uiState = uiState.copy(loading = true)
 
-            try {
-                val uid = authRepository.getUid()
-                val userResult = usersRepository.getUserByUid(uid = uid)
-
-                userResult.fold(
-                    onSuccess = { user ->
-                        val contract = uiState.contract
-                        if (contract == null) {
-                            uiState = uiState.copy(exception = IllegalStateException("Contract required"))
-                            return@fold
-                        }
-                        val actions = actionsRepository.getActions(user.uid).first()
-                            .filter { it.timestamp in uiState.startTimestamp..uiState.endTimestamp }
-                        reportsRepository.generateReport(
-                            template = uiState.templateFile!!,
-                            output = uiState.outputFile!!,
-                            user = user,
-                            contract = contract,
-                            startTimestamp = uiState.startTimestamp,
-                            endTimestamp = uiState.endTimestamp,
-                            actions = actions
-                        )
-                        uiState = uiState.copy(success = true)
-                    },
-                    onFailure = { uiState = uiState.copy(exception = it as Exception) }
-                )
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loading = false)
+            val uid = authRepository.getUid().getOrElse { throwable ->
+                uiState = uiState.copy(exception = throwable.asException(), loading = false)
+                return@launch
             }
+
+            val user = usersRepository.getUserByUid(uid).getOrElse { throwable ->
+                uiState = uiState.copy(exception = throwable.asException(), loading = false)
+                return@launch
+            }
+
+            val contract = uiState.contract ?: run {
+                uiState = uiState.copy(
+                    exception = IllegalStateException("Contract required"),
+                    loading = false
+                )
+                return@launch
+            }
+
+            val actionsResult = actionsRepository.getActions(user.uid).first()
+            val actions = actionsResult.getOrElse { throwable ->
+                uiState = uiState.copy(exception = throwable.asException(), loading = false)
+                return@launch
+            }
+
+            val filteredActions = actions.filter { it.timestamp in uiState.startTimestamp..uiState.endTimestamp }
+            val reportResult = reportsRepository.generateReport(
+                template = uiState.templateFile!!,
+                output = uiState.outputFile!!,
+                user = user,
+                contract = contract,
+                startTimestamp = uiState.startTimestamp,
+                endTimestamp = uiState.endTimestamp,
+                actions = filteredActions
+            )
+
+            reportResult
+                .onSuccess {
+                    uiState = uiState.copy(success = true)
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(exception = throwable.asException())
+                }
+
+            uiState = uiState.copy(loading = false)
         }
     }
 }
@@ -101,3 +120,5 @@ data class GenerateReportUiState(
     val startTimestamp: Long = 0,
     val endTimestamp: Long = 0,
 )
+
+private fun Throwable.asException(): Exception = this as? Exception ?: Exception(this)

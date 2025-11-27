@@ -84,7 +84,7 @@ class AddTrainingProgramViewModel(
             uiState = uiState.copy(loading = true)
             try {
                 val teacherId = userStateHolder.userState.user?.uid ?: return@launch
-                repository.createTrainingProgram(
+                val result = repository.createTrainingProgram(
                     TrainingProgram(
                         name = uiState.name,
                         code = uiState.code.toInt(),
@@ -94,7 +94,13 @@ class AddTrainingProgramViewModel(
                         teacherUserId = teacherId
                     )
                 )
-                uiState = uiState.copy(saved = true)
+                result
+                    .onSuccess {
+                        uiState = uiState.copy(saved = true)
+                    }
+                    .onFailure { exception ->
+                        uiState = uiState.copy(exception = exception as Exception)
+                    }
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)
             } finally {

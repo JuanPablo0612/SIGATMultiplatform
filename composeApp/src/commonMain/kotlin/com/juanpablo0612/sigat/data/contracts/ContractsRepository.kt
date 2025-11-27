@@ -1,6 +1,7 @@
 package com.juanpablo0612.sigat.data.contracts
 
 import com.juanpablo0612.sigat.data.contracts.remote.ContractsRemoteDataSource
+import com.juanpablo0612.sigat.data.exceptions.runSuspendCatchingApp
 import com.juanpablo0612.sigat.domain.model.Contract
 
 /**
@@ -9,12 +10,16 @@ import com.juanpablo0612.sigat.domain.model.Contract
 class ContractsRepository(
     private val remoteDataSource: ContractsRemoteDataSource,
 ) {
-    suspend fun saveContract(contract: Contract) {
-        remoteDataSource.saveContract(contract.userId, contract.toModel())
+    suspend fun saveContract(contract: Contract): Result<Unit> {
+        return runSuspendCatchingApp {
+            remoteDataSource.saveContract(contract.userId, contract.toModel())
+        }
     }
 
-    suspend fun getContract(userId: String): Contract? {
-        return remoteDataSource.getContract(userId)?.toDomain()
+    suspend fun getContract(userId: String): Result<Contract?> {
+        return runSuspendCatchingApp {
+            remoteDataSource.getContract(userId)?.toDomain()
+        }
     }
 }
 

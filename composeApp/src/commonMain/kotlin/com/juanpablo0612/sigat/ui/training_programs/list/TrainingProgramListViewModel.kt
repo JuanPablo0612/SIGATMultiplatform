@@ -26,8 +26,14 @@ class TrainingProgramListViewModel(
             uiState = uiState.copy(loading = true)
             try {
                 val teacherId = userStateHolder.userState.user?.uid ?: return@launch
-                repository.getTrainingProgramsByTeacherId(teacherId).collect {
-                    uiState = uiState.copy(programs = it, loading = false)
+                repository.getTrainingProgramsByTeacherId(teacherId).collect { result ->
+                    result
+                        .onSuccess { programs ->
+                            uiState = uiState.copy(programs = programs, loading = false, exception = null)
+                        }
+                        .onFailure { exception ->
+                            uiState = uiState.copy(exception = exception as Exception, loading = false)
+                        }
                 }
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)

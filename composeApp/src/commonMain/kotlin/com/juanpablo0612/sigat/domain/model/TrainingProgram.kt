@@ -13,7 +13,7 @@ data class TrainingProgram(
     val endDate: Long = 0L,
     val schedule: String = "",
     val teacherUserId: String = "",
-    val students: List<String> = emptyList()
+    val students: List<Long> = emptyList()
 ) {
     fun toModel() = TrainingProgramModel(
         id = id,

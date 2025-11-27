@@ -30,15 +30,29 @@ class ManageRolesViewModel(
 
             try {
                 val currentUserId = userStateHolder.userState.user?.uid ?: return@launch
-                val roles = rolesRepository.getRoles()
+                val rolesResult = rolesRepository.getRoles()
+                var roles: List<Role> = emptyList()
+                rolesResult
+                    .onSuccess { fetchedRoles -> roles = fetchedRoles }
+                    .onFailure { exception ->
+                        uiState = uiState.copy(initialLoading = false, exception = exception as Exception)
+                        return@launch
+                    }
+
                 usersRepository.getAllUsers().collect { usersResult ->
                     usersResult.fold(
                         onSuccess = { users ->
-                            uiState = uiState.copy(users = users.filterNot { it.uid == currentUserId }, roles = roles)
+                            uiState = uiState.copy(
+                                users = users.filterNot { it.uid == currentUserId },
+                                roles = roles,
+                                initialLoading = false,
+                                exception = null
+                            )
                         },
-                        onFailure = { uiState = uiState.copy(exception = it as Exception) }
+                        onFailure = { failure ->
+                            uiState = uiState.copy(initialLoading = false, exception = failure as Exception)
+                        }
                     )
-                    uiState = uiState.copy(initialLoading = false)
                 }
             } catch (e: Exception) {
                 uiState = uiState.copy(initialLoading = false, exception = e)
@@ -53,8 +67,18 @@ class ManageRolesViewModel(
             try {
                 val updateUser = user.copy(role = role)
 
-                usersRepository.saveUser(updateUser)
-                uiState = uiState.copy(successChange = true, applyingChangesToUser = null)
+                val saveResult = usersRepository.saveUser(updateUser)
+                saveResult
+                    .onSuccess {
+                        uiState = uiState.copy(successChange = true, applyingChangesToUser = null)
+                    }
+                    .onFailure { exception ->
+                        uiState = uiState.copy(
+                            applyingChangesToUser = null,
+                            successChange = false,
+                            exception = exception as Exception
+                        )
+                    }
             } catch (e: Exception) {
                 uiState =
                     uiState.copy(applyingChangesToUser = null, successChange = false, exception = e)

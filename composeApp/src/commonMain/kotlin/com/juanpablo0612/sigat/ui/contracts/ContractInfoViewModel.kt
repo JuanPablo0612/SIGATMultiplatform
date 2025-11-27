@@ -24,32 +24,40 @@ class ContractInfoViewModel(
     private fun loadContract() {
         viewModelScope.launch {
             uiState = uiState.copy(loading = true)
-            val uid = authRepository.getUid()
-            try {
-                val contract = contractsRepository.getContract(uid)
-                if (contract != null) {
-                    uiState = uiState.copy(
-                        city = contract.city,
-                        supervisorName = contract.supervisorName,
-                        supervisorPosition = contract.supervisorPosition,
-                        supervisorDependency = contract.supervisorDependency,
-                        number = contract.number,
-                        year = contract.year,
-                        contractorName = contract.contractorName,
-                        contractorIdNumber = contract.contractorIdNumber,
-                        contractorIdExpeditionPlace = contract.contractorIdExpeditionPlace,
-                        contractObject = contract.contractObject,
-                        value = contract.value,
-                        paymentMethod = contract.paymentMethod,
-                        elaborationDate = contract.elaborationDate,
-                        endDate = contract.endDate,
-                    )
+            val uidResult = authRepository.getUid()
+            uidResult
+                .onSuccess { uid ->
+                    val contractResult = contractsRepository.getContract(uid)
+                    contractResult
+                        .onSuccess { contract ->
+                            if (contract != null) {
+                                uiState = uiState.copy(
+                                    city = contract.city,
+                                    supervisorName = contract.supervisorName,
+                                    supervisorPosition = contract.supervisorPosition,
+                                    supervisorDependency = contract.supervisorDependency,
+                                    number = contract.number,
+                                    year = contract.year,
+                                    contractorName = contract.contractorName,
+                                    contractorIdNumber = contract.contractorIdNumber,
+                                    contractorIdExpeditionPlace = contract.contractorIdExpeditionPlace,
+                                    contractObject = contract.contractObject,
+                                    value = contract.value,
+                                    paymentMethod = contract.paymentMethod,
+                                    elaborationDate = contract.elaborationDate,
+                                    endDate = contract.endDate,
+                                )
+                            }
+                        }
+                        .onFailure { exception ->
+                            uiState = uiState.copy(exception = exception as Exception)
+                        }
                 }
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loading = false)
-            }
+                .onFailure { exception ->
+                    uiState = uiState.copy(exception = exception as Exception)
+                }
+
+            uiState = uiState.copy(loading = false)
         }
     }
 
@@ -178,32 +186,40 @@ class ContractInfoViewModel(
             if (!allFieldsValid()) return@launch
 
             uiState = uiState.copy(loading = true, exception = null)
-            val uid = authRepository.getUid()
-            val contract = Contract(
-                userId = uid,
-                city = uiState.city,
-                elaborationDate = uiState.elaborationDate,
-                supervisorName = uiState.supervisorName,
-                supervisorPosition = uiState.supervisorPosition,
-                supervisorDependency = uiState.supervisorDependency,
-                number = uiState.number,
-                year = uiState.year,
-                contractorName = uiState.contractorName,
-                contractorIdNumber = uiState.contractorIdNumber,
-                contractorIdExpeditionPlace = uiState.contractorIdExpeditionPlace,
-                contractObject = uiState.contractObject,
-                value = uiState.value,
-                paymentMethod = uiState.paymentMethod,
-                endDate = uiState.endDate,
-            )
-            try {
-                contractsRepository.saveContract(contract)
-                uiState = uiState.copy(saved = true)
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loading = false)
-            }
+            val uidResult = authRepository.getUid()
+            uidResult
+                .onSuccess { uid ->
+                    val contract = Contract(
+                        userId = uid,
+                        city = uiState.city,
+                        elaborationDate = uiState.elaborationDate,
+                        supervisorName = uiState.supervisorName,
+                        supervisorPosition = uiState.supervisorPosition,
+                        supervisorDependency = uiState.supervisorDependency,
+                        number = uiState.number,
+                        year = uiState.year,
+                        contractorName = uiState.contractorName,
+                        contractorIdNumber = uiState.contractorIdNumber,
+                        contractorIdExpeditionPlace = uiState.contractorIdExpeditionPlace,
+                        contractObject = uiState.contractObject,
+                        value = uiState.value,
+                        paymentMethod = uiState.paymentMethod,
+                        endDate = uiState.endDate,
+                    )
+                    val saveResult = contractsRepository.saveContract(contract)
+                    saveResult
+                        .onSuccess {
+                            uiState = uiState.copy(saved = true)
+                        }
+                        .onFailure { exception ->
+                            uiState = uiState.copy(exception = exception as Exception)
+                        }
+                }
+                .onFailure { exception ->
+                    uiState = uiState.copy(exception = exception as Exception)
+                }
+
+            uiState = uiState.copy(loading = false)
         }
     }
 }

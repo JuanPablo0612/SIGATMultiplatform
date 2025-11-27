@@ -41,49 +41,58 @@ class TrainingProgramDetailViewModel(
 
     private fun loadTrainingProgram(id: String) {
         viewModelScope.launch {
-            uiState = uiState.copy(loading = true)
-            try {
-                val program = repository.getTrainingProgram(id)
-                if (program != null) {
-                    val students = usersRepository
-                        .getUsersByIds(program.students)
-                        .getOrThrow()
-                    uiState = uiState.copy(
-                        id = program.id,
-                        name = program.name,
-                        code = program.code.toString(),
-                        startDate = program.startDate,
-                        endDate = program.endDate,
-                        schedule = program.schedule,
-                        teacherUserId = program.teacherUserId,
-                        students = students
-                    )
-                    observeEvaluations(program.id)
-                    loadAttendance(uiState.selectedDate)
-                }
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
+            uiState = uiState.copy(loading = true, exception = null)
+            val program = repository.getTrainingProgram(id).getOrElse { throwable ->
+                uiState = uiState.copy(loading = false, exception = throwable.asException())
+                return@launch
+            } ?: run {
                 uiState = uiState.copy(loading = false)
+                return@launch
             }
+
+            val students = usersRepository.getUsersByIds(program.students).getOrElse { throwable ->
+                uiState = uiState.copy(loading = false, exception = throwable.asException())
+                return@launch
+            }
+
+            uiState = uiState.copy(
+                id = program.id,
+                name = program.name,
+                code = program.code.toString(),
+                startDate = program.startDate,
+                endDate = program.endDate,
+                schedule = program.schedule,
+                teacherUserId = program.teacherUserId,
+                students = students,
+                loading = false,
+                exception = null
+            )
+            observeEvaluations(program.id)
+            loadAttendance(uiState.selectedDate)
         }
     }
 
     fun loadAttendance(date: Long) {
         viewModelScope.launch {
             uiState = uiState.copy(loadingAttendance = true, selectedDate = date)
-            try {
-                val attendance = assistanceRepository
-                    .getAssistanceForProgramAndDate(uiState.id, date)
-                    .first()
-                uiState = uiState.copy(
-                    attendance = attendance.associate { it.studentIdNumber to it.present }
-                )
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loadingAttendance = false)
-            }
+            val attendanceResult = assistanceRepository
+                .getAssistanceForProgramAndDate(uiState.id, date)
+                .first()
+
+            attendanceResult
+                .onSuccess { attendance ->
+                    uiState = uiState.copy(
+                        attendance = attendance.associate { it.studentIdNumber to it.present },
+                        loadingAttendance = false,
+                        exception = null
+                    )
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(
+                        loadingAttendance = false,
+                        exception = throwable.asException()
+                    )
+                }
         }
     }
 
@@ -91,31 +100,37 @@ class TrainingProgramDetailViewModel(
         evaluationsJob?.cancel()
         uiState = uiState.copy(loadingEvaluations = true)
         evaluationsJob = viewModelScope.launch {
-            try {
-                evaluationsRepository
-                    .getEvaluationsByTrainingProgram(programId)
-                    .collect { evaluations ->
-                        val students = uiState.students
-                        val existingGrades = uiState.evaluationGrades
-                        val mergedGrades = evaluations.associate { evaluation ->
-                            val base = students.associate { it.idNumber to "" }.toMutableMap()
-                            evaluation.grades.forEach { (studentId, grade) ->
-                                base[studentId] = grade.toString()
+            evaluationsRepository
+                .getEvaluationsByTrainingProgram(programId)
+                .collect { result ->
+                    result
+                        .onSuccess { evaluations ->
+                            val students = uiState.students
+                            val existingGrades = uiState.evaluationGrades
+                            val mergedGrades = evaluations.associate { evaluation ->
+                                val base = students.associate { it.idNumber to "" }.toMutableMap()
+                                evaluation.grades.forEach { (studentId, grade) ->
+                                    base[studentId] = grade.toString()
+                                }
+                                existingGrades[evaluation.id]?.forEach { (studentId, value) ->
+                                    base[studentId] = value
+                                }
+                                evaluation.id to base.toMap()
                             }
-                            existingGrades[evaluation.id]?.forEach { (studentId, value) ->
-                                base[studentId] = value
-                            }
-                            evaluation.id to base.toMap()
+                            uiState = uiState.copy(
+                                evaluations = evaluations,
+                                evaluationGrades = mergedGrades,
+                                loadingEvaluations = false,
+                                exception = null
+                            )
                         }
-                        uiState = uiState.copy(
-                            evaluations = evaluations,
-                            evaluationGrades = mergedGrades,
-                            loadingEvaluations = false
-                        )
-                    }
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e, loadingEvaluations = false)
-            }
+                        .onFailure { throwable ->
+                            uiState = uiState.copy(
+                                exception = throwable.asException(),
+                                loadingEvaluations = false
+                            )
+                        }
+                }
         }
     }
 
@@ -129,16 +144,18 @@ class TrainingProgramDetailViewModel(
     fun saveAttendance() {
         viewModelScope.launch {
             uiState = uiState.copy(loadingAttendance = true)
-            try {
-                val date = uiState.selectedDate
-                uiState.attendance.forEach { (studentId, present) ->
-                    assistanceRepository.setAttendance(uiState.id, studentId, date, present)
+            val date = uiState.selectedDate
+            uiState.attendance.forEach { (studentId, present) ->
+                val result = assistanceRepository.setAttendance(uiState.id, studentId, date, present)
+                result.onFailure { throwable ->
+                    uiState = uiState.copy(
+                        exception = throwable.asException(),
+                        loadingAttendance = false
+                    )
+                    return@launch
                 }
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loadingAttendance = false)
             }
+            uiState = uiState.copy(loadingAttendance = false, exception = null)
         }
     }
 
@@ -176,25 +193,30 @@ class TrainingProgramDetailViewModel(
 
         viewModelScope.launch {
             uiState = uiState.copy(loadingEvaluations = true)
-            try {
-                evaluationsRepository.addEvaluation(
-                    Evaluation(
-                        trainingProgramId = programId,
-                        name = name,
-                        percentage = percentage!!
+            val result = evaluationsRepository.addEvaluation(
+                Evaluation(
+                    trainingProgramId = programId,
+                    name = name,
+                    percentage = percentage
+                )
+            )
+            result
+                .onSuccess {
+                    uiState = uiState.copy(
+                        newEvaluationName = "",
+                        newEvaluationPercentage = "",
+                        validEvaluationName = true,
+                        validEvaluationPercentage = true,
+                        loadingEvaluations = false,
+                        exception = null
                     )
-                )
-                uiState = uiState.copy(
-                    newEvaluationName = "",
-                    newEvaluationPercentage = "",
-                    validEvaluationName = true,
-                    validEvaluationPercentage = true
-                )
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loadingEvaluations = false)
-            }
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(
+                        exception = throwable.asException(),
+                        loadingEvaluations = false
+                    )
+                }
         }
     }
 
@@ -235,29 +257,38 @@ class TrainingProgramDetailViewModel(
 
         viewModelScope.launch {
             uiState = uiState.copy(loadingEvaluations = true)
-            try {
-                evaluationsRepository.setGrades(evaluationId, parsedGrades)
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loadingEvaluations = false)
-            }
+            val result = evaluationsRepository.setGrades(evaluationId, parsedGrades)
+            result
+                .onSuccess {
+                    uiState = uiState.copy(loadingEvaluations = false, exception = null)
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(
+                        loadingEvaluations = false,
+                        exception = throwable.asException()
+                    )
+                }
         }
     }
 
     fun deleteEvaluation(evaluationId: String) {
         viewModelScope.launch {
             uiState = uiState.copy(loadingEvaluations = true)
-            try {
-                evaluationsRepository.deleteEvaluation(evaluationId)
-                uiState = uiState.copy(
-                    evaluationGrades = uiState.evaluationGrades - evaluationId
-                )
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loadingEvaluations = false)
-            }
+            val result = evaluationsRepository.deleteEvaluation(evaluationId)
+            result
+                .onSuccess {
+                    uiState = uiState.copy(
+                        evaluationGrades = uiState.evaluationGrades - evaluationId,
+                        loadingEvaluations = false,
+                        exception = null
+                    )
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(
+                        loadingEvaluations = false,
+                        exception = throwable.asException()
+                    )
+                }
         }
     }
 
@@ -307,56 +338,62 @@ class TrainingProgramDetailViewModel(
 
             if (!allFieldsValid()) return@launch
 
-            try {
-                repository.updateTrainingProgram(
-                    TrainingProgram(
-                        id = uiState.id,
-                        name = uiState.name,
-                        code = uiState.code.toInt(),
-                        startDate = uiState.startDate!!,
-                        endDate = uiState.endDate!!,
-                        schedule = uiState.schedule,
-                        teacherUserId = uiState.teacherUserId,
-                        students = uiState.students.map { it.uid }
-                    )
+            val result = repository.updateTrainingProgram(
+                TrainingProgram(
+                    id = uiState.id,
+                    name = uiState.name,
+                    code = uiState.code.toInt(),
+                    startDate = uiState.startDate!!,
+                    endDate = uiState.endDate!!,
+                    schedule = uiState.schedule,
+                    teacherUserId = uiState.teacherUserId,
+                    students = uiState.students.map { it.idNumber }
                 )
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
+            )
+            result.onFailure { throwable ->
+                uiState = uiState.copy(exception = throwable.asException())
             }
         }
     }
 
     fun deleteTrainingProgram() {
         viewModelScope.launch {
-            try {
-                repository.deleteTrainingProgram(uiState.id)
-                uiState = uiState.copy(finished = true)
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            }
+            val result = repository.deleteTrainingProgram(uiState.id)
+            result
+                .onSuccess {
+                    uiState = uiState.copy(finished = true, exception = null)
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(exception = throwable.asException())
+                }
         }
     }
 
     fun addStudent() {
         viewModelScope.launch {
-            try {
-                repository.addStudentToTrainingProgram(uiState.id, uiState.newStudentId)
-                loadTrainingProgram(uiState.id)
-                uiState = uiState.copy(newStudentId = "")
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            }
+            val result = repository.addStudentToTrainingProgram(uiState.id, uiState.newStudentId)
+            result
+                .onSuccess {
+                    loadTrainingProgram(uiState.id)
+                    uiState = uiState.copy(newStudentId = "", exception = null)
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(exception = throwable.asException())
+                }
         }
     }
 
     fun removeStudent(studentIdNumber: Long) {
         viewModelScope.launch {
-            try {
-                repository.removeStudentFromTrainingProgram(uiState.id, studentIdNumber)
-                loadTrainingProgram(uiState.id)
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            }
+            val result = repository.removeStudentFromTrainingProgram(uiState.id, studentIdNumber)
+            result
+                .onSuccess {
+                    loadTrainingProgram(uiState.id)
+                    uiState = uiState.copy(exception = null)
+                }
+                .onFailure { throwable ->
+                    uiState = uiState.copy(exception = throwable.asException())
+                }
         }
     }
 
@@ -401,3 +438,5 @@ data class TrainingProgramDetailUiState(
     val exception: Exception? = null,
     val finished: Boolean = false
 )
+
+private fun Throwable.asException(): Exception = this as? Exception ?: Exception(this)

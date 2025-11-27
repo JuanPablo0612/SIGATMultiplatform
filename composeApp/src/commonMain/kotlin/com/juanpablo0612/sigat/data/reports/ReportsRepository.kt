@@ -1,5 +1,6 @@
 package com.juanpablo0612.sigat.data.reports
 
+import com.juanpablo0612.sigat.data.exceptions.runSuspendCatchingApp
 import com.juanpablo0612.sigat.data.reports.local.ReportsLocalDataSource
 import com.juanpablo0612.sigat.domain.model.Contract
 import com.juanpablo0612.sigat.domain.model.Action
@@ -15,14 +16,16 @@ class ReportsRepository(private val localDataSource: ReportsLocalDataSource) {
         startTimestamp: Long,
         endTimestamp: Long,
         actions: List<Action>
-    ) {
-        localDataSource.generateReport(
-            template,
-            output,
-            user.toModel(),
-            contract.toModel(),
-            startTimestamp,
-            endTimestamp,
-            actions.map { it.toModel() })
+    ): Result<Unit> {
+        return runSuspendCatchingApp {
+            localDataSource.generateReport(
+                template,
+                output,
+                user.toModel(),
+                contract.toModel(),
+                startTimestamp,
+                endTimestamp,
+                actions.map { it.toModel() })
+        }
     }
 }

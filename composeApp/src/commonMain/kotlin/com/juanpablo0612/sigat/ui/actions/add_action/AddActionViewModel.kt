@@ -28,11 +28,17 @@ class AddActionViewModel(
     private fun getData() {
         viewModelScope.launch {
             val user = userStateHolder.userState.user ?: return@launch
-            val obligations = obligationsRepository.getObligations(user.role.id)
-            uiState = uiState.copy(
-                uid = user.uid,
-                obligations = obligations.sortedBy { it.number }
-            )
+            val obligationsResult = obligationsRepository.getObligations(user.role.id)
+            obligationsResult
+                .onSuccess { obligations ->
+                    uiState = uiState.copy(
+                        uid = user.uid,
+                        obligations = obligations.sortedBy { it.number }
+                    )
+                }
+                .onFailure { exception ->
+                    uiState = uiState.copy(exception = exception as Exception)
+                }
         }
     }
 
@@ -88,8 +94,14 @@ class AddActionViewModel(
                     images = emptyList()
                 )
 
-                actionsRepository.addAction(action, uiState.images)
-                uiState = uiState.copy(success = true, saved = true)
+                val addActionResult = actionsRepository.addAction(action, uiState.images)
+                addActionResult
+                    .onSuccess {
+                        uiState = uiState.copy(success = true, saved = true)
+                    }
+                    .onFailure { exception ->
+                        uiState = uiState.copy(exception = exception as Exception)
+                    }
             } catch (e: Exception) {
                 uiState = uiState.copy(exception = e)
             } finally {

@@ -24,16 +24,15 @@ class ActionListViewModel(
     private fun loadActions() {
         viewModelScope.launch {
             uiState = uiState.copy(loading = true)
-
-            try {
-                val uid = userStateHolder.userState.user?.uid ?: return@launch
-                actionsRepository.getActions(uid).collect {
-                    uiState = uiState.copy(actions = it, loading = false)
-                }
-            } catch (e: Exception) {
-                uiState = uiState.copy(exception = e)
-            } finally {
-                uiState = uiState.copy(loading = false)
+            val uid = userStateHolder.userState.user?.uid ?: return@launch
+            actionsRepository.getActions(uid).collect { result ->
+                result
+                    .onSuccess { actions ->
+                        uiState = uiState.copy(actions = actions, loading = false, exception = null)
+                    }
+                    .onFailure { exception ->
+                        uiState = uiState.copy(exception = exception as Exception, loading = false)
+                    }
             }
         }
     }
